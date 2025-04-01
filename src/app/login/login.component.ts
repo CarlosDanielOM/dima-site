@@ -37,6 +37,8 @@ export class LoginComponent {
         this.router.navigate(['/']);
       }
 
+      //! Check if token is valid
+
       this.authService.loginWithToken(this.token);
     }
 
