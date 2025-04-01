@@ -29,7 +29,7 @@
               </p>
             </div>
             <div class="space-x-4">
-              <a class="p-4 rounded-xl bg-purple-600 text-white hover:bg-purple-700 hover:cursor-pointer">
+              <a class="p-4 rounded-xl bg-purple-600 text-white hover:bg-purple-700 hover:cursor-pointer" (click)="loginWithTwitch()">
                 <span class="icon icon-twitch"></span>
                 <p class="inline">Login with Twitch</p>
               </a>
@@ -124,8 +124,8 @@
             </div>
             <div key="premium" class="flex flex-col p-6 bg-white rounded-lg shadow-lg">
                 <h3 class="text-2xl font-bold text-purple-900">PREMIUM</h3> 
-                <div class="mt-4 text-purple-900 text-4xl font-bold">$ N/A</div>
-                <p class="mt-2 text-purple-700">To be implemented soon.</p>
+                <div class="mt-4 text-purple-900 text-4xl font-bold">$ 5 USD</div>
+                <p class="mt-2 text-purple-700">Coming soon.</p>
                 <!-- <ul class="mt-4 space-y-2">
                     <li class="flex items-center">
                         <span class="icon icon-check mr-2 h-5 w-5"></span>
@@ -185,7 +185,7 @@
               </p>
             </div>
             <div class="w-full max-w-sm space-y-2">
-              <button class="w-full bg-[#9146FF] hover:bg-[#7D2EFF] text-white font-semibold py-2 px-4 rounded-md flex items-center justify-center space-x-2">
+              <button class="w-full bg-[#9146FF] hover:bg-[#7D2EFF] text-white font-semibold py-2 px-4 rounded-md flex items-center justify-center space-x-2" (click)="loginWithTwitch()">
                 <span class="icon icon-twitch h-5 w-5"></span>
                 <span>Sign Up with Twitch</span>
               </button>

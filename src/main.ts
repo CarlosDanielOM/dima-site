@@ -8,7 +8,9 @@ posthog.init(
   environment.POSTHOG_KEY,
   {
     api_host: environment.POSTHOG_HOST,
-    person_profiles: 'always'
+    person_profiles: 'always',
+    capture_pageview: false,
+    capture_pageleave: true
   }
 )
 
