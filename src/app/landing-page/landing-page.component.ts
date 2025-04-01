@@ -19,7 +19,8 @@ export class LandingPageComponent {
     private router: Router,
     private linksService: LinksService
   ) {
-    this.twitchAuthUrl = this.linksService.getTwitchAuthUrl();
+    let scope = encodeURIComponent('user:read:email');
+    this.twitchAuthUrl = `${this.linksService.getTwitchAuthUrl()}&scope=${scope}`;
   }
 
   ngOnInit(): void {
