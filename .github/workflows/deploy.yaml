@@ -3,7 +3,7 @@ name: Automated Deployment of Angular App to server
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
