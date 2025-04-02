@@ -32,5 +32,5 @@ jobs:
           rm: true
           source: "./dist/dima-site/browser/*"
           target: "/var/www/dombotsite/browser"
-          strip_components: 1
+          strip_components: 3
 
