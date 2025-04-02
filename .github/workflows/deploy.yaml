@@ -29,7 +29,6 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
-          source: "./dist/dima-site/*"
-          target: "/var/www/dombotsite/"
-          debug: true
+          source: "./dist/dima-site/browser/*"
+          target: "/var/www/dombotsite/browser"
 
