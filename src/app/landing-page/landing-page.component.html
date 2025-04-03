@@ -1,7 +1,7 @@
 <div class="flex flex-col min-h-[100dvh] bg-purple-100">
     <header class="px-4 lg:px-6 h-14 flex items-center">
       <a class="flex items-center justify-center" href="#">
-        <span class="h-6 w-6 text-purple-600 icon icon-twitch"></span>
+        <lucide-icon name="twitch" class="h-6 w-6 text-purple-600"></lucide-icon>
         <span class="ml-2 text-2xl font-bold text-purple-900">DomDimaBot</span>
       </a>
       <nav class="ml-auto flex gap-4 sm:gap-6">
@@ -30,8 +30,10 @@
             </div>
             <div class="space-x-4">
               <a class="p-4 rounded-xl bg-purple-600 text-white hover:bg-purple-700 hover:cursor-pointer" (click)="loginWithTwitch()">
-                <span class="icon icon-twitch"></span>
-                <p class="inline">Login with Twitch</p>
+                <p class="inline">
+                  <lucide-icon [name]="twitchIcon" class="text-white inline h-8 w-8"></lucide-icon>
+                  Login with Twitch
+                </p>
               </a>
               <button class="p-4 rounded-xl border-2 border-purple-600 text-purple-600 hover:bg-purple-100 hover:cursor-pointer">
                 Learn More
@@ -44,19 +46,19 @@
         <div class="container mx-auto px-4 md:px-6">
           <div class="grid gap-8 sm:grid-cols-3">
             <div class="flex flex-col items-center space-y-2 border-purple-300 p-4 rounded-lg bg-white shadow-sm">
-              <span class="icon icon-activity h-8 w-8 text-purple-600"></span>
+              <lucide-icon [name]="activityIcon" class="h-8 w-8 text-purple-600"></lucide-icon>
               <h3 class="text-xl font-bold text-purple-900">Active Channels</h3>
-              <p class="text-3xl font-bold text-purple-600">1,234</p>
+              <p class="text-3xl font-bold text-purple-600">25</p>
             </div>
             <div class="flex flex-col items-center space-y-2 border-purple-300 p-4 rounded-lg bg-white shadow-sm">
-              <span class="icon icon-tv h-8 w-8 text-purple-600"></span>
+              <lucide-icon [name]="tvIcon" class="h-8 w-8 text-purple-600"></lucide-icon>
               <h3 class="text-xl font-bold text-purple-900">Live Channels</h3>
-              <p class="text-3xl font-bold text-purple-600">567</p>
+              <p class="text-3xl font-bold text-purple-600">N/A</p>
             </div>
             <div class="flex flex-col items-center space-y-2 border-purple-300 p-4 rounded-lg bg-white shadow-sm">
-              <span class="icon icon-users h-8 w-8 text-purple-600"></span>
+              <lucide-icon [name]="usersIcon" class="h-8 w-8 text-purple-600"></lucide-icon>
               <h3 class="text-xl font-bold text-purple-900">Registered Channels</h3>
-              <p class="text-3xl font-bold text-purple-600">5,678</p>
+              <p class="text-3xl font-bold text-purple-600">41</p>
             </div>
           </div>
         </div>
@@ -68,19 +70,17 @@
           </h2>
           <div class="grid gap-10 sm:grid-cols-2 md:grid-cols-3">
             <div class="flex flex-col items-center space-y-3 text-center">
-                <span class="icon icon-message-circle h-12 w-12 text-purple-600"></span>
+              <lucide-icon [name]="messageCircleIcon" class="h-12 w-12 text-purple-600"></lucide-icon>
               <h3 class="text-xl font-bold text-purple-900">Smart Chat Moderation</h3>
               <p class="text-purple-800">Automatically filter spam and inappropriate content to keep your chat clean.</p>
             </div>
             <div class="flex flex-col items-center space-y-3 text-center">
-              <span class="icon icon-zap h-12 w-12 text-purple-600"></span>
+              <lucide-icon [name]="zapIcon" class="h-12 w-12 text-purple-600"></lucide-icon>
               <h3 class="text-xl font-bold text-purple-900">Custom Commands</h3>
               <p class="text-purple-800">Create personalized commands to interact with your audience effortlessly.</p>
             </div>
             <div class="flex flex-col items-center space-y-3 text-center">
-              <span class="icon material-symbols-outlined h-12 w-12 text-purple-600">
-                settings
-              </span>
+              <lucide-icon [name]="settingsIcon" class="h-12 w-12 text-purple-600"></lucide-icon>
               <h3 class="text-xl font-bold text-purple-900">Easy Integration</h3>
               <p class="text-purple-800">Seamlessly integrate DomDimaBot with your Twitch channel in just a few clicks.</p>
             </div>
@@ -108,15 +108,15 @@
                 <p class="mt-2 text-purple-700">This is the free plan for new users.</p>
                 <ul class="mt-4 space-y-2">
                     <li class="flex items-center">
-                        <span class="icon icon-check mr-2 h-5 w-5"></span>
+                        <lucide-icon [name]="checkIcon" class="mr-2 h-5 w-5"></lucide-icon>
                         <span class="text-purple-800">Smart Chat Moderation</span>
                     </li>
                     <li class="flex items-center">
-                        <span class="icon icon-check mr-2 h-5 w-5"></span>
+                        <lucide-icon [name]="checkIcon" class="mr-2 h-5 w-5"></lucide-icon>
                         <span class="text-purple-800">Unlimited Simple Custom Commands</span>
                     </li>
                     <li class="flex items-center">
-                        <span class="icon icon-check mr-2 h-5 w-5"></span>
+                        <lucide-icon [name]="checkIcon" class="mr-2 h-5 w-5"></lucide-icon>
                         <span class="text-purple-800">Basic Analytics</span>
                     </li>
                 </ul>
@@ -186,7 +186,7 @@
             </div>
             <div class="w-full max-w-sm space-y-2">
               <button class="w-full bg-[#9146FF] hover:bg-[#7D2EFF] text-white font-semibold py-2 px-4 rounded-md flex items-center justify-center space-x-2" (click)="loginWithTwitch()">
-                <span class="icon icon-twitch h-5 w-5"></span>
+                <lucide-icon [name]="twitchIcon" class="h-5 w-5"></lucide-icon>
                 <span>Sign Up with Twitch</span>
               </button>
               <p class="text-xs text-purple-700">

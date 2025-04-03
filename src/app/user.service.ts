@@ -20,20 +20,22 @@ export class UserService {
     private router: Router,
   ) { }
 
-  createUser(user: User): void {
+  createUser(user: User): boolean {
     this.user = user;
     sessionStorage.setItem('user', JSON.stringify(user));
+    return true;
   }
 
-  createRouteUser(user: User): void {
+  createRouteUser(user: User): boolean {
     this.routeUser = user;
     sessionStorage.setItem('routeUser', JSON.stringify(user));
+    return true;
   }
 
   restoreUser(): boolean {
-    this.user = JSON.parse(sessionStorage.getItem('user')??'');
+    this.user = JSON.parse(sessionStorage.getItem('user') ?? '{}');
 
-    if(!this.user) {
+    if(!this.user.token) {
       this.deleteData();
       return false;
     }
@@ -43,9 +45,9 @@ export class UserService {
   }
 
   restoreRouteUser(): boolean {
-    this.routeUser = JSON.parse(sessionStorage.getItem('routeUser')??'');
+    this.routeUser = JSON.parse(sessionStorage.getItem('routeUser') ?? '{}');
 
-    if(!this.user) {
+    if(!this.user.token) {
       this.deleteData();
       return false;
     }
@@ -58,13 +60,16 @@ export class UserService {
       }).subscribe(res => {
         let data = res;
         let dataUser: User = {
-          username: data.username,
+          login: data.login,
           display_name: data.display_name,
-          active: this.user.active,
+          actived: this.user.actived,
           email: this.user.email,
           id: data.id,
           profile_image_url: data.profile_image_url,
-          role: this.user.role,
+          premium: this.user.premium,
+          premium_until: this.user.premium_until,
+          premium_plus: this.user.premium_plus,
+          chat_enabled: this.user.chat_enabled,
           token: this.user.token
         };
         this.createRouteUser(dataUser);
@@ -86,8 +91,8 @@ export class UserService {
     return this.user;
   }
 
-  getUsername(): string {
-    return this.user.username;
+  getLogin(): string {
+    return this.user.login;
   }
 
   getDisplayName(): string {
@@ -98,12 +103,24 @@ export class UserService {
     return this.user.email;
   }
 
+  getUserId(): number {
+    return this.user.id;
+  }
+
   getProfileImageUrl(): string {
     return this.user.profile_image_url;
   }
 
-  getRole(): string {
-    return this.user.role;
+  getPremium(): boolean {
+    return this.user.premium;
+  }
+
+  getPremiumUntil(): string {
+    return this.user.premium_until;
+  }
+
+  getPremiumPlus(): boolean {
+    return this.user.premium_plus;
   }
 
   getToken(): string {
@@ -111,11 +128,11 @@ export class UserService {
   }
 
   getActive(): boolean {
-    return this.user.active;
+    return this.user.actived;
   }
 
   changeActiveStatus(status: boolean): void {
-    this.user.active = status;
+    this.user.actived = status;
     sessionStorage.setItem('user', JSON.stringify(this.user));
   }
 
@@ -126,12 +143,6 @@ export class UserService {
   logoutUser() {
     this.deleteData();
     this.router.navigate(['/']);
-  }
-
-  getEvents() {
-    return this.http.get<any>(`${environment.DIMA_API}/dev/eventsubs`).pipe(
-      map(res => res.events)
-    );
   }
   
 }

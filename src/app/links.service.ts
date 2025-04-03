@@ -16,6 +16,10 @@ export class LinksService {
     return this.twitchAuthUrl;
   }
 
+  getApiURL() {
+    return environment.production ? 'https://api.domdimabot.com' : 'http://localhost:3000';
+  }
+
   getLink() {
     return environment.production ? 'https://domdimabot.com' : 'http://localhost:4200';
   }

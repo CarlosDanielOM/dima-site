@@ -1,0 +1,49 @@
+<!-- Mobile Sidebar Trigger -->
+<button 
+  (click)="toggleSidebar()"
+  class="md:hidden p-2 rounded-md hover:bg-gray-100 fixed top-16 left-4 z-50"
+>
+  <i-lucide [name]="menuIcon" class="w-6 h-6"></i-lucide>
+</button>
+
+<!-- Mobile Sidebar -->
+<div 
+  *ngIf="isOpen"
+  class="fixed inset-0 z-40 md:hidden"
+  (click)="toggleSidebar()"
+>
+  <div class="fixed inset-y-0 left-0 w-[240px] sm:w-[300px] bg-white shadow-lg mt-16">
+    <nav class="flex flex-col h-full">
+      <div class="overflow-y-auto flex-1">
+        <div class="space-y-2 py-4">
+          <a
+            *ngFor="let link of links"
+            [routerLink]="link.href"
+            class="flex items-center py-2 px-4 text-sm font-medium rounded-md hover:bg-purple-100"
+          >
+            <i-lucide [name]="link.icon" class="w-5 h-5 mr-2"></i-lucide>
+            {{ link.label }}
+          </a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</div>
+
+<!-- Desktop Sidebar -->
+<div class="hidden md:block h-[calc(100vh-64px)] fixed left-0 top-16 w-[240px] bg-white border-r border-gray-200">
+  <nav class="flex flex-col h-full">
+    <div class="overflow-y-auto flex-1">
+      <div class="space-y-2 px-4 py-4">
+        <a
+          *ngFor="let link of links"
+          [routerLink]="link.href"
+          class="flex items-center py-2 px-4 text-sm font-medium rounded-md hover:bg-purple-100"
+        >
+          <i-lucide [name]="link.icon" class="w-5 h-5 mr-2"></i-lucide>
+          {{ link.label }}
+        </a>
+      </div>
+    </div>
+  </nav>
+</div> 

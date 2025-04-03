@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { UserService } from '../../user.service';
 import { CommonModule } from '@angular/common';
-
+import { LinksService } from '../../links.service';
+import { AuthService } from '../../auth.service';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -11,19 +12,34 @@ import { CommonModule } from '@angular/common';
 })
 export class DashboardComponent {
 
-  test$: any;
-
-  constructor(
-    private userService: UserService
-  ) {}
+  authUrl = '';
+  scopes: any = [];
   
-  ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
-    console.log('DashboardComponent initialized');
-    this.test$ = this.userService.getEvents();
+  constructor(
+    private userService: UserService,
+    private linksService: LinksService,
+    private authService: AuthService
+  ) {}
 
-    console.log(this.test$);
+  ngOnInit() {
+
+    let s = this.authService.getScopes();
+
+    let scopeString = '';
+    
+    s.forEach((scope, index, scopes) => {
+      if (index === scopes.length - 1) {  
+        scopeString += encodeURIComponent(scope);
+      } else {
+        scopeString += encodeURIComponent(scope) + '+';
+      }
+    })
+
+    this.authUrl = `https://id.twitch.tv/oauth2/authorize?response_type=code&force_verify=false&client_id=jl9k3mi67pmrbl1bh67y07ezjdc4cf&redirect_uri=${this.linksService.getApiURL()}/auth/register&scope=${scopeString}&state=${this.userService.getLogin()}`
   }
-
+  
+  startPermissionFlow() {
+    window.location.href = this.authUrl;
+  }
+  
 }
