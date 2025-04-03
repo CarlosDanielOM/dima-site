@@ -1,26 +1,70 @@
 <nav class="bg-purple-700 text-white p-4">
     <div class="container mx-auto flex justify-between items-center">
-        <a routerLink="/" class="flex items-center space-x-2">
+        <a routerLink="/{{user.login}}/dashboard" class="flex items-center space-x-2">
             <i-lucide [name]="twitchIcon" class="w-6 h-6"></i-lucide>
-            <span class="font-bold text-xl">TwitchBot</span>
+            <span class="font-bold text-xl">DomDimaBot</span>
         </a>
 
-        <div *ngIf="!user?.actived" class="flex-1 text-center">
-            <button class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg" (click)="startPermissionFlow()">
-                First Time Setup, Click Here!   
-            </button>
+        <!-- Mobile view -->
+        <div class="md:hidden flex items-center space-x-4">
+            <div *ngIf="!user?.actived" class="mr-4">
+                <button class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg text-sm" (click)="startPermissionFlow()">
+                    Setup
+                </button>
+            </div>
+            <div class="relative">
+                <button (click)="toggleDropdown()" class="relative h-8 w-8 rounded-full bg-transparent hover:bg-purple-600">
+                    <img src="{{user.profile_image_url}}" alt="User avatar" class="rounded-full" />
+                </button>
+                <div *ngIf="isDropdownOpen" class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-1">
+                        <div class="px-4 py-2">
+                            <p class="text-sm font-medium text-gray-900">{{user.login}}</p>
+                            <p class="text-xs text-gray-500">{{user.email}}</p>
+                        </div>
+                        <div class="border-t border-gray-100"></div>
+                        <a routerLink="dashboard" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
+                            <i-lucide [name]="dashboardIcon" class="w-4 h-4"></i-lucide>
+                            <span>Dashboard</span>
+                        </a>
+                        <a routerLink="modules" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
+                            <i-lucide [name]="circuitBoardIcon" class="w-4 h-4"></i-lucide>
+                            <span>Modules</span>
+                        </a>
+                        <a routerLink="settings" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
+                            <i-lucide [name]="settingsIcon" class="w-4 h-4"></i-lucide>
+                            <span>Settings</span>
+                        </a>
+                        <div class="border-t border-gray-100"></div>
+                        <a href="#" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
+                            <i-lucide [name]="userIcon" class="w-4 h-4"></i-lucide>
+                            <span>Profile Settings</span>
+                        </a>
+                        <a href="#" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
+                            <i-lucide [name]="logoutIcon" class="w-4 h-4"></i-lucide>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="flex items-center space-x-4">
-            <a routerLink="/dashboard" class="hover:text-purple-200 flex items-center space-x-1">
+        <!-- Desktop view -->
+        <div class="hidden md:flex items-center space-x-4">
+            <div *ngIf="!user?.actived" class="flex-1 text-center">
+                <button class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg" (click)="startPermissionFlow()">
+                    First Time Setup, Click Here!   
+                </button>
+            </div>
+            <a routerLink="dashboard" class="hover:text-purple-200 flex items-center space-x-1">
                 <i-lucide [name]="dashboardIcon" class="w-5 h-5"></i-lucide>
                 <span>Dashboard</span>
             </a>
-            <a routerLink="/commands" class="hover:text-purple-200 flex items-center space-x-1">
+            <a routerLink="modules" class="hover:text-purple-200 flex items-center space-x-1">
                 <i-lucide [name]="circuitBoardIcon" class="w-5 h-5"></i-lucide>
                 <span>Modules</span>
             </a>
-            <a routerLink="/settings" class="hover:text-purple-200 flex items-center space-x-1">
+            <a routerLink="settings" class="hover:text-purple-200 flex items-center space-x-1">
                 <i-lucide [name]="settingsIcon" class="w-5 h-5"></i-lucide>
                 <span>Settings</span>
             </a>
@@ -35,11 +79,11 @@
                             <p class="text-xs text-gray-500">{{user.email}}</p>
                         </div>
                         <div class="border-t border-gray-100"></div>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
+                        <a routerLink="profile/settings" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
                             <i-lucide [name]="userIcon" class="w-4 h-4"></i-lucide>
                             <span>Profile Settings</span>
                         </a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
+                        <a routerLink="/logout" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
                             <i-lucide [name]="logoutIcon" class="w-4 h-4"></i-lucide>
                             <span>Logout</span>
                         </a>

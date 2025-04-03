@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { LucideAngularModule, LayoutDashboard, Terminal, BarChart3, Users, Settings, Menu } from 'lucide-angular';
+import { UserService } from '../user.service';
 
 interface NavLink {
   href: string;
@@ -26,13 +27,17 @@ export class SideNavbarComponent {
   analyticsIcon = BarChart3;
   usersIcon = Users;
   settingsIcon = Settings;
+
+  constructor(
+    private userService: UserService
+  ) {}
   
   links: NavLink[] = [
-    { href: '/dashboard', label: 'Dashboard', icon: this.dashboardIcon },
-    { href: '/commands', label: 'Commands', icon: this.commandsIcon },
-    { href: '/analytics', label: 'Analytics', icon: this.analyticsIcon },
-    { href: '/users', label: 'Users', icon: this.usersIcon },
-    { href: '/settings', label: 'Settings', icon: this.settingsIcon },
+    { href: `dashboard`, label: 'Dashboard', icon: this.dashboardIcon },
+    // { href: `commands`, label: 'Commands', icon: this.commandsIcon },
+    // { href: `analytics`, label: 'Analytics', icon: this.analyticsIcon },
+    // { href: `users`, label: 'Users', icon: this.usersIcon },
+    // { href: `settings`, label: 'Settings', icon: this.settingsIcon },
   ];
 
   toggleSidebar() {
