@@ -131,6 +131,19 @@ export class UserService {
     return this.user.actived;
   }
 
+  isChatEnabled(): boolean {
+    return this.user.chat_enabled;
+  }
+
+  setChatEnabled(status: boolean): void {
+    this.http.post(`${environment.DIMA_API}/user/chat/${this.user.id}`, {
+      enabled: status
+    }).subscribe(res => {
+      this.user.chat_enabled = status;
+      sessionStorage.setItem('user', JSON.stringify(this.user));
+    })
+  }
+  
   changeActiveStatus(status: boolean): void {
     this.user.actived = status;
     sessionStorage.setItem('user', JSON.stringify(this.user));

@@ -13,7 +13,7 @@ export const routes: Routes = [
         { path: ':streamer', component: LandingPageComponent, title: 'DomDimaBot' },
     ] },
     { path: ':streamer', component: MainComponent, title: 'DomDimaBot', children: [
-        { path: 'dashboard', component: WipComponent, title: 'Dashboard' },
+        { path: 'dashboard', component: DashboardComponent, title: 'Dashboard' },
         { path: 'modules', component: WipComponent, title: 'Modules' },
         { path: 'settings', component: WipComponent, title: 'Settings' },
         { path: 'profile/settings', component: WipComponent, title: 'Settings' },

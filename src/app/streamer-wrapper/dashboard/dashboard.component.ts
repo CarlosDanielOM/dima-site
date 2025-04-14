@@ -14,6 +14,8 @@ export class DashboardComponent {
 
   authUrl = '';
   scopes: any = [];
+  chat_enabled = false;
+  active = false;
   
   constructor(
     private userService: UserService,
@@ -36,6 +38,14 @@ export class DashboardComponent {
     })
 
     this.authUrl = `https://id.twitch.tv/oauth2/authorize?response_type=code&force_verify=false&client_id=jl9k3mi67pmrbl1bh67y07ezjdc4cf&redirect_uri=${this.linksService.getApiURL()}/auth/register&scope=${scopeString}&state=${this.userService.getLogin()}`
+
+    this.active = this.userService.getActive();
+    this.chat_enabled = this.userService.isChatEnabled();
+  }
+  
+  toggleChatEnabled() {
+    this.userService.setChatEnabled(!this.chat_enabled);
+    this.chat_enabled = !this.chat_enabled;
   }
   
   startPermissionFlow() {
