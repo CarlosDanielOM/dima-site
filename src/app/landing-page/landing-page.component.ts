@@ -11,8 +11,9 @@ import {
   MessageCircle,
   Zap,
   Settings,
-  Check
+  Check,
 } from 'lucide-angular';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-landing-page',
@@ -60,6 +61,10 @@ export class LandingPageComponent {
     } else {
       window.location.href = this.twitchAuthUrl;
     }
+  }
+
+  openDiscord() {
+    window.open(environment.DISCORD_URL, '_blank');
   }
   
 }
