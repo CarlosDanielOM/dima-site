@@ -17,8 +17,7 @@ export class MainComponent {
     private userService: UserService,
     private router: Router
   ) {
-    this.userService.getUser();
-    if(!this.userService.getUser()) {
+    if (!this.userService.restoreUser()) {
       this.router.navigate(['/login']);
     }
   }

@@ -24,10 +24,10 @@ export class ModuleViewComponent {
         EN: 'Select a clip viewer design and adjust settings.',
         ES: 'Selecciona un diseño de visualizador de clips y ajusta los ajustes.'
       },
-      disabled: true,
+      disabled: false,
       disabled_message: 'This module is not available yet. Please check back later.',
       disabled_icon: 'lock',
-      disabled_color: 'bg-purple-500',
+      disabled_color: 'bg-red-500',
       disabled_text_color: 'text-white',
       premium: false,
       premium_plus: false
@@ -43,7 +43,7 @@ export class ModuleViewComponent {
       disabled: true,
       disabled_message: 'This module is not available yet. Please check back later.',
       disabled_icon: 'lock',
-      disabled_color: 'bg-purple-500',
+      disabled_color: 'bg-red-500',
       disabled_text_color: 'text-white',
       premium: false,
       premium_plus: false
@@ -59,7 +59,7 @@ export class ModuleViewComponent {
       disabled: true,
       disabled_message: 'This module is not available yet. Please check back later.',
       disabled_icon: 'lock',
-      disabled_color: 'bg-purple-500',
+      disabled_color: 'bg-red-500',
       disabled_text_color: 'text-white',
       premium: false,
       premium_plus: false
