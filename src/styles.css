@@ -1,2 +1,132 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'tailwindcss';
+
+/* Force preserve critical spacing utilities in production */
+/* Space utilities */
+.space-x-0 > * + * { margin-left: 0px; }
+.space-x-1 > * + * { margin-left: 0.25rem; }
+.space-x-2 > * + * { margin-left: 0.5rem; }
+.space-x-3 > * + * { margin-left: 0.75rem; }
+.space-x-4 > * + * { margin-left: 1rem; }
+.space-x-5 > * + * { margin-left: 1.25rem; }
+.space-x-6 > * + * { margin-left: 1.5rem; }
+.space-x-8 > * + * { margin-left: 2rem; }
+.space-x-10 > * + * { margin-left: 2.5rem; }
+.space-x-12 > * + * { margin-left: 3rem; }
+
+.space-y-0 > * + * { margin-top: 0px; }
+.space-y-1 > * + * { margin-top: 0.25rem; }
+.space-y-2 > * + * { margin-top: 0.5rem; }
+.space-y-3 > * + * { margin-top: 0.75rem; }
+.space-y-4 > * + * { margin-top: 1rem; }
+.space-y-5 > * + * { margin-top: 1.25rem; }
+.space-y-6 > * + * { margin-top: 1.5rem; }
+.space-y-8 > * + * { margin-top: 2rem; }
+.space-y-10 > * + * { margin-top: 2.5rem; }
+.space-y-12 > * + * { margin-top: 3rem; }
+
+/* Gap utilities */
+.gap-0 { gap: 0px; }
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+.gap-5 { gap: 1.25rem; }
+.gap-6 { gap: 1.5rem; }
+.gap-8 { gap: 2rem; }
+.gap-10 { gap: 2.5rem; }
+.gap-12 { gap: 3rem; }
+.gap-16 { gap: 4rem; }
+
+/* Responsive variants */
+@media (min-width: 640px) {
+  .sm\:space-x-1 > * + * { margin-left: 0.25rem; }
+  .sm\:space-x-2 > * + * { margin-left: 0.5rem; }
+  .sm\:space-x-3 > * + * { margin-left: 0.75rem; }
+  .sm\:space-x-4 > * + * { margin-left: 1rem; }
+  .sm\:space-x-6 > * + * { margin-left: 1.5rem; }
+  .sm\:space-x-8 > * + * { margin-left: 2rem; }
+  
+  .sm\:space-y-1 > * + * { margin-top: 0.25rem; }
+  .sm\:space-y-2 > * + * { margin-top: 0.5rem; }
+  .sm\:space-y-3 > * + * { margin-top: 0.75rem; }
+  .sm\:space-y-4 > * + * { margin-top: 1rem; }
+  .sm\:space-y-6 > * + * { margin-top: 1.5rem; }
+  .sm\:space-y-8 > * + * { margin-top: 2rem; }
+  
+  .sm\:gap-1 { gap: 0.25rem; }
+  .sm\:gap-2 { gap: 0.5rem; }
+  .sm\:gap-3 { gap: 0.75rem; }
+  .sm\:gap-4 { gap: 1rem; }
+  .sm\:gap-6 { gap: 1.5rem; }
+  .sm\:gap-8 { gap: 2rem; }
+}
+
+@media (min-width: 768px) {
+  .md\:space-x-1 > * + * { margin-left: 0.25rem; }
+  .md\:space-x-2 > * + * { margin-left: 0.5rem; }
+  .md\:space-x-3 > * + * { margin-left: 0.75rem; }
+  .md\:space-x-4 > * + * { margin-left: 1rem; }
+  .md\:space-x-6 > * + * { margin-left: 1.5rem; }
+  .md\:space-x-8 > * + * { margin-left: 2rem; }
+  
+  .md\:space-y-1 > * + * { margin-top: 0.25rem; }
+  .md\:space-y-2 > * + * { margin-top: 0.5rem; }
+  .md\:space-y-3 > * + * { margin-top: 0.75rem; }
+  .md\:space-y-4 > * + * { margin-top: 1rem; }
+  .md\:space-y-6 > * + * { margin-top: 1.5rem; }
+  .md\:space-y-8 > * + * { margin-top: 2rem; }
+  
+  .md\:gap-1 { gap: 0.25rem; }
+  .md\:gap-2 { gap: 0.5rem; }
+  .md\:gap-3 { gap: 0.75rem; }
+  .md\:gap-4 { gap: 1rem; }
+  .md\:gap-6 { gap: 1.5rem; }
+  .md\:gap-8 { gap: 2rem; }
+}
+
+@media (min-width: 1024px) {
+  .lg\:space-x-1 > * + * { margin-left: 0.25rem; }
+  .lg\:space-x-2 > * + * { margin-left: 0.5rem; }
+  .lg\:space-x-3 > * + * { margin-left: 0.75rem; }
+  .lg\:space-x-4 > * + * { margin-left: 1rem; }
+  .lg\:space-x-6 > * + * { margin-left: 1.5rem; }
+  .lg\:space-x-8 > * + * { margin-left: 2rem; }
+  
+  .lg\:space-y-1 > * + * { margin-top: 0.25rem; }
+  .lg\:space-y-2 > * + * { margin-top: 0.5rem; }
+  .lg\:space-y-3 > * + * { margin-top: 0.75rem; }
+  .lg\:space-y-4 > * + * { margin-top: 1rem; }
+  .lg\:space-y-6 > * + * { margin-top: 1.5rem; }
+  .lg\:space-y-8 > * + * { margin-top: 2rem; }
+  
+  .lg\:gap-1 { gap: 0.25rem; }
+  .lg\:gap-2 { gap: 0.5rem; }
+  .lg\:gap-3 { gap: 0.75rem; }
+  .lg\:gap-4 { gap: 1rem; }
+  .lg\:gap-6 { gap: 1.5rem; }
+  .lg\:gap-8 { gap: 2rem; }
+}
+
+@media (min-width: 1280px) {
+  .xl\:space-x-1 > * + * { margin-left: 0.25rem; }
+  .xl\:space-x-2 > * + * { margin-left: 0.5rem; }
+  .xl\:space-x-3 > * + * { margin-left: 0.75rem; }
+  .xl\:space-x-4 > * + * { margin-left: 1rem; }
+  .xl\:space-x-6 > * + * { margin-left: 1.5rem; }
+  .xl\:space-x-8 > * + * { margin-left: 2rem; }
+  
+  .xl\:space-y-1 > * + * { margin-top: 0.25rem; }
+  .xl\:space-y-2 > * + * { margin-top: 0.5rem; }
+  .xl\:space-y-3 > * + * { margin-top: 0.75rem; }
+  .xl\:space-y-4 > * + * { margin-top: 1rem; }
+  .xl\:space-y-6 > * + * { margin-top: 1.5rem; }
+  .xl\:space-y-8 > * + * { margin-top: 2rem; }
+  
+  .xl\:gap-1 { gap: 0.25rem; }
+  .xl\:gap-2 { gap: 0.5rem; }
+  .xl\:gap-3 { gap: 0.75rem; }
+  .xl\:gap-4 { gap: 1rem; }
+  .xl\:gap-6 { gap: 1.5rem; }
+  .xl\:gap-8 { gap: 2rem; }
+}
