@@ -28,23 +28,23 @@ export class ModuleViewComponent {
       disabled_message: 'This module is not available yet. Please check back later.',
       disabled_icon: 'lock',
       disabled_color: 'bg-red-500',
-      disabled_text_color: 'text-white',
+      disabled_text_color: 'text-red-500',
       premium: false,
       premium_plus: false
     },
     {
       name: 'Chat Events',
-      path: 'events',
+      path: 'chat-events',
       icon: 'calendar',
       description: {
         EN: 'Enable or disable chat events, like follows, bits, subs, etc, and set their respective messages and thresholds.',
         ES: 'Activa o desactiva eventos de chat, como follows, bits, subs, etc, y establece sus respectivos mensajes y umbrales.'
       },
       disabled: true,
-      disabled_message: 'This module is not available yet. Please check back later.',
+      disabled_message: 'WIP, this module is being worked on currently and will be available soon.',
       disabled_icon: 'lock',
       disabled_color: 'bg-red-500',
-      disabled_text_color: 'text-white',
+      disabled_text_color: 'text-red-500',
       premium: false,
       premium_plus: false
     },
@@ -60,7 +60,7 @@ export class ModuleViewComponent {
       disabled_message: 'This module is not available yet. Please check back later.',
       disabled_icon: 'lock',
       disabled_color: 'bg-red-500',
-      disabled_text_color: 'text-white',
+      disabled_text_color: 'text-red-500',
       premium: false,
       premium_plus: false
     },

@@ -8,6 +8,7 @@ import { WipComponent } from './wip/wip.component';
 import { ModulesComponent } from './modules/modules.component';
 import { ModuleViewComponent } from './modules/module-view/module-view.component';
 import { ClipsComponent } from './modules/clips/clips.component';
+import { ChatEventsComponent } from './modules/chat-events/chat-events.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent, title: 'Login' },
@@ -20,6 +21,7 @@ export const routes: Routes = [
         { path: 'modules', component: ModulesComponent, title: 'Modules', children: [
             { path: '', component: ModuleViewComponent, title: 'Module' },
             { path: 'clips', component: ClipsComponent, title: 'Clips' },
+            { path: 'chat-events', component: ChatEventsComponent, title: 'Chat Events' },
             { path: ':module', component: WipComponent, title: 'To be implemented' },
         ]},
         { path: 'settings', component: WipComponent, title: 'Settings' },

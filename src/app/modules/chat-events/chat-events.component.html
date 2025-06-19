@@ -1,0 +1,25 @@
+<h2 class="text-2xl font-bold text-purple-900 mb-4">Chat Events</h2>
+
+@for (event of chatEvents; track event.name; let i = $index) {
+    @if(i % 2 === 0) {
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-purple-100 hover:border-purple-200 hover:-translate-y-2">
+            <div class="p-8 relative">
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-600"></div>
+    
+                <h2 class="text-2xl font-bold text-purple-900 mb-4 group-hover:text-purple-700 transition-colors duration-300">
+                    {{ event.name }} {{ i }}
+                </h2>
+            </div>
+        </div>
+    } @else {
+        <div class="bg-white/40 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-purple-100 hover:border-purple-200 hover:-translate-y-2">
+            <div class="p-8 relative">
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-sky-500 to-blue-600"></div>
+    
+                <h2 class="text-2xl font-bold text-purple-900 mb-4 group-hover:text-purple-700 transition-colors duration-300">
+                    {{ event.name }} {{ i }}
+                </h2>
+            </div>
+        </div>
+    }
+}
