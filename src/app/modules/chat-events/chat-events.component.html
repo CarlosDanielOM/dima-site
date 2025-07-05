@@ -1,25 +1,66 @@
-<h2 class="text-2xl font-bold text-purple-900 mb-4">Chat Events</h2>
+<div class="container mx-auto px-4 py-8">
+  <div class="text-center mb-12">
+    <h1 class="text-4xl font-bold mb-4 text-purple-900 tracking-tight">
+      Chat Events
+    </h1>
+    <div
+      class="w-24 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 mx-auto rounded-full"
+    ></div>
+  </div>
 
-@for (event of chatEvents; track event.name; let i = $index) {
-    @if(i % 2 === 0) {
-        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-purple-100 hover:border-purple-200 hover:-translate-y-2">
-            <div class="p-8 relative">
-                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-600"></div>
-    
-                <h2 class="text-2xl font-bold text-purple-900 mb-4 group-hover:text-purple-700 transition-colors duration-300">
-                    {{ event.name }} {{ i }}
-                </h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    @for (event of chatEvents; track event.name) {
+    <div
+      class="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-purple-100 hover:border-purple-200 hover:-translate-y-2"
+      [class.opacity-60]="event.disabled || event.maintenance"
+    >
+      <div class="p-6 relative">
+        <div
+          class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-600"
+        ></div>
+
+        <div class="flex items-start">
+          <div
+            class="w-12 h-12 rounded-xl mb-6 flex items-center justify-center shadow-lg"
+            [class]="event.color"
+          >
+            <i-lucide [name]="event.icon" class="w-6 h-6" [class]="event.textColor"></i-lucide>
+          </div>
+
+          <div class="ml-6 flex-1">
+            <h2
+              class="text-xl font-bold text-purple-900 mb-2 group-hover:text-purple-700 transition-colors duration-300 flex items-center"
+            >
+              {{ event.name }}
+              @if(event.premium_plus) {
+                <div class="inline-flex items-center ml-2 relative">
+                  <i-lucide [name]="crownIcon" class="w-5 h-5 text-yellow-500"></i-lucide>
+                  <span class="absolute -top-2 -right-2 text-[10px] font-bold text-yellow-500 bg-white rounded-full px-0.5">+</span>
+                </div>
+              } @else if(event.premium) {
+                <i-lucide [name]="crownIcon" class="w-5 h-5 inline-block ml-2 text-yellow-500"></i-lucide>
+              }
+            </h2>
+            <p class="text-purple-600 text-sm leading-relaxed mb-4">
+              {{ event.description[lang] }}
+            </p>
+
+            <div class="flex items-center text-sm font-semibold">
+              @if (event.maintenance) {
+                <i-lucide [name]="event.maintenance_message_icon" class="w-4 h-4 mr-2" [class]="event.maintenance_message_color"></i-lucide>
+                <span [class]="event.maintenance_message_color">{{ event.maintenance_message }}</span>
+              } @else if (event.disabled) {
+                <i-lucide [name]="event.disabled_message_icon" class="w-4 h-4 mr-2" [class]="event.disabled_message_color"></i-lucide>
+                <span [class]="event.disabled_message_color">{{ event.disabled_message }}</span>
+              } @else {
+                <i-lucide [name]="event.enabled_message_icon" class="w-4 h-4 mr-2" [class]="event.enabled_message_color"></i-lucide>
+                <span [class]="event.enabled_message_color">{{ event.enabled_message }}</span>
+              }
             </div>
+          </div>
         </div>
-    } @else {
-        <div class="bg-white/40 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-purple-100 hover:border-purple-200 hover:-translate-y-2">
-            <div class="p-8 relative">
-                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-sky-500 to-blue-600"></div>
-    
-                <h2 class="text-2xl font-bold text-purple-900 mb-4 group-hover:text-purple-700 transition-colors duration-300">
-                    {{ event.name }} {{ i }}
-                </h2>
-            </div>
-        </div>
+      </div>
+    </div>
     }
-}
+  </div>
+</div>

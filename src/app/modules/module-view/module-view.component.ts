@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Construction, LucideAngularModule, Crown } from 'lucide-angular';
+import { Construction, LucideAngularModule, Crown, Video, Calendar, Settings } from 'lucide-angular';
 
 @Component({
   selector: 'app-module-view',
@@ -19,7 +19,7 @@ export class ModuleViewComponent {
     {
       name: 'Clips',
       path: 'clips',
-      icon: 'video',
+      icon: Video,
       description: {
         EN: 'Select a clip viewer design and adjust settings.',
         ES: 'Selecciona un diseño de visualizador de clips y ajusta los ajustes.'
@@ -35,12 +35,12 @@ export class ModuleViewComponent {
     {
       name: 'Chat Events',
       path: 'chat-events',
-      icon: 'calendar',
+      icon: Calendar,
       description: {
         EN: 'Enable or disable chat events, like follows, bits, subs, etc, and set their respective messages and thresholds.',
         ES: 'Activa o desactiva eventos de chat, como follows, bits, subs, etc, y establece sus respectivos mensajes y umbrales.'
       },
-      disabled: true,
+      disabled: false,
       disabled_message: 'WIP, this module is being worked on currently and will be available soon.',
       disabled_icon: 'lock',
       disabled_color: 'bg-red-500',
@@ -51,7 +51,7 @@ export class ModuleViewComponent {
     {
       name: 'Triggers',
       path: 'triggers',
-      icon: 'settings',
+      icon: Settings,
       description: {
         EN: 'Create, edit, and manage triggers for your content. Triggers are short videos that can be triggered by twitch rewards.',
         ES: 'Crea, edita y gestiona triggers para tu contenido. Los triggers son videos cortos que pueden ser activados por recompensas de Twitch.'
@@ -66,3 +66,4 @@ export class ModuleViewComponent {
     },
   ];
 }
+
