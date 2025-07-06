@@ -40,6 +40,9 @@ export interface StageInfo { message: { EN: string; ES: string; }; color: string
 
 export interface ChatEvent {
   name:string;
+  type: string;
+  version: string;
+  condition?: { broadcaster_user_id?: string; moderator_user_id?: string; };
   description: { EN: string; ES: string; };
   icon: any;
   color: string;
@@ -159,7 +162,7 @@ export class ChatEventsComponent implements OnInit {
 
   toggleFeature(eventToToggle: ChatEvent): void {
     const newStatus = !eventToToggle.enabled;
-    this.eventsubService.updateEventStatus(eventToToggle.name, newStatus).subscribe(() => {
+    this.eventsubService.updateEventStatus(eventToToggle.type, newStatus).subscribe(() => {
       this.chatEvents = this.chatEvents.map(event => {
         if (event.name === eventToToggle.name) {
           return { ...event, enabled: newStatus };
