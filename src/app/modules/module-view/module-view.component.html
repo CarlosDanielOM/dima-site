@@ -3,62 +3,136 @@
     <h1 class="text-4xl font-bold mb-4 text-purple-900 tracking-tight">
       Available Modules
     </h1>
-    <div class="w-24 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 mx-auto rounded-full"></div>
+    <div
+      class="w-24 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 mx-auto rounded-full"
+    ></div>
   </div>
 
+  @if (isLoading) {
+  <div class="text-center p-12">
+    <p class="text-purple-600">Loading modules...</p>
+  </div>
+  } @else {
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-    @for (module of modules; track module.name) {
-    <div class="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-purple-100 hover:border-purple-200 hover:-translate-y-2"
-      [class.opacity-50]="module.disabled">
-      <div class="p-8 relative">
-        <!-- Decorative gradient background -->
-        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-600"></div>
-
-        <!-- Icon placeholder with purple background -->
+    @for (module of modules; track trackByName) {
+    <div
+      class="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-purple-100 hover:border-purple-200 hover:-translate-y-2 flex flex-col"
+      [class.opacity-50]="!getUserAccess(module).canAccess || module.releaseStage === 'coming_soon' || module.releaseStage === 'maintenance'"
+    >
+      <div class="p-8 relative flex-grow">
         <div
-          class="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl mb-6 flex items-center justify-center shadow-lg">
-          <i-lucide [name]="module.disabled ? constructionIcon : module.icon" class="w-8 h-8 text-white"></i-lucide>
+          class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-600"
+        ></div>
+
+        <div
+          class="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl mb-6 flex items-center justify-center shadow-lg"
+        >
+          <lucide-icon
+            [name]="module.icon"
+            class="w-8 h-8 text-white"
+          ></lucide-icon>
         </div>
 
-        <h2 class="text-2xl font-bold text-purple-900 mb-4 group-hover:text-purple-700 transition-colors duration-300">
-          {{ module.name }}
-          @if(module.premium_plus) {
+        <h2
+          class="text-2xl font-bold text-purple-900 mb-4 group-hover:text-purple-700 transition-colors duration-300"
+        >
+          {{ module.name }} @if(module.premium_plus) {
           <div class="inline-flex items-center ml-2 relative">
-            <i-lucide [name]="crownIcon" class="w-5 h-5 text-yellow-500"></i-lucide>
-            <span class="absolute -top-2 -right-2 text-[10px] font-bold text-yellow-500 bg-white rounded-full px-0.5">+</span>
+            <lucide-icon
+              [name]="crownIcon"
+              class="w-5 h-5 text-yellow-500"
+            ></lucide-icon>
+            <span
+              class="absolute -top-2 -right-2 text-[10px] font-bold text-yellow-500 bg-white rounded-full px-0.5"
+              >+</span
+            >
           </div>
           } @else if(module.premium) {
-          <i-lucide [name]="crownIcon" class="w-5 h-5 inline-block ml-2 text-yellow-500"></i-lucide>
+          <lucide-icon
+            [name]="crownIcon"
+            class="w-5 h-5 inline-block ml-2 text-yellow-500"
+          ></lucide-icon>
           }
         </h2>
 
         <p class="text-purple-600 mb-6 text-sm leading-relaxed">
           {{ module.description[lang] }}
         </p>
+      </div>
 
-        @if (module.disabled) {
-        <p class="{{ module.disabled_text_color }} mb-6 text-sm leading-relaxed">
-          {{ module.disabled_message }}
-        </p>
-        } @else {
-        <a [routerLink]="module.path"
-          class="inline-flex items-center justify-center w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl group-hover:shadow-purple-500/25">
-          <span>Access Module</span>
-          <svg class="w-5 h-5 ml-2 transition-transform duration-300 group-hover:translate-x-1" fill="none"
-            stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-          </svg>
-        </a>
-        }
+      <div
+        class="bg-purple-50/50 px-6 py-4 border-t border-purple-100 mt-auto"
+      >
+        <div class="flex items-center justify-between">
+          <div
+            class="flex items-center text-sm font-semibold"
+            [class]="getModuleDisplayStatus(module).color"
+          >
+            @if(getModuleDisplayStatus(module).icon) {
+            <lucide-icon
+              [name]="getModuleDisplayStatus(module).icon"
+              class="w-4 h-4 mr-2"
+            ></lucide-icon>
+            }
+            <span>{{ getModuleDisplayStatus(module).text }}</span>
+          </div>
+
+          <div>
+            @if(getUserAccess(module).canAccess) { @if (module.releaseStage ===
+            'stable' || module.releaseStage === 'beta' || module.releaseStage
+            === 'alpha') {
+            <a
+              [routerLink]="module.path"
+              class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg group-hover:shadow-purple-500/25 text-sm"
+            >
+              <span>Access Module</span>
+              <svg
+                class="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                ></path>
+              </svg>
+            </a>
+            } @else {
+            <button
+              class="px-4 py-2 text-sm font-semibold text-gray-500 bg-gray-200 rounded-xl cursor-not-allowed"
+              disabled
+            >
+              Access
+            </button>
+            } } @else {
+            <button
+              class="px-4 py-2 text-sm font-semibold text-white bg-purple-600 hover:bg-purple-700 rounded-xl transition-colors"
+            >
+              Upgrade
+            </button>
+            }
+          </div>
+        </div>
       </div>
     </div>
     }
   </div>
+  }
 
-  <!-- Optional: Add a subtle pattern overlay -->
   <div class="fixed inset-0 pointer-events-none opacity-5">
-    <div class="absolute inset-0"
-      style="background-image: radial-gradient(circle at 1px 1px, purple 1px, transparent 0); background-size: 20px 20px;">
-    </div>
+    <div
+      class="absolute inset-0"
+      style="
+        background-image: radial-gradient(
+          circle at 1px 1px,
+          purple 1px,
+          transparent 0
+        );
+        background-size: 20px 20px;
+      "
+    ></div>
   </div>
 </div>
