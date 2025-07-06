@@ -1,0 +1,24 @@
+<div class="fixed top-5 right-5 z-50 w-full max-w-sm">
+    <div class="space-y-3">
+      @for(toast of toasts; track toast.id) {
+        <div [class]="cssClass(toast)" role="alert">
+          <div class="flex-shrink-0">
+            <lucide-icon [name]="icon(toast)" class="w-6 h-6"></lucide-icon>
+          </div>
+          <div class="ml-3 flex-1">
+            <p class="text-sm font-bold">{{ toast.title }}</p>
+            <p class="text-sm">{{ toast.message }}</p>
+          </div>
+          <div class="ml-auto pl-3">
+            <div class="-mx-1.5 -my-1.5">
+              <button type="button" (click)="removeToast(toast)" class="inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2">
+                <span class="sr-only">Dismiss</span>
+                <lucide-icon [name]="xIcon" class="w-5 h-5"></lucide-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+  

@@ -1,66 +1,104 @@
+<!-- 
+  File: chat-events.component.html
+  Description: This template now includes a permission layer to control UI
+               based on the user's premium status.
+-->
 <div class="container mx-auto px-4 py-8">
   <div class="text-center mb-12">
     <h1 class="text-4xl font-bold mb-4 text-purple-900 tracking-tight">
       Chat Events
     </h1>
-    <div
-      class="w-24 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 mx-auto rounded-full"
-    ></div>
+    <div class="w-24 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 mx-auto rounded-full"></div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-    @for (event of chatEvents; track event.name) {
-    <div
-      class="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-purple-100 hover:border-purple-200 hover:-translate-y-2"
-      [class.opacity-60]="event.disabled || event.maintenance"
-    >
-      <div class="p-6 relative">
-        <div
-          class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-600"
-        ></div>
-
-        <div class="flex items-start">
-          <div
-            class="w-12 h-12 rounded-xl mb-6 flex items-center justify-center shadow-lg"
-            [class]="event.color"
-          >
-            <i-lucide [name]="event.icon" class="w-6 h-6" [class]="event.textColor"></i-lucide>
-          </div>
-
-          <div class="ml-6 flex-1">
-            <h2
-              class="text-xl font-bold text-purple-900 mb-2 group-hover:text-purple-700 transition-colors duration-300 flex items-center"
-            >
-              {{ event.name }}
-              @if(event.premium_plus) {
+  @if (isLoading) {
+    <div class="text-center p-12"><p class="text-purple-600">Loading events...</p></div>
+  } @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      @for (event of chatEvents; track trackByName) {
+      <div class="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-purple-100 hover:border-purple-200 flex flex-col">
+        <div class="p-6 relative flex-grow">
+          <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-600"></div>
+          <div class="flex items-start">
+            <div class="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center shadow-lg" [class]="event.color">
+              <lucide-icon [name]="event.icon" class="w-6 h-6" [class]="event.textColor"></lucide-icon>
+            </div>
+            <div class="ml-4 flex-1">
+              <h2 class="text-xl font-bold text-purple-900 mb-2 group-hover:text-purple-700 transition-colors duration-300 flex items-center">
+                {{ event.name }}
+                @if(event.premium_plus) {
                 <div class="inline-flex items-center ml-2 relative">
-                  <i-lucide [name]="crownIcon" class="w-5 h-5 text-yellow-500"></i-lucide>
+                  <lucide-icon [name]="crownIcon" class="w-5 h-5 text-yellow-500"></lucide-icon>
                   <span class="absolute -top-2 -right-2 text-[10px] font-bold text-yellow-500 bg-white rounded-full px-0.5">+</span>
                 </div>
-              } @else if(event.premium) {
-                <i-lucide [name]="crownIcon" class="w-5 h-5 inline-block ml-2 text-yellow-500"></i-lucide>
-              }
-            </h2>
-            <p class="text-purple-600 text-sm leading-relaxed mb-4">
-              {{ event.description[lang] }}
-            </p>
+                } @else if(event.premium) {
+                <lucide-icon [name]="crownIcon" class="w-5 h-5 inline-block ml-2 text-yellow-500"></lucide-icon>
+                }
+              </h2>
+              <p class="text-purple-600 text-sm leading-relaxed">
+                {{ event.description[lang] }}
+              </p>
+            </div>
+          </div>
+        </div>
 
-            <div class="flex items-center text-sm font-semibold">
-              @if (event.maintenance) {
-                <i-lucide [name]="event.maintenance_message_icon" class="w-4 h-4 mr-2" [class]="event.maintenance_message_color"></i-lucide>
-                <span [class]="event.maintenance_message_color">{{ event.maintenance_message }}</span>
-              } @else if (event.disabled) {
-                <i-lucide [name]="event.disabled_message_icon" class="w-4 h-4 mr-2" [class]="event.disabled_message_color"></i-lucide>
-                <span [class]="event.disabled_message_color">{{ event.disabled_message }}</span>
+        <!-- Action Bar -->
+        <div class="bg-purple-50/50 px-6 py-3 border-t border-purple-100 mt-auto">
+          <div class="flex items-center justify-between text-sm font-semibold">
+            <!-- FIX: This status display is now driven by a single, smart function -->
+            <div class="flex items-center">
+              <lucide-icon [name]="getEventDisplayStatus(event).icon" class="w-4 h-4 mr-2" [class]="getEventDisplayStatus(event).color"></lucide-icon>
+              <span class="font-semibold" [class]="getEventDisplayStatus(event).color">
+                {{ getEventDisplayStatus(event).text }}
+              </span>
+            </div>
+            
+            <!-- FIX: This whole block now checks for permission first -->
+            <div class="flex items-center space-x-2">
+              @if(getUserAccess(event).canAccess) {
+                @if (event.enabled) {
+                  @if (event.config) {
+                  <button (click)="toggleConfigure(event.name)" class="px-3 py-1 text-xs font-semibold text-white bg-blue-500 hover:bg-blue-600 rounded-full transition-colors">Configure</button>
+                  }
+                  <button (click)="toggleFeature(event)" class="px-3 py-1 text-xs font-semibold text-white bg-red-500 hover:bg-red-600 rounded-full transition-colors">Disable</button>
+                } @else if (event.releaseStage !== 'coming_soon' && event.releaseStage !== 'maintenance') {
+                  <button (click)="toggleFeature(event)" class="px-3 py-1 text-xs font-semibold text-white bg-green-500 hover:bg-green-600 rounded-full transition-colors">Enable</button>
+                } @else {
+                  <button class="px-3 py-1 text-xs font-semibold text-gray-500 bg-gray-200 rounded-full cursor-not-allowed" disabled>Configure</button>
+                }
               } @else {
-                <i-lucide [name]="event.enabled_message_icon" class="w-4 h-4 mr-2" [class]="event.enabled_message_color"></i-lucide>
-                <span [class]="event.enabled_message_color">{{ event.enabled_message }}</span>
+                <!-- If user does not have access, show an Upgrade button -->
+                <button class="px-3 py-1 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-700 rounded-full transition-colors">Upgrade</button>
               }
             </div>
           </div>
         </div>
+
+        <!-- Dynamic Configuration Section (no changes needed here) -->
+        @if (event.isConfiguring && event.config) {
+        <div class="bg-white p-6 border-t-2 border-dashed border-purple-200">
+          <h3 class="text-lg font-bold text-purple-800 mb-4">Configuration</h3>
+          <div class="space-y-4">
+            @for(control of event.config; track control.id) {
+              @if (!control.showIf || getControlValue(event.config, control.showIf.controlId) === control.showIf.is) {
+                <div class="flex flex-col">
+                  <label [for]="control.id" class="mb-1 text-sm font-medium text-purple-700">{{ control.label[lang] }}</label>
+                  @switch (control.type) {
+                    @case ('text') { <input type="text" [id]="control.id" [(ngModel)]="control.value" [placeholder]="control.placeholder" class="p-2 border border-purple-200 rounded-md focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none transition"> }
+                    @case ('number') { <input type="number" [id]="control.id" [(ngModel)]="control.value" class="p-2 border border-purple-200 rounded-md focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none transition"> }
+                    @case ('checkbox') { <div class="flex items-center"><input type="checkbox" [id]="control.id" [(ngModel)]="control.value" class="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"></div> }
+                  }
+                </div>
+              }
+            }
+          </div>
+          <div class="mt-6 flex justify-end">
+            <button (click)="saveConfiguration(event)" class="px-4 py-2 text-sm font-semibold text-white bg-green-500 hover:bg-green-600 rounded-full transition-colors">Save Changes</button>
+          </div>
+        </div>
+        }
       </div>
+      }
     </div>
-    }
-  </div>
+  }
 </div>

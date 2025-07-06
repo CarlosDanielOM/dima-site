@@ -1,526 +1,190 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import {
   LucideAngularModule,
   UserPlus,
   Heart,
-  Gift,
   Zap,
   Users,
-  Tv,
   MessageCircle,
-  Trophy,
-  Terminal,
-  BarChart3,
-  Star,
-  Smile,
-  Clock,
-  Award,
   VolumeX,
-  Calendar,
-  Share2,
   Gamepad2,
-  Music,
-  Video,
   Check,
   X,
   Wrench,
   Crown,
+  Clock,
+  Terminal,
+  Award,
+  Star,
+  Trophy,
+  FlaskConical,
+  Lock, // <-- Import Lock icon
 } from 'lucide-angular';
+import { EventsubService } from '../../eventsub.service';
+import { ToastService } from '../../toast.service';
+
+// Interfaces remain the same
+export interface ConfigControl {
+  id: string;
+  label: { EN: string; ES: string; };
+  type: 'text' | 'number' | 'checkbox';
+  value: string | number | boolean;
+  placeholder?: string;
+  showIf?: { controlId: string; is: any; };
+}
+
+export type ReleaseStage = 'stable' | 'beta' | 'alpha' | 'maintenance' | 'coming_soon';
+export interface StageInfo { message: { EN: string; ES: string; }; color: string; icon: any; }
+
+export interface ChatEvent {
+  name:string;
+  description: { EN: string; ES: string; };
+  icon: any;
+  color: string;
+  textColor: string;
+  releaseStage: ReleaseStage;
+  enabled: boolean;
+  premium: boolean;
+  premium_plus: boolean;
+  isConfiguring?: boolean;
+  config?: ConfigControl[];
+}
 
 @Component({
   selector: 'app-chat-events',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, LucideAngularModule, FormsModule],
   templateUrl: './chat-events.component.html',
   styleUrl: './chat-events.component.css',
 })
-export class ChatEventsComponent {
+export class ChatEventsComponent implements OnInit {
   lang: 'EN' | 'ES' = (localStorage.getItem('lang') as 'EN' | 'ES') || 'EN';
   crownIcon = Crown;
+  checkIcon = Check;
+  xIcon = X;
+  lockIcon = Lock; // <-- Add property for Lock icon
 
-  chatEvents = [
-    {
-      name: 'Follows',
-      description: {
-        EN: 'A message will be sent to the chat when a user follows.',
-        ES: 'Se enviará un mensaje al chat cuando un usuario te siga.',
-      },
-      icon: UserPlus,
-      color: 'bg-purple-500',
-      textColor: 'text-white',
-      enabled: true,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: false,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: false,
-      premium_plus: false,
+  // MOCK: This would come from an authentication service.
+  // You can change this to 'none' or 'premium_plus' to test the UI.
+  userPremiumStatus: 'none' | 'premium' | 'premium_plus' = 'premium_plus';
+
+  permissionMessages = {
+    needs_premium: {
+      EN: 'Requires Premium',
+      ES: 'Requiere Premium',
     },
-    {
-      name: 'Subscriptions',
-      description: {
-        EN: 'Celebrate when viewers subscribe to your channel.',
-        ES: 'Celebra cuando los espectadores se suscriban a tu canal.',
-      },
-      icon: Heart,
-      color: 'bg-red-500',
-      textColor: 'text-white',
-      enabled: true,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: false,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: true,
-      premium_plus: false,
+    needs_premium_plus: {
+      EN: 'Requires Premium Plus',
+      ES: 'Requiere Premium Plus',
     },
-    {
-      name: 'Donations',
-      description: {
-        EN: 'Appreciate viewer donations with custom messages.',
-        ES: 'Agradece las donaciones de espectadores con mensajes.',
-      },
-      icon: Gift,
-      color: 'bg-green-500',
-      textColor: 'text-white',
-      enabled: false,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: true,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: true,
-      premium_plus: true,
-    },
-    {
-      name: 'Bits',
-      description: {
-        EN: 'Celebrate when viewers cheer with bits.',
-        ES: 'Celebra cuando los espectadores animen con bits.',
-      },
-      icon: Zap,
-      color: 'bg-yellow-500',
-      textColor: 'text-black',
-      enabled: true,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: false,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: false,
-      premium_plus: false,
-    },
-    {
-      name: 'Raids',
-      description: {
-        EN: 'Welcome raiders when they join your stream.',
-        ES: 'Da la bienvenida a los raiders cuando se unan a tu stream.',
-      },
-      icon: Users,
-      color: 'bg-blue-500',
-      textColor: 'text-white',
-      enabled: true,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: false,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: false,
-      premium_plus: false,
-    },
-    {
-      name: 'Hosts',
-      description: {
-        EN: 'Thank viewers when they host your channel.',
-        ES: 'Agradece a los espectadores cuando hagan host de tu canal.',
-      },
-      icon: Tv,
-      color: 'bg-indigo-500',
-      textColor: 'text-white',
-      enabled: false,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: true,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: false,
-      premium_plus: false,
-    },
-    {
-      name: 'First Time Chatters',
-      description: {
-        EN: 'Welcome new chatters to your community.',
-        ES: 'Da la bienvenida a nuevos chatters a tu comunidad.',
-      },
-      icon: MessageCircle,
-      color: 'bg-pink-500',
-      textColor: 'text-white',
-      enabled: true,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: false,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: false,
-      premium_plus: false,
-    },
-    {
-      name: 'Stream Milestones',
-      description: {
-        EN: 'Celebrate reaching viewer count milestones.',
-        ES: 'Celebra alcanzar hitos de espectadores.',
-      },
-      icon: Trophy,
-      color: 'bg-amber-500',
-      textColor: 'text-black',
-      enabled: true,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: false,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: true,
-      premium_plus: false,
-    },
-    {
-      name: 'Chat Commands',
-      description: {
-        EN: 'Custom commands that viewers can use in chat.',
-        ES: 'Comandos personalizados que los espectadores pueden usar.',
-      },
-      icon: Terminal,
-      color: 'bg-gray-500',
-      textColor: 'text-white',
-      enabled: false,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: true,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: true,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: true,
-      premium_plus: true,
-    },
-    {
-      name: 'Poll Results',
-      description: {
-        EN: 'Announce the results of chat polls.',
-        ES: 'Anuncia los resultados de las encuestas del chat.',
-      },
-      icon: BarChart3,
-      color: 'bg-teal-500',
-      textColor: 'text-white',
-      enabled: true,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: false,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: false,
-      premium_plus: false,
-    },
-    {
-      name: 'Channel Points',
-      description: {
-        EN: 'Reward viewers for redeeming channel points.',
-        ES: 'Recompensa a los espectadores por canjear puntos del canal.',
-      },
-      icon: Star,
-      color: 'bg-orange-500',
-      textColor: 'text-white',
-      enabled: true,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: false,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: false,
-      premium_plus: false,
-    },
-    {
-      name: 'Emote Only Mode',
-      description: {
-        EN: 'Notify when emote-only mode is toggled.',
-        ES: 'Notifica cuando se active el modo solo emotes.',
-      },
-      icon: Smile,
-      color: 'bg-cyan-500',
-      textColor: 'text-white',
-      enabled: false,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: true,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: false,
-      premium_plus: false,
-    },
-    {
-      name: 'Slow Mode',
-      description: {
-        EN: 'Alert when slow mode is activated in chat.',
-        ES: 'Alerta cuando se active el modo lento en el chat.',
-      },
-      icon: Clock,
-      color: 'bg-slate-500',
-      textColor: 'text-white',
-      enabled: true,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: false,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: false,
-      premium_plus: false,
-    },
-    {
-      name: 'Subscriber Milestones',
-      description: {
-        EN: 'Celebrate reaching subscriber count milestones.',
-        ES: 'Celebra alcanzar hitos de suscriptores.',
-      },
-      icon: Award,
-      color: 'bg-rose-500',
-      textColor: 'text-white',
-      enabled: true,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: false,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: true,
-      premium_plus: true,
-    },
-    {
-      name: 'Chat Timeouts',
-      description: {
-        EN: 'Notify when users are timed out in chat.',
-        ES: 'Notifica cuando los usuarios sean silenciados en el chat.',
-      },
-      icon: VolumeX,
-      color: 'bg-red-600',
-      textColor: 'text-white',
-      enabled: false,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: true,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: false,
-      premium_plus: false,
-    },
-    {
-      name: 'Stream Schedule',
-      description: {
-        EN: 'Remind viewers about upcoming streams.',
-        ES: 'Recuerda a los espectadores sobre próximos streams.',
-      },
-      icon: Calendar,
-      color: 'bg-emerald-500',
-      textColor: 'text-white',
-      enabled: true,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: false,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: true,
-      premium_plus: false,
-    },
-    {
-      name: 'Social Media Links',
-      description: {
-        EN: 'Share social media links periodically.',
-        ES: 'Comparte enlaces de redes sociales periódicamente.',
-      },
-      icon: Share2,
-      color: 'bg-violet-500',
-      textColor: 'text-white',
-      enabled: false,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: true,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: false,
-      premium_plus: false,
-    },
-    {
-      name: 'Game Alerts',
-      description: {
-        EN: 'Notify when switching games or starting new ones.',
-        ES: 'Notifica cuando cambies de juego o inicies nuevos.',
-      },
-      icon: Gamepad2,
-      color: 'bg-lime-500',
-      textColor: 'text-black',
-      enabled: true,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: false,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: false,
-      premium_plus: false,
-    },
-    {
-      name: 'Music Requests',
-      description: {
-        EN: 'Handle music requests from chat viewers.',
-        ES: 'Maneja solicitudes de música de los espectadores del chat.',
-      },
-      icon: Music,
-      color: 'bg-fuchsia-500',
-      textColor: 'text-white',
-      enabled: false,
-      enabled__message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: true,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: true,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: true,
-      premium_plus: true,
-    },
-    {
-      name: 'Clip Highlights',
-      description: {
-        EN: 'Automatically share and celebrate new clips.',
-        ES: 'Comparte y celebra automáticamente nuevos clips.',
-      },
-      icon: Video,
-      color: 'bg-sky-500',
-      textColor: 'text-white',
-      enabled: true,
-      enabled_message: 'Enabled',
-      enabled_message_color: 'text-green-500',
-      enabled_message_icon: Check,
-      disabled: false,
-      disabled_message: 'Disabled',
-      disabled_message_color: 'text-red-500',
-      disabled_message_icon: X,
-      maintenance: false,
-      maintenance_message: 'Maintenance',
-      maintenance_message_color: 'text-yellow-500',
-      maintenance_message_icon: Wrench,
-      premium: true,
-      premium_plus: true,
-    },
-  ];
+  };
+
+  stageMap: Record<ReleaseStage, StageInfo> = {
+    stable: { message: { EN: '', ES: '' }, color: '', icon: null },
+    beta: { message: { EN: 'Beta', ES: 'Beta' }, color: 'text-orange-500', icon: FlaskConical },
+    alpha: { message: { EN: 'Alpha', ES: 'Alfa' }, color: 'text-purple-600', icon: FlaskConical },
+    maintenance: { message: { EN: 'Maintenance', ES: 'Mantenimiento' }, color: 'text-yellow-500', icon: Wrench },
+    coming_soon: { message: { EN: 'Coming Soon', ES: 'Próximamente' }, color: 'text-blue-500', icon: Clock },
+  };
+  
+  chatEvents: ChatEvent[] = [];
+  isLoading = true;
+
+  constructor(
+    private eventsubService: EventsubService,
+    private toastService: ToastService
+  ) {}
+
+  ngOnInit(): void {
+    // This should now call the merged getEvents() function from your service
+    this.eventsubService.getEvents().subscribe(events => {
+      this.chatEvents = events;
+      this.isLoading = false;
+    });
+  }
+
+  // NEW: A single function to determine the visual status, including permissions
+  getEventDisplayStatus(event: ChatEvent): { text: string; icon: any; color: string } {
+    const access = this.getUserAccess(event);
+    if (!access.canAccess && access.reason) {
+      return {
+        text: this.permissionMessages[access.reason][this.lang],
+        icon: this.lockIcon,
+        color: 'text-yellow-600',
+      };
+    }
+
+    // If access is granted, proceed with the original status logic
+    if (event.releaseStage === 'alpha' || event.releaseStage === 'beta') {
+      const stageInfo = this.stageMap[event.releaseStage];
+      const text = event.enabled
+        ? `${stageInfo.message[this.lang]} Enabled`
+        : `Try the ${stageInfo.message[this.lang]}!`;
+      return { text, icon: stageInfo.icon, color: stageInfo.color };
+    }
+
+    if (event.releaseStage === 'stable') {
+      if (event.enabled) {
+        return { text: 'Enabled', icon: this.checkIcon, color: 'text-green-500' };
+      } else {
+        return { text: 'Disabled', icon: this.xIcon, color: 'text-red-500' };
+      }
+    }
+    
+    const stageInfo = this.stageMap[event.releaseStage];
+    return { text: stageInfo.message[this.lang], icon: stageInfo.icon, color: stageInfo.color };
+  }
+
+  // NEW: Helper to check if the user has permission to interact with the event
+  getUserAccess(event: ChatEvent): { canAccess: boolean; reason?: 'needs_premium' | 'needs_premium_plus' } {
+    if (event.premium_plus && this.userPremiumStatus !== 'premium_plus') {
+      return { canAccess: false, reason: 'needs_premium_plus' };
+    }
+    if (event.premium && this.userPremiumStatus === 'none') {
+      return { canAccess: false, reason: 'needs_premium' };
+    }
+    return { canAccess: true };
+  }
+  
+  toggleConfigure(eventName: string): void {
+     this.chatEvents = this.chatEvents.map(event => {
+      if (event.name === eventName) {
+        return { ...event, isConfiguring: !event.isConfiguring };
+      }
+      return { ...event, isConfiguring: false };
+    });
+  }
+
+  toggleFeature(eventToToggle: ChatEvent): void {
+    const newStatus = !eventToToggle.enabled;
+    this.eventsubService.updateEventStatus(eventToToggle.name, newStatus).subscribe(() => {
+      this.chatEvents = this.chatEvents.map(event => {
+        if (event.name === eventToToggle.name) {
+          return { ...event, enabled: newStatus };
+        }
+        return event;
+      });
+      const statusText = newStatus ? 'enabled' : 'disabled';
+      this.toastService.success('Status Updated', `${eventToToggle.name} has been ${statusText}.`);
+    });
+  }
+
+  saveConfiguration(eventToSave: ChatEvent): void {
+    if (!eventToSave.config) return;
+    this.eventsubService.saveEventConfiguration(eventToSave.name, eventToSave.config).subscribe(() => {
+      this.toastService.success('Configuration Saved', `Your settings for ${eventToSave.name} have been updated.`);
+      this.toggleConfigure(eventToSave.name);
+    });
+  }
+
+  getControlValue(config: ConfigControl[] | undefined, controlId: string): any {
+    if (!config) return undefined;
+    return config.find(c => c.id === controlId)?.value;
+  }
+
+  trackByName(index: number, event: ChatEvent): string {
+    return event.name;
+  }
 }
-
-
