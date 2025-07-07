@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, forkJoin } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { map, switchMap, tap, shareReplay } from 'rxjs/operators';
 import { ChatEvent, ConfigControl } from './modules/chat-events/chat-events.component'; // Adjust path as needed
 import { Gamepad2, Heart, Star, Trophy, UserPlus, Users, VolumeX } from 'lucide-angular';
 import { UserService } from './user.service';
@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 // Represents the data structure for a user's saved configuration in your MongoDB.
 // It's a partial record, only containing what the user has customized.
 export interface UserEventConfig {
-  name: string; // The primary key, e.g., 'Follows', which corresponds to ChatEvent.name
+  name: string; // The primary key, e.g., 'channel.follow', which corresponds to ChatEvent.type
   enabled: boolean;
   config?: Partial<ConfigControl>[]; // Only contains the values the user has changed
 }
@@ -58,6 +58,7 @@ export interface Subscription {
 })
 export class EventsubService {
   private apiUrl = 'https://api.domdimabot.com'; // This would be your backend API
+  private eventsCache$: Observable<ChatEvent[]> | null = null;
 
   constructor(
     private http: HttpClient,
@@ -67,17 +68,27 @@ export class EventsubService {
 
   // This remains the main function your component calls.
   getEvents(): Observable<ChatEvent[]> {
-    return forkJoin({
-      // 1. Get all possible event "templates" your bot supports
+    if (this.eventsCache$) {
+      return this.eventsCache$;
+    }
+
+    // Try to load from localStorage
+    const cached = sessionStorage.getItem('eventsCache');
+    if (cached) {
+      this.eventsCache$ = of(JSON.parse(cached));
+      return this.eventsCache$;
+    }
+
+    // Otherwise, fetch from backend and cache
+    this.eventsCache$ = forkJoin({
       allSupportedEvents: this.getBotSupportedEvents(),
-      // 2. Get the specific configurations this user has saved
       userConfigs: this.getUserConfiguredEvents()
     }).pipe(
       map(({ allSupportedEvents, userConfigs }) => {
         // This is the new, more powerful merging logic
         return allSupportedEvents.map(defaultEvent => {
           // Find if the user has a saved configuration for this event
-          const userConfig = userConfigs.find(c => c.name === defaultEvent.name);
+          const userConfig = userConfigs.find(c => c.name === defaultEvent.type);
 
           // If they don't, just return the default template
           if (!userConfig) {
@@ -103,8 +114,19 @@ export class EventsubService {
           
           return mergedEvent;
         });
-      })
+      }),
+      tap(events => {
+        sessionStorage.setItem('eventsCache', JSON.stringify(events));
+      }),
+      shareReplay(1)
     );
+    return this.eventsCache$;
+  }
+
+  // Method to invalidate the cache
+  public clearCache() {
+    this.eventsCache$ = null;
+    sessionStorage.removeItem('eventsCache');
   }
 
   // --- Helper Functions ---
@@ -114,7 +136,7 @@ export class EventsubService {
     // In a real app: return this.http.get<ChatEvent[]>(`${this.apiUrl}/events/definitions`);
     console.log('Fetching all supported event definitions from local DB...');
     const mockDefinitions: ChatEvent[] = [
-      { name: 'Follows', type: 'channel.follow', version: '2', icon: UserPlus, color: 'bg-purple-500', textColor: 'text-white', releaseStage: 'coming_soon', enabled: false, premium: false, premium_plus: false, description: { EN: 'Greet a new follower with a custom message to make them feel welcomed!', ES: 'Saluda a un nuevo seguidor, para que se sientan bienvenidos!' }, config: [{ id: 'followMessage', label: {EN: 'Follow Message', ES: 'Mensaje de Seguidor'}, type: 'text', value: 'Thank you for the follow $(user)! Hope you enjoy the stream!' }] },
+      { name: 'Follows', type: 'channel.follow', version: '2', icon: UserPlus, color: 'bg-purple-500', textColor: 'text-white', releaseStage: 'stable', enabled: false, premium: false, premium_plus: false, description: { EN: 'Greet a new follower with a custom message to make them feel welcomed!', ES: 'Saluda a un nuevo seguidor, para que se sientan bienvenidos!' }, config: [{ id: 'followMessage', label: {EN: 'Follow Message', ES: 'Mensaje de Seguidor'}, type: 'text', value: 'Thank you for the follow $(user)! Hope you enjoy the stream!' }] },
     ];
     return of(mockDefinitions);
   }
@@ -133,10 +155,21 @@ export class EventsubService {
 
         return subscriptionsArray
           .filter((sub: any) => sub && sub.type) // Filter out any empty/invalid objects
-          .map((subscription: BackendSubscription) => ({
-            name: subscription.type,
-            enabled: subscription.enabled,
-        }));
+          .map((subscription: BackendSubscription) => {
+            console.log('Processing subscription:', subscription);
+            console.log('Full subscription data:', JSON.stringify(subscription, null, 2));
+            return {
+              name: subscription.type,
+              enabled: subscription.enabled,
+              config: subscription['message'] ? [{
+                id: 'followMessage',
+                label: { EN: 'Follow Message', ES: 'Mensaje de Seguidor' },
+                type: 'text' as const,
+                value: subscription['message']
+              }] : []
+              
+            };
+          });
       }),
       tap(userConfigs => console.log('Mapped user configs:', userConfigs))
     );
@@ -165,7 +198,9 @@ export class EventsubService {
             version: event.version,
             condition: { broadcaster_user_id: channelId, moderator_user_id: '698614112' }
           };
-          return this.http.post(`${this.apiUrl}/eventsubs/${channelId}`, body, { headers });
+          return this.http.post(`${this.apiUrl}/eventsubs/${channelId}`, body, { headers }).pipe(
+            tap(() => this.clearCache()) // Invalidate cache on success
+          );
         } else {
           // UNSUBSCRIBE from the event
           // 1. Get the subscription ID from your backend
@@ -177,7 +212,9 @@ export class EventsubService {
                 return of({ success: true, message: 'Subscription not found, nothing to delete.' });
               }
               // 2. Send the DELETE request
-              return this.http.delete(`${this.apiUrl}/eventsubs/${channelId}?id=${subscription.id}`, { headers });
+              return this.http.delete(`${this.apiUrl}/eventsubs/${channelId}?id=${subscription.id}`, { headers }).pipe(
+                tap(() => this.clearCache()) // Invalidate cache on success
+              );
             })
           );
         }
