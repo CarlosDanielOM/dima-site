@@ -1,27 +1,29 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Crown, LucideAngularModule, Palette, Sparkles, Zap } from 'lucide-angular';
+import { Crown, LucideAngularModule, Palette, Sparkles, Zap, CheckCircle, XCircle, AlertTriangle, Lock, Wrench, FlaskConical, Boxes } from 'lucide-angular';
 import { SafePipe } from '../../safe.pipe';
 import { UserService } from '../../user.service';
 import { HttpClient } from '@angular/common/http';
+import { ToastService } from '../../toast.service';
+
+export type ReleaseStage = 'stable' | 'beta' | 'alpha' | 'maintenance' | 'coming_soon';
 
 interface Design {
   id: string;
-  name: string;
+  name: {
+    EN: string;
+    ES: string;
+  };
   description: {
     EN: string;
     ES: string;
   };
   previewUrl: string;
   premium: boolean;
-  premium_plus?: boolean;
+  premium_plus: boolean;
   icon: any;
-  disabled: boolean;
-  disabled_message: string;
-  disabled_icon: any;
-  disabled_color: string;
-  disabled_text_color: string;
+  releaseStage: ReleaseStage;
 }
 
 @Component({
@@ -36,19 +38,24 @@ export class ClipsComponent {
   paletteIcon = Palette;
   sparklesIcon = Sparkles;
   zapIcon = Zap;
+  checkCircleIcon = CheckCircle;
+  xCircleIcon = XCircle;
+  alertTriangleIcon = AlertTriangle;
+  lockIcon = Lock;
+  wrenchIcon = Wrench;
+  flaskConicalIcon = FlaskConical;
+  boxesIcon = Boxes;
   lang: 'EN' | 'ES' = localStorage.getItem('lang') as 'EN' | 'ES' || 'EN';
   userId = 0;
   login = '';
   isPremium = false;
   selectedDesign: Design | null = null;
   timeoutSeconds: number = 30;
-  showToast = false;
-  toastMessage = '';
-  toastType: 'success' | 'error' = 'success';
 
   constructor(
     private userService: UserService,
-    private http: HttpClient
+    private http: HttpClient,
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {
@@ -61,61 +68,87 @@ export class ClipsComponent {
     return [
       {
         id: 'design1',
-        name: 'Classic Design',
+        name: {
+          EN: 'Classic Design',
+          ES: 'Diseño Clásico'
+        },
         description: {
           EN: 'Shows the clips with the users streamer information on the right side',
           ES: 'Muestra los clips con la información del streamer del usuario en el lado derecho'
         },
         previewUrl: `https://api.domdimabot.com/clip/${this.userId}`,
         premium: false,
+        premium_plus: false,
         icon: this.paletteIcon,
-        disabled: false,
-        disabled_message: 'This design is not available yet. Please check back later.',
-        disabled_icon: this.paletteIcon,
-        disabled_color: 'bg-red-500',
-        disabled_text_color: 'text-white'
+        releaseStage: 'stable',
       },
       {
         id: 'design2',
-        name: 'Simple Design',
+        name: {
+          EN: 'Simple Design',
+          ES: 'Diseño Simple'
+        },
         description: {
           EN: 'Contemporary design with sleek animations and effects',
           ES: 'Diseño contemporáneo con animaciones y efectos suaves'
         },
         previewUrl: `https://api.domdimabot.com/clip/${this.userId}?design=2`,
         premium: false,
+        premium_plus: false,
         icon: this.sparklesIcon,
-        disabled: false,
-        disabled_message: 'This design is not available yet. Please check back later.',
-        disabled_icon: this.sparklesIcon,
-        disabled_color: 'bg-red-500',
-        disabled_text_color: 'text-white'
+        releaseStage: 'beta',
       },
       {
         id: 'design3',
-        name: 'Custom Design',
+        name: {
+          EN: 'Custom Design',
+          ES: 'Diseño Personalizado'
+        },
         description: {
           EN: 'Fully customizable design with premium features',
           ES: 'Diseño completamente personalizable con características premium'
         },
         previewUrl: `https://api.domdimabot.com/clip/${this.userId}?design=custom`,
         premium: true,
-        premium_plus: false,
+        premium_plus: true,
         icon: this.zapIcon,
-        disabled: true,
-        disabled_message: 'This design is not available yet. Please check back later.',
-        disabled_icon: this.zapIcon,
-        disabled_color: 'bg-red-500',
-        disabled_text_color: 'text-white'
+        releaseStage: 'coming_soon',
       }
     ];
+  }
+
+  getDesignStatus(design: Design): { text: string; icon: any; color: string } {
+    if (design.releaseStage === 'maintenance') {
+      return { text: 'Maintenance', icon: this.wrenchIcon, color: 'text-orange-500' };
+    }
+    if (design.releaseStage === 'coming_soon') {
+      return { text: 'Coming Soon', icon: this.boxesIcon, color: 'text-blue-500' };
+    }
+    const isLocked = (design.premium && !this.isPremium) || (design.premium_plus && !this.isPremium);
+    if (isLocked) {
+      return { text: 'Premium Required', icon: this.lockIcon, color: 'text-red-500' };
+    }
+    if (this.selectedDesign?.id === design.id) {
+        return { text: 'Selected', icon: this.checkCircleIcon, color: 'text-purple-500' };
+    }
+    return { text: 'Available', icon: this.checkCircleIcon, color: 'text-green-500' };
+  }
+
+  getStageInfo(stage: ReleaseStage): { text: string, color: string } | null {
+    const info: { [key in ReleaseStage]?: { text: string, color: string } } = {
+      stable: { text: 'Stable', color: 'bg-purple-500 text-white' },
+      beta: { text: 'Beta', color: 'bg-yellow-500 text-white' },
+      alpha: { text: 'Alpha', color: 'bg-red-500 text-white' },
+      maintenance: { text: 'Maintenance', color: 'bg-gray-500 text-white' },
+      coming_soon: { text: 'Coming Soon', color: 'bg-blue-500 text-white' },
+    };
+    return info[stage] || null;
   }
 
   getSelectedDesignUrl(): string {
     if (!this.selectedDesign) return '';
     
     const baseUrl = this.selectedDesign.previewUrl;
-    const timeoutParam = this.timeoutSeconds > 0 ? `&timeout=${this.timeoutSeconds}` : '';
     
     // Check if URL already has parameters
     const separator = baseUrl.includes('?') ? '&' : '?';
@@ -123,26 +156,41 @@ export class ClipsComponent {
   }
 
   selectDesign(design: Design) {
-    if (design.premium && !this.isPremium) {
-      return; // Don't allow selection if premium and user is not premium
+    if (!this.canSelectDesign(design)) {
+      if (['maintenance', 'coming_soon'].includes(design.releaseStage)) {
+          this.toastService.error('Not Available', 'This design is not available yet.');
+      } else if ((design.premium && !this.isPremium) || (design.premium_plus && !this.isPremium)) {
+          this.toastService.error('Premium Required', 'This is a premium feature. Please upgrade to use it.');
+      }
+      return;
     }
     this.selectedDesign = design;
   }
 
   canSelectDesign(design: Design): boolean {
-    return !design.premium || this.isPremium;
+    const isLocked = (design.premium && !this.isPremium) || (design.premium_plus && !this.isPremium);
+    const isUnavailable = ['maintenance', 'coming_soon'].includes(design.releaseStage);
+    return !isLocked && !isUnavailable;
   }
 
   copyUrl() {
+    if (!this.selectedDesign) {
+      this.toastService.error('Selection Required', 'Please select a design first');
+      return;
+    }
     const url = this.getSelectedDesignUrl();
     navigator.clipboard.writeText(url).then(() => {
-      this.showToastMessage('URL copied to clipboard!', 'success');
+      this.toastService.success('Copied!', 'URL copied to clipboard!');
     }).catch(() => {
-      this.showToastMessage('Failed to copy URL', 'error');
+      this.toastService.error('Copy Failed', 'Failed to copy URL to clipboard');
     });
   }
 
   testDesign() {
+    if (!this.selectedDesign) {
+      this.toastService.error('Selection Required', 'Please select a design first');
+      return;
+    }
     const url = this.getSelectedDesignUrl();
     this.http.post('https://api.domdimabot.com/clip/test', {
       channelID: this.userId,
@@ -151,23 +199,13 @@ export class ClipsComponent {
     }).subscribe({
       next: (data) => {
         console.log(data);
-        this.showToastMessage('Design test sent successfully!', 'success');
+        this.toastService.success('Test Sent', 'Design test sent successfully!');
       },
       error: (error) => {
         console.error('Error testing design:', error);
-        this.showToastMessage('Failed to test design', 'error');
+        this.toastService.error('Test Failed', 'Failed to send test design');
       }
     });
-  }
-
-  showToastMessage(message: string, type: 'success' | 'error') {
-    this.toastMessage = message;
-    this.toastType = type;
-    this.showToast = true;
-    
-    setTimeout(() => {
-      this.showToast = false;
-    }, 3000);
   }
 
   onTimeoutChange() {

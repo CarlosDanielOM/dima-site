@@ -21,7 +21,7 @@
           <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-600"></div>
           <div class="flex items-start">
             <div class="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center shadow-lg" [class]="event.color">
-              <lucide-icon [name]="event.icon" class="w-6 h-6" [class]="event.textColor"></lucide-icon>
+              <lucide-icon [name]="getIconComponent(event.icon)" class="w-6 h-6" [class]="event.textColor"></lucide-icon>
             </div>
             <div class="ml-4 flex-1">
               <h2 class="text-xl font-bold text-purple-900 mb-2 group-hover:text-purple-700 transition-colors duration-300 flex items-center">
@@ -60,7 +60,16 @@
                   @if (event.config) {
                   <button (click)="toggleConfigure(event.name)" class="px-3 py-1 text-xs font-semibold text-white bg-blue-500 hover:bg-blue-600 rounded-full transition-colors">Configure</button>
                   }
-                  <button (click)="toggleFeature(event)" class="px-3 py-1 text-xs font-semibold text-white bg-red-500 hover:bg-red-600 rounded-full transition-colors">Disable</button>
+                  <button (click)="toggleFeature(event)"
+                          class="px-3 py-1 text-xs font-semibold text-white rounded-full transition-colors"
+                          [class.bg-red-500]="canBeDisabled(event)"
+                          [class.hover:bg-red-600]="canBeDisabled(event)"
+                          [class.bg-gray-400]="!canBeDisabled(event)"
+                          [class.cursor-not-allowed]="!canBeDisabled(event)"
+                          [disabled]="!canBeDisabled(event)"
+                          [title]="!canBeDisabled(event) ? 'This event cannot be disabled. To turn it off, please clear the message content in its configuration.' : ''">
+                    Disable
+                  </button>
                 } @else if (event.releaseStage !== 'coming_soon' && event.releaseStage !== 'maintenance') {
                   <button (click)="toggleFeature(event)" class="px-3 py-1 text-xs font-semibold text-white bg-green-500 hover:bg-green-600 rounded-full transition-colors">Enable</button>
                 } @else {
@@ -82,11 +91,78 @@
             @for(control of event.config; track control.id) {
               @if (!control.showIf || getControlValue(event.config, control.showIf.controlId) === control.showIf.is) {
                 <div class="flex flex-col">
-                  <label [for]="control.id" class="mb-1 text-sm font-medium text-purple-700">{{ control.label[lang] }}</label>
+                  <label [for]="control.id" class="mb-1 text-sm font-medium text-purple-700 flex items-center">
+                    <span>{{ control.label[lang] }}</span>
+                    @if(control.id === 'cheerTiers') {
+                      <lucide-icon [name]="crownIcon" class="w-4 h-4 ml-1.5 text-yellow-500"></lucide-icon>
+                    }
+                  </label>
                   @switch (control.type) {
                     @case ('text') { <input type="text" [id]="control.id" [(ngModel)]="control.value" [placeholder]="control.placeholder" class="p-2 border border-purple-200 rounded-md focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none transition"> }
                     @case ('number') { <input type="number" [id]="control.id" [(ngModel)]="control.value" class="p-2 border border-purple-200 rounded-md focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none transition"> }
                     @case ('checkbox') { <div class="flex items-center"><input type="checkbox" [id]="control.id" [(ngModel)]="control.value" class="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"></div> }
+                    @case ('message-tiers') {
+                     <div class="space-y-3">
+                       @if(isArray(control.value)) {
+                         @for (tier of control.value; track tier.id) {
+                           <div class="p-3 border rounded-lg bg-purple-50/50 relative">
+                             <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                               <!-- Tier Name -->
+                               <div class="col-span-2">
+                                 <label [for]="tier.id + '-name'" class="text-xs font-semibold text-purple-600">Tier Name</label>
+                                 <input type="text" [id]="tier.id + '-name'" [(ngModel)]="tier.name" class="w-full mt-1 p-1.5 text-sm border border-purple-200 rounded-md focus:ring-1 focus:ring-purple-400 focus:border-purple-400 outline-none transition">
+                               </div>
+                               <!-- Min Amount -->
+                               <div>
+                                 <label [for]="tier.id + '-min'" class="text-xs font-semibold text-purple-600">Min Bits</label>
+                                 <input type="number" [id]="tier.id + '-min'" [(ngModel)]="tier.minAmount" class="w-full mt-1 p-1.5 text-sm border border-purple-200 rounded-md focus:ring-1 focus:ring-purple-400 focus:border-purple-400 outline-none transition">
+                               </div>
+                               <!-- Max Amount -->
+                               <div>
+                                 <label [for]="tier.id + '-max'" class="text-xs font-semibold text-purple-600">Max Bits</label>
+                                 <input type="number" [id]="tier.id + '-max'" [(ngModel)]="tier.maxAmount" class="w-full mt-1 p-1.5 text-sm border border-purple-200 rounded-md focus:ring-1 focus:ring-purple-400 focus:border-purple-400 outline-none transition">
+                               </div>
+                               <!-- Message -->
+                               <div class="col-span-2">
+                                 <label [for]="tier.id + '-msg'" class="text-xs font-semibold text-purple-600">Message</label>
+                                 <input type="text" [id]="tier.id + '-msg'" [(ngModel)]="tier.message" class="w-full mt-1 p-1.5 text-sm border border-purple-200 rounded-md focus:ring-1 focus:ring-purple-400 focus:border-purple-400 outline-none transition">
+                               </div>
+                             </div>
+                             <button (click)="removeTier(control.value, tier.id, event)" class="absolute top-2 right-2 text-red-500 hover:text-red-700 transition-colors">
+                               <lucide-icon [name]="trashIcon" class="w-4 h-4"></lucide-icon>
+                             </button>
+                           </div>
+                         }
+                         <button (click)="addTier(control.value, event)"
+                                 class="w-full mt-2 px-3 py-1.5 text-xs font-semibold text-purple-600 border-2 border-dashed border-purple-300 rounded-lg transition-colors"
+                                 [class.hover:bg-purple-100]="canAddTier(event, control.value)"
+                                 [class.hover:border-solid]="canAddTier(event, control.value)"
+                                 [class.opacity-50]="!canAddTier(event, control.value)"
+                                 [class.cursor-not-allowed]="!canAddTier(event, control.value)"
+                                 [disabled]="!canAddTier(event, control.value)"
+                                 [title]="getAddTierTooltip(event, control.value)">
+                           Add Message Tier
+                         </button>
+                         @if(tierInfoMessage) {
+                          <div class="flex items-center justify-center mt-2 p-2 text-xs text-center rounded-lg"
+                              [ngClass]="{
+                                'bg-yellow-100 text-yellow-800': tierInfoMessage.level === 'upsell-premium' || tierInfoMessage.level === 'upsell-plus',
+                                'bg-gray-100 text-gray-700': tierInfoMessage.level === 'limit-reached'
+                              }">
+                            @if(tierInfoMessage.level === 'upsell-premium') {
+                              <lucide-icon [name]="crownIcon" class="w-4 h-4 mr-1.5 flex-shrink-0 text-yellow-500"></lucide-icon>
+                            } @else if (tierInfoMessage.level === 'upsell-plus') {
+                              <div class="inline-flex items-center relative mr-1.5 flex-shrink-0">
+                                <lucide-icon [name]="crownIcon" class="w-4 h-4 text-yellow-500"></lucide-icon>
+                                <span class="absolute -top-1.5 -right-1.5 text-[10px] font-bold text-yellow-600">+</span>
+                              </div>
+                            }
+                            <span>{{ tierInfoMessage.message }}</span>
+                          </div>
+                         }
+                       }
+                     </div>
+                    }
                   }
                 </div>
               }

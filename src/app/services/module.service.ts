@@ -56,8 +56,8 @@ export class ModuleService {
           EN: 'Enable or disable chat events, like follows, bits, subs, etc, and set their respective messages and thresholds.',
           ES: 'Activa o desactiva eventos de chat, como follows, bits, subs, etc, y establece sus respectivos mensajes y umbrales.',
         },
-        releaseStage: 'beta',
-        premium: true,
+        releaseStage: 'coming_soon',
+        premium: false,
         premium_plus: false,
       },
       {

@@ -123,6 +123,16 @@ export class UserService {
     return this.user.premium_plus;
   }
 
+  getPremiumStatus(): string {
+    if (this.user.premium_plus) {
+      return 'premium_plus';
+    } else if (this.user.premium) {
+      return 'premium';
+    } else {
+      return 'none';
+    }
+  }
+
   getToken(): string {
     return this.user.token;
   }
