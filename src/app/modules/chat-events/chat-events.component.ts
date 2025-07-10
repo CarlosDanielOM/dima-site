@@ -23,6 +23,7 @@ import {
   Lock,
   Trash2,
   Play,
+  PlusCircle,
 } from 'lucide-angular';
 import { EventsubService } from '../../eventsub.service';
 import { ToastService } from '../../toast.service';
@@ -39,6 +40,7 @@ export interface CheerTier {
 
 export interface ConfigControl {
   id: string;
+  dbId?: string;
   label: { EN: string; ES: string; };
   type: 'text' | 'number' | 'checkbox' | 'message-tiers' | 'select';
   value: string | number | boolean | CheerTier[];
@@ -64,6 +66,7 @@ export interface ChatEvent {
   premium: boolean;
   premium_plus: boolean;
   isConfiguring?: boolean;
+  isSubscribed?: boolean;
   config?: ConfigControl[];
   tierLimits?: {
     premium: number;
@@ -85,6 +88,7 @@ export class ChatEventsComponent implements OnInit {
   xIcon = X;
   lockIcon = Lock;
   trashIcon = Trash2;
+  plusCircleIcon = PlusCircle;
 
   // Icon mapping from string names to actual icon components
   private iconMap: { [key: string]: any } = {
@@ -108,6 +112,7 @@ export class ChatEventsComponent implements OnInit {
     'Lock': Lock,
     'Trash2': Trash2,
     'Play': Play,
+    'PlusCircle': PlusCircle,
   };
   tierInfoMessage: { message: string; level: 'upsell-plus' | 'upsell-premium' | 'limit-reached' } | null = null;
 
@@ -122,6 +127,57 @@ export class ChatEventsComponent implements OnInit {
       EN: 'Requires Premium Plus',
       ES: 'Requiere Premium Plus',
     },
+  };
+
+  deleteConfirmationMessages = {
+    title: {
+      EN: 'Confirm Deletion',
+      ES: 'Confirmar Eliminación',
+    },
+    areYouSure: {
+      EN: 'Are you sure you want to delete the event',
+      ES: '¿Estás seguro de que quieres eliminar el evento',
+    },
+    warning: {
+      EN: 'All associated data will be erased and it will need to be reconfigured if you want to use it again.',
+      ES: 'Todos los datos asociados se borrarán y deberá reconfigurarse si quieres volver a usarlo.',
+    }
+  };
+
+  private prepareConfigForSave(configControls: ConfigControl[]): any {
+    const payload: { [key: string]: any } = {};
+    for (const control of configControls) {
+      // Ensure dbId exists and value is not undefined before adding to payload
+      if (control.dbId && control.value !== undefined) {
+        payload[control.dbId] = control.value;
+      }
+    }
+    return payload;
+  }
+
+  actionNotAllowedMessages = {
+    title: {
+      EN: 'Action Not Allowed',
+      ES: 'Acción no permitida',
+    },
+    cannotDisable: {
+      EN: 'This event cannot be disabled. To turn it off, clear the message in its configuration.',
+      ES: 'Este evento no se puede desactivar. Para apagarlo, borra el contenido del mensaje en su configuración.',
+    },
+    cannotDelete: {
+      EN: 'This event cannot be deleted because it is essential for the bot to work properly.',
+      ES: 'Este evento no se puede eliminar porque es esencial para el funcionamiento del bot.',
+    }
+  };
+
+  statusMessages = {
+    notCreated: { EN: 'Not Created', ES: 'No Creado' },
+    enabled: { EN: 'Enabled', ES: 'Activado' },
+    disabled: { EN: 'Disabled', ES: 'Desactivado' },
+    betaEnabled: { EN: 'Beta Enabled', ES: 'Beta Activada' },
+    tryTheBeta: { EN: 'Try the Beta!', ES: '¡Prueba la Beta!' },
+    alphaEnabled: { EN: 'Alpha Enabled', ES: 'Alfa Activada' },
+    tryTheAlpha: { EN: 'Try the Alpha!', ES: '¡Prueba la Alfa!' },
   };
 
   stageMap: Record<ReleaseStage, StageInfo> = {
@@ -169,23 +225,43 @@ export class ChatEventsComponent implements OnInit {
       };
     }
 
-    // If access is granted, proceed with the original status logic
+    // Handle Alpha and Beta stages specifically
     if (event.releaseStage === 'alpha' || event.releaseStage === 'beta') {
       const stageInfo = this.stageMap[event.releaseStage];
-      const text = event.enabled
-        ? `${stageInfo.message[this.lang]} Enabled`
-        : `Try the ${stageInfo.message[this.lang]}!`;
-      return { text, icon: stageInfo.icon, color: stageInfo.color };
+
+      if (event.isSubscribed === false) {
+        // Not subscribed, show call to action
+        const text = event.releaseStage === 'alpha'
+          ? this.statusMessages.tryTheAlpha[this.lang]
+          : this.statusMessages.tryTheBeta[this.lang];
+        return { text, icon: stageInfo.icon, color: stageInfo.color };
+      } else {
+        // Is subscribed, check if enabled or disabled
+        if (event.enabled) {
+          const text = event.releaseStage === 'alpha'
+            ? this.statusMessages.alphaEnabled[this.lang]
+            : this.statusMessages.betaEnabled[this.lang];
+          return { text, icon: stageInfo.icon, color: stageInfo.color };
+        } else {
+          return { text: this.statusMessages.disabled[this.lang], icon: this.xIcon, color: 'text-red-500' };
+        }
+      }
     }
 
+    // Handle Stable stage
     if (event.releaseStage === 'stable') {
-      if (event.enabled) {
-        return { text: 'Enabled', icon: this.checkIcon, color: 'text-green-500' };
+      if (event.isSubscribed === false) {
+        return { text: this.statusMessages.notCreated[this.lang], icon: this.plusCircleIcon, color: 'text-gray-500' };
       } else {
-        return { text: 'Disabled', icon: this.xIcon, color: 'text-red-500' };
+        if (event.enabled) {
+          return { text: this.statusMessages.enabled[this.lang], icon: this.checkIcon, color: 'text-green-500' };
+        } else {
+          return { text: this.statusMessages.disabled[this.lang], icon: this.xIcon, color: 'text-red-500' };
+        }
       }
     }
     
+    // Fallback for other stages like 'coming_soon', 'maintenance'
     const stageInfo = this.stageMap[event.releaseStage];
     return { text: stageInfo.message[this.lang], icon: stageInfo.icon, color: stageInfo.color };
   }
@@ -248,28 +324,68 @@ export class ChatEventsComponent implements OnInit {
   toggleFeature(eventToToggle: ChatEvent): void {
     if (!this.canBeDisabled(eventToToggle) && eventToToggle.enabled) {
       this.toastService.info(
-        'Action Not Allowed',
-        'This event cannot be disabled. To turn it off, clear the message in its configuration.'
+        this.actionNotAllowedMessages.title[this.lang],
+        this.actionNotAllowedMessages.cannotDisable[this.lang]
       );
       return;
     }
     const newStatus = !eventToToggle.enabled;
     this.eventsubService.updateEventStatus(eventToToggle.type, newStatus).subscribe(() => {
-      this.chatEvents = this.chatEvents.map(event => {
-        if (event.name === eventToToggle.name) {
-          return { ...event, enabled: newStatus };
-        }
-        return event;
+      // The cache is cleared in the service, so we refetch to get the updated state
+      this.isLoading = true;
+      this.eventsubService.getEvents().subscribe(events => {
+        this.chatEvents = events;
+        this.isLoading = false;
       });
     });
   }
 
   saveConfiguration(eventToSave: ChatEvent): void {
-    if (!eventToSave.config) return;
-    this.eventsubService.saveEventConfiguration(eventToSave.name, eventToSave.config).subscribe(() => {
-      this.toastService.success('Configuration Saved', `Your settings for ${eventToSave.name} have been updated.`);
+    if (!eventToSave.config) {
+      console.warn('No configuration to save for', eventToSave.name);
+      this.toastService.error('No Configuration', 'No configuration to save for this event.');
+      return;
+    }
+  
+    const configPayload = this.prepareConfigForSave(eventToSave.config);
+  
+    // Call the service to save the configuration.
+    this.eventsubService.saveEventConfiguration(eventToSave.type, configPayload).subscribe(() => {
+      // On success, exit configuration mode.
       this.toggleConfigure(eventToSave.name);
+      this.toastService.success('Configuration Saved', 'Configuration for this event has been saved.');
     });
+  }
+
+  deleteEvent(eventToDelete: ChatEvent): void {
+    if (!this.canBeDisabled(eventToDelete)) {
+      this.toastService.info(
+        this.actionNotAllowedMessages.title[this.lang],
+        this.actionNotAllowedMessages.cannotDelete[this.lang]
+      );
+      return;
+    }
+
+    const confirmationMessage = `${this.deleteConfirmationMessages.areYouSure[this.lang]} "${eventToDelete.name}"?\n\n${this.deleteConfirmationMessages.warning[this.lang]}`;
+    const confirmation = window.confirm(confirmationMessage);
+
+    if (confirmation) {
+      this.isLoading = true; // Show loading state
+      this.eventsubService.deleteEvent(eventToDelete.type).subscribe({
+        next: () => {
+          this.toastService.success('Event Unsubscribed', `The event "${eventToDelete.name}" has been reset.`);
+          // The cache is cleared in the service, so we refetch to get the updated state
+          this.eventsubService.getEvents().subscribe(events => {
+            this.chatEvents = events;
+            this.isLoading = false;
+          });
+        },
+        error: () => {
+          // Re-enable interaction if the deletion fails
+          this.isLoading = false;
+        }
+      });
+    }
   }
 
   getTierLimit(event: ChatEvent): number {

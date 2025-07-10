@@ -66,7 +66,6 @@
                           [class.hover:bg-red-600]="canBeDisabled(event)"
                           [class.bg-gray-400]="!canBeDisabled(event)"
                           [class.cursor-not-allowed]="!canBeDisabled(event)"
-                          [disabled]="!canBeDisabled(event)"
                           [title]="!canBeDisabled(event) ? 'This event cannot be disabled. To turn it off, please clear the message content in its configuration.' : ''">
                     Disable
                   </button>
@@ -168,7 +167,16 @@
               }
             }
           </div>
-          <div class="mt-6 flex justify-end">
+          <div class="mt-6 flex justify-end space-x-3">
+            <button (click)="deleteEvent(event)"
+                    class="px-4 py-2 text-sm font-semibold text-white rounded-full transition-colors"
+                    [class.bg-red-500]="canBeDisabled(event)"
+                    [class.hover:bg-red-600]="canBeDisabled(event)"
+                    [class.bg-gray-400]="!canBeDisabled(event)"
+                    [class.cursor-not-allowed]="!canBeDisabled(event)"
+                    [title]="!canBeDisabled(event) ? 'This event cannot be deleted as it is essential.' : 'Delete Event'">
+              Delete Event
+            </button>
             <button (click)="saveConfiguration(event)" class="px-4 py-2 text-sm font-semibold text-white bg-green-500 hover:bg-green-600 rounded-full transition-colors">Save Changes</button>
           </div>
         </div>

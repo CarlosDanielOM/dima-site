@@ -98,13 +98,13 @@ export class EventsubService {
           // Find if the user has a saved configuration for this event
           const userConfig = userConfigs.find(c => c.name === defaultEvent.type);
 
-          // If they don't, just return the default template
+          // If they don't, just return the default template, marked as not subscribed
           if (!userConfig) {
-            return defaultEvent;
+            return { ...defaultEvent, isSubscribed: false };
           }
 
           // If they do, merge the user's settings into the default template
-          const mergedEvent = { ...defaultEvent };
+          const mergedEvent = { ...defaultEvent, isSubscribed: true };
           mergedEvent.enabled = userConfig.enabled ?? false; // Overwrite enabled status
           // Store the subscription ID for later use
           (mergedEvent as any).subscriptionId = userConfig.subscriptionId;
@@ -142,6 +142,35 @@ export class EventsubService {
   public clearCache() {
     this.eventsCache$ = null;
     sessionStorage.removeItem('eventsCache');
+  }
+
+  // Method to delete an event subscription
+  deleteEvent(eventType: string): Observable<any> {
+    const channelId = this.userService.getUserId().toString();
+    const token = this.userService.getToken();
+    const headers = new HttpHeaders().set('Authorization', `${token}`);
+
+    // We need the subscription ID to delete it. Let's get it from the cache.
+    return this.getEvents().pipe(
+      switchMap(events => {
+        const event = events.find(e => e.type === eventType);
+        if (!event || !(event as any).subscriptionId) {
+          // If there's no event or no subscription ID, we can't delete it.
+          // This could mean it was never created, or the cache is out of sync.
+          // We can either throw an error or just complete silently.
+          // Let's inform the user.
+          this.toastService.error('Not Found', 'Could not find a subscription to delete for this event.');
+          return throwError(() => new Error('Subscription not found for deletion.'));
+        }
+
+        const subscriptionId = (event as any).subscriptionId;
+        return this.http.delete(`${this.apiUrl}/eventsubs/${channelId}/${subscriptionId}`, { headers }).pipe(
+          tap(() => {
+            this.clearCache(); // Invalidate the cache on successful deletion
+          })
+        );
+      })
+    );
   }
 
   // --- Helper Functions ---
@@ -300,10 +329,16 @@ export class EventsubService {
                   condition: condition
                 };
 
-                // Find the first text control that could be a default message.
-                const messageControl = eventDef.config?.find(c => c.type === 'text' && c.id.toLowerCase().includes('message'));
-                if (messageControl && typeof messageControl.value === 'string') {
-                  body.message = messageControl.value;
+                if (eventDef.config && Array.isArray(eventDef.config)) {
+                  const configPayload: { [key: string]: any } = {};
+                  eventDef.config.forEach((control: any) => {
+                    if (control.dbId && typeof control.value !== 'undefined') {
+                      configPayload[control.dbId] = control.value;
+                    }
+                  });
+                  if (Object.keys(configPayload).length > 0) {
+                    body.config = configPayload;
+                  }
                 }
 
                 return this.http.post(`${this.apiUrl}/eventsubs/${channelId}`, body, { headers }).pipe(
@@ -369,5 +404,36 @@ export class EventsubService {
     );
   }
   
-  saveEventConfiguration(eventName: string, config: any): Observable<any> { /* ... */ return of({ success: true }); }
+  saveEventConfiguration(eventName: string, configToSave: any): Observable<any> {
+    const channelId = this.userService.getUserId().toString();
+    const token = this.userService.getToken();
+    const headers = new HttpHeaders().set('Authorization', `${token}`);
+
+    return this.getEvents().pipe(
+      switchMap(events => {
+        const event = events.find(e => e.type === eventName);
+        if (!event || !(event as any).subscriptionId) {
+          this.toastService.error('Not Found', 'Could not find a subscription to update for this event.');
+          return throwError(() => new Error('Subscription not found for update.'));
+        }
+
+        const subscriptionId = (event as any).subscriptionId;
+
+        // The body of the request is the config object itself.
+        return this.http.patch(`${this.apiUrl}/eventsubs/${channelId}/${subscriptionId}`, configToSave, { headers }).pipe(
+          tap(() => {
+            this.clearCache();
+            this.toastService.success('EN:Configuration Saved', `ES:Configuracion guardada`);
+            // this.toastService.success('Configuration Saved', `Configuration for ${eventName} has been updated.`);
+          }),
+          catchError((error: any) => {
+            const statusCode = error.status || 'Unknown';
+            const reason = error.error?.message || error.message || 'Unknown error occurred';
+            this.toastService.error(`Error ${statusCode}`, reason);
+            return throwError(() => error);
+          })
+        );
+      })
+    );
+  }
 }
