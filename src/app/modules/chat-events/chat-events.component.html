@@ -88,7 +88,7 @@
           <h3 class="text-lg font-bold text-purple-800 mb-4">Configuration</h3>
           <div class="space-y-4">
             @for(control of event.config; track control.id) {
-              @if (!control.showIf || getControlValue(event.config, control.showIf.controlId) === control.showIf.is) {
+              @if (shouldShowControl(control, event)) {
                 <div class="flex flex-col">
                   <label [for]="control.id" class="mb-1 text-sm font-medium text-purple-700 flex items-center">
                     <span>{{ control.label[lang] }}</span>

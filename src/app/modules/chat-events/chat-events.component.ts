@@ -330,13 +330,25 @@ export class ChatEventsComponent implements OnInit {
       return;
     }
     const newStatus = !eventToToggle.enabled;
+    // We only need to refetch if we are CREATING a subscription for the first time.
+    const shouldRefetch = eventToToggle.isSubscribed === false;
+
     this.eventsubService.updateEventStatus(eventToToggle.type, newStatus).subscribe(() => {
-      // The cache is cleared in the service, so we refetch to get the updated state
-      this.isLoading = true;
-      this.eventsubService.getEvents().subscribe(events => {
-        this.chatEvents = events;
-        this.isLoading = false;
-      });
+      if (shouldRefetch) {
+        this.isLoading = true;
+        this.eventsubService.getEvents().subscribe(events => {
+          this.chatEvents = events;
+          this.isLoading = false;
+        });
+      } else {
+        // Otherwise, just update the local state.
+        this.chatEvents = this.chatEvents.map(event => {
+          if (event.type === eventToToggle.type) {
+            return { ...event, enabled: newStatus };
+          }
+          return event;
+        });
+      }
     });
   }
 
@@ -355,6 +367,29 @@ export class ChatEventsComponent implements OnInit {
       this.toggleConfigure(eventToSave.name);
       this.toastService.success('Configuration Saved', 'Configuration for this event has been saved.');
     });
+  }
+
+  shouldShowControl(control: ConfigControl, parentEvent: ChatEvent): boolean {
+    // If there's no condition, always show the control.
+    if (!control.showIf) {
+      return true;
+    }
+
+    // If there's a condition but no config to check against, do not show the control.
+    if (!parentEvent.config) {
+      return false;
+    }
+
+    // Find the control that this control's visibility depends on.
+    const sourceControl = parentEvent.config.find(c => c.id === control.showIf!.controlId);
+
+    // If the source control doesn't exist, do not show this control.
+    if (!sourceControl) {
+      return false;
+    }
+
+    // Show this control only if the source control's value matches the required value.
+    return sourceControl.value === control.showIf.is;
   }
 
   deleteEvent(eventToDelete: ChatEvent): void {

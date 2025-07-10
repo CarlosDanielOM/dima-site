@@ -273,7 +273,7 @@ export class EventsubService {
             // We just need to re-enable it with a PATCH request.
             return this.http.patch(`${this.apiUrl}/eventsubs/${channelId}/${subscriptionId}`, { enabled: true }, { headers }).pipe(
               tap(() => {
-                this.clearCache();
+                // this.clearCache(); // No need to clear cache, local state will be updated
                 this.toastService.success('Status Updated', `${eventType} has been ${enabled ? 'enabled' : 'disabled'}.`);
               }),
               catchError((error: any) => {
@@ -344,7 +344,7 @@ export class EventsubService {
                 return this.http.post(`${this.apiUrl}/eventsubs/${channelId}`, body, { headers }).pipe(
                   tap(() => {
                     console.log({body})
-                    this.clearCache();
+                    this.clearCache(); // Clear cache on CREATE
                     this.toastService.success('Status Updated', `${eventType} has been enabled.`);
                   }),
                   catchError((error: any) => {
@@ -379,7 +379,7 @@ export class EventsubService {
             // Send the PATCH request with the cached subscription ID
             return this.http.patch(`${this.apiUrl}/eventsubs/${channelId}/${subscriptionId}`, { enabled: false }, { headers }).pipe(
               tap(() => {
-                this.clearCache();
+                // this.clearCache(); // No need to clear cache, local state will be updated
                 this.toastService.success('Status Updated', `${eventType} has been ${enabled ? 'enabled' : 'disabled'}.`);
               }),
               catchError((error: any) => {
@@ -422,7 +422,7 @@ export class EventsubService {
         // The body of the request is the config object itself.
         return this.http.patch(`${this.apiUrl}/eventsubs/${channelId}/${subscriptionId}`, configToSave, { headers }).pipe(
           tap(() => {
-            this.clearCache();
+            // this.clearCache(); // No need to clear cache, local state is already updated
             this.toastService.success('EN:Configuration Saved', `ES:Configuracion guardada`);
             // this.toastService.success('Configuration Saved', `Configuration for ${eventName} has been updated.`);
           }),
