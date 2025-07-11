@@ -374,22 +374,28 @@ export class ChatEventsComponent implements OnInit {
     if (!control.showIf) {
       return true;
     }
-
-    // If there's a condition but no config to check against, do not show the control.
+  
+    // If there's a condition but no config to check against, do not show.
     if (!parentEvent.config) {
       return false;
     }
-
+  
     // Find the control that this control's visibility depends on.
     const sourceControl = parentEvent.config.find(c => c.id === control.showIf!.controlId);
-
+  
     // If the source control doesn't exist, do not show this control.
     if (!sourceControl) {
       return false;
     }
-
-    // Show this control only if the source control's value matches the required value.
-    return sourceControl.value === control.showIf.is;
+  
+    // Robustly check the condition. If `is` is a boolean, we should compare booleans.
+    const requiredValue = control.showIf.is;
+    if (typeof requiredValue === 'boolean') {
+      return !!sourceControl.value === requiredValue;
+    }
+  
+    // Otherwise, use strict equality.
+    return sourceControl.value === requiredValue;
   }
 
   deleteEvent(eventToDelete: ChatEvent): void {

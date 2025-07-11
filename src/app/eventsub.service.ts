@@ -110,21 +110,54 @@ export class EventsubService {
           (mergedEvent as any).subscriptionId = userConfig.subscriptionId;
 
           // If there's a config to merge, do a deep merge on the controls
-          if (mergedEvent.config && userConfig.config) {
+          if (userConfig.config) {
+            const userConfigMap = new Map(userConfig.config.map(c => [c.id, c.value]));
+
+            if (!mergedEvent.config) {
+              mergedEvent.config = [];
+            }
+            
             mergedEvent.config = mergedEvent.config.map(defaultControl => {
-              const userControl = userConfig.config?.find(c => c.id === defaultControl.id);
-              // If the user has a saved value for this control, use it (even if empty)
-              if (userControl && userControl.value !== undefined) {
-                const mergedControl = { ...defaultControl, value: userControl.value };
-                // If the user's value is empty, set the default as placeholder
-                if (userControl.value === '' && typeof defaultControl.value === 'string' && defaultControl.value) {
-                  mergedControl.placeholder = defaultControl.value;
+              if (userConfigMap.has(defaultControl.id)) {
+                const userValue = userConfigMap.get(defaultControl.id);
+                if (userValue !== undefined) {
+                  const mergedControl = { ...defaultControl, value: userValue };
+                  if (userValue === '' && typeof defaultControl.value === 'string' && defaultControl.value) {
+                    mergedControl.placeholder = defaultControl.value;
+                  }
+                  userConfigMap.delete(defaultControl.id!); // Remove from map once used
+                  return mergedControl;
                 }
-                return mergedControl;
               }
-              // Otherwise, keep the default
               return defaultControl;
             });
+            
+            // Add any remaining user-specific controls that weren't in the default config
+            for (const [id, value] of userConfigMap.entries()) {
+              if (value === undefined) continue;
+
+              const userControl = userConfig.config.find(c => c.id === id);
+              // We need a complete control definition, not just a partial one.
+              // This is tricky without the full default definition. We'll assume if it's not in default,
+              // it's a new control that has all properties except maybe 'value'.
+              // A better approach would be to have all possible controls in the default definitions, even if disabled.
+              if (userControl) {
+                // Find a default definition for this control type if it exists somewhere else (e.g. another event)
+                // For now, let's just construct it as best we can.
+                const newControl: ConfigControl = {
+                  id: userControl.id!,
+                  dbId: userControl.dbId,
+                  label: userControl.label!,
+                  type: userControl.type!,
+                  value: value,
+                  // Provide sensible defaults for other required properties if they are missing
+                  placeholder: userControl.placeholder,
+                  showIf: userControl.showIf,
+                  canDisable: userControl.canDisable,
+                };
+                mergedEvent.config.push(newControl);
+              }
+            }
           }
           
           return mergedEvent;
@@ -234,10 +267,12 @@ export class EventsubService {
                 value: subscription['endEnabled']
               });
             }
-            if (subscription.type === 'channel.cheer' && Array.isArray(subscription['cheerMessages'])) {
+            if (subscription.type === 'channel.cheer' && Array.isArray(subscription['cheerTiers'])) {
               userConfigControls.push({
                 id: 'cheerTiers',
-                value: subscription['cheerMessages'].map((t: any, i: number) => ({ ...t, id: `tier-${Date.now()}-${i}` }))
+                // The tiers from the DB already have unique IDs, so we don't need to generate new ones.
+                // Just pass them through directly.
+                value: subscription['cheerTiers']
               });
             }
             return {

@@ -65,7 +65,7 @@ export class LandingPageComponent {
         }
         this.userService.createUser(userData);
         this.userService.createRouteUser(userData);
-        this.router.navigate(['/login']);
+        this.router.navigate(['/cdom201/dashboard']);
       }
     }
   }
