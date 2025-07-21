@@ -1,5 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
-@import 'tailwindcss';
+@import "tailwindcss";
 
 /* Force preserve critical spacing utilities in production */
 /* Space utilities */

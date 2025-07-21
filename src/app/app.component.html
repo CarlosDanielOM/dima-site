@@ -1,3 +1,13 @@
+<div class="fixed bottom-4 right-4 z-50">
+  <button
+    (click)="themeService.toggleTheme()"
+    class="rounded-full bg-gray-200 p-2 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+  >
+    <span *ngIf="themeService.isDarkMode()">☀️</span>
+    <span *ngIf="!themeService.isDarkMode()">🌙</span>
+  </button>
+</div>
+
 <router-outlet></router-outlet>
 
 <app-toast></app-toast>
