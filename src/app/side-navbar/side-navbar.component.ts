@@ -40,7 +40,7 @@ export class SideNavbarComponent {
   
   links: NavLink[] = [
     { href: `dashboard`, label: 'Dashboard', icon: this.dashboardIcon, premium: false, premium_plus: false, disabled: false, },
-    { href: `commands`, label: 'Commands', icon: this.commandsIcon, premium: false, premium_plus: false, disabled: true },
+    { href: `commands`, label: 'Commands', icon: this.commandsIcon, premium: false, premium_plus: false, disabled: false },
     { href: `analytics`, label: 'Analytics', icon: this.analyticsIcon, premium: false, premium_plus: false, disabled: true },
     { href: `users`, label: 'Users', icon: this.usersIcon, premium: false, premium_plus: false, disabled: true },
     { href: `settings`, label: 'Settings', icon: this.settingsIcon, premium: false, premium_plus: false, disabled: true },

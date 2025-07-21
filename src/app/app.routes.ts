@@ -9,6 +9,7 @@ import { ModulesComponent } from './modules/modules.component';
 import { ModuleViewComponent } from './modules/module-view/module-view.component';
 import { ClipsComponent } from './modules/clips/clips.component';
 import { ChatEventsComponent } from './modules/chat-events/chat-events.component';
+import { CommandsComponent } from './streamer-wrapper/commands/commands.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent, title: 'Login' },
@@ -18,6 +19,7 @@ export const routes: Routes = [
     ] },
     { path: ':streamer', component: MainComponent, title: 'DomDimaBot', children: [
         { path: 'dashboard', component: DashboardComponent, title: 'Dashboard' },
+        { path: 'commands', component: CommandsComponent, title: 'Commands' },
         { path: 'modules', component: ModulesComponent, title: 'Modules', children: [
             { path: '', component: ModuleViewComponent, title: 'Module' },
             { path: 'clips', component: ClipsComponent, title: 'Clips' },
