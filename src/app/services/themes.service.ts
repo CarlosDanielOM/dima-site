@@ -14,10 +14,12 @@ export class ThemesService {
     const storedPreference = localStorage.getItem('darkmode');
     if (storedPreference !== null) {
       this.isDarkMode.set(storedPreference === 'true');
+      console.log('Setting darkmode from localStorage', this.isDarkMode());
     } else {
       this.isDarkMode.set(
         window.matchMedia('(prefers-color-scheme: dark)').matches
       );
+      console.log('Setting darkmode from matchMedia', this.isDarkMode());
     }
     this.updateHtmlClass();
   }

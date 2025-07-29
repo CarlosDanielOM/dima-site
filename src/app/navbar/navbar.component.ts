@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { UserService } from '../user.service';
-import { LucideAngularModule, Twitch, Settings, LayoutDashboard, Terminal, User, LogOut, CircuitBoard } from 'lucide-angular';
+import { LucideAngularModule, Twitch, Settings, LayoutDashboard, Terminal, User, LogOut, CircuitBoard, Menu } from 'lucide-angular';
 import { AuthService } from '../auth.service';
 import { LinksService } from '../links.service';
+import { SidebarService } from '../services/sidebar.service';
 
 @Component({
   selector: 'app-navbar',
@@ -25,13 +26,15 @@ export class NavbarComponent {
   userIcon = User;
   logoutIcon = LogOut;
   circuitBoardIcon = CircuitBoard;
+  menuIcon = Menu;
 
   authUrl = '';
 
   constructor(
     private userService: UserService,
     private authService: AuthService,
-    private linksService: LinksService
+    private linksService: LinksService,
+    private sidebarService: SidebarService
   ) {
     this.user = this.userService.getUser();
   }
@@ -59,5 +62,9 @@ export class NavbarComponent {
 
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;
+  }
+
+  toggleSidebar() {
+    this.sidebarService.toggle();
   }
 }

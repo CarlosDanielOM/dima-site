@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { LucideAngularModule, LayoutDashboard, Terminal, BarChart3, Users, Settings, Menu, Crown, Construction, Lock } from 'lucide-angular';
 import { UserService } from '../user.service';
+import { SidebarService } from '../services/sidebar.service';
 
 interface NavLink {
   href: string;
@@ -35,8 +36,13 @@ export class SideNavbarComponent {
   lockIcon = Lock;
 
   constructor(
-    private userService: UserService
-  ) {}
+    private userService: UserService,
+    private sidebarService: SidebarService
+  ) {
+    this.sidebarService.isOpen$.subscribe(isOpen => {
+      this.isOpen = isOpen;
+    });
+  }
   
   links: NavLink[] = [
     { href: `dashboard`, label: 'Dashboard', icon: this.dashboardIcon, premium: false, premium_plus: false, disabled: false, },
@@ -47,6 +53,6 @@ export class SideNavbarComponent {
   ];
 
   toggleSidebar() {
-    this.isOpen = !this.isOpen;
+    this.sidebarService.toggle();
   }
 }

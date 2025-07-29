@@ -1,9 +1,170 @@
-<h2>{{ user?.display_name }}'s commands</h2>
-
-@for (command of commands; track command.id) {
-  <div class="command">
-    <h3>{{ command.name }}</h3>
-    <p>{{ command.description }}</p>
+<div class="container mx-auto px-4 py-8 sm:w-dvw">
+  <div class="flex justify-between items-center mb-12">
+    <div class="text-left">
+      <h1 class="text-4xl font-bold text-purple-900 tracking-tight">
+        {{ user?.display_name }}'s Commands
+      </h1>
+      <div class="w-24 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full mt-2"></div>
+    </div>
+    @if(viewMode === 'table') {
+      <button class="bg-purple-600 text-white px-4 py-2 cursor-pointer rounded-full transition-colors duration-300 focus:outline-none" (click)="addingCommand = true">Add Command</button>
+    }
+    <div class="flex items-center space-x-2 bg-purple-100 rounded-full p-1">
+      <button (click)="setView('table')"
+        [class.bg-purple-600]="viewMode === 'table'"
+        [class.text-white]="viewMode === 'table'"
+        [class.text-purple-600]="viewMode !== 'table'"
+        class="p-2 rounded-full transition-colors duration-300 focus:outline-none">
+        <lucide-icon [name]="listIcon" class="w-5 h-5"></lucide-icon>
+      </button>
+      <button (click)="setView('card')"
+        [class.bg-purple-600]="viewMode === 'card'"
+        [class.text-white]="viewMode === 'card'"
+        [class.text-purple-600]="viewMode !== 'card'"
+        class="p-2 rounded-full transition-colors duration-300 focus:outline-none">
+        <lucide-icon [name]="gridIcon" class="w-5 h-5"></lucide-icon>
+      </button>
+    </div>
   </div>
-  <br>
-}
+
+  @if (viewMode === 'table') {
+  <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden border border-purple-100 dark:bg-gray-300 dark:text-white">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-purple-200">
+        <thead class="bg-purple-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">Name</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">Command</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">Function (message)</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">Description</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">Cooldown</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">User Level</th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-purple-800 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-purple-100">
+          @if (paginatedCommands.length === 0) {
+          <tr>
+            <td colspan="6" class="px-6 py-4 text-center text-sm text-purple-700">No commands found</td>
+          </tr>
+          }
+          @if (addingCommand) {
+            <tr class="bg-purple-50/50 hover:bg-purple-50/50 transition-colors duration-200 dark:bg-gray-200 dark:text-white" [formGroup]="newCommand">
+                <td class="px-7 py-4 whitespace-nowrap text-sm font-medium text-purple-900">
+                  <input type="text" class="w-full" placeholder="Name" formControlName="name">
+                </td>
+                <td class="px-7 py-4 whitespace-nowrap text-sm text-purple-700 font-mono">!<input type="text" class="w-full" placeholder="Command" formControlName="cmd"></td>
+                <td class="px-7 py-4 whitespace-nowrap text-sm text-purple-700 font-mono"><input type="text" class="w-full" placeholder="Function (message)" formControlName="message"></td>
+                <td class="px-7 py-4 whitespace-normal text-sm text-purple-600 max-w-xs truncate"><input type="text" class="w-full" placeholder="Description" formControlName="description"></td>
+                <td class="px-7 py-4 whitespace-nowrap text-sm text-purple-700"><input type="number" class="w-full" placeholder="Cooldown" value="10" min="5" max="60" formControlName="cooldown"></td>
+                <td class="px-7 py-4 whitespace-nowrap text-sm text-purple-700"><select name="userLevel" id="userLevel" class="w-full" formControlName="userLevel">
+                  <option value="1">1 - Everyone</option>
+                  <option value="2">2 - Tier 1</option>
+                  <option value="3">3 - Tier 2</option>
+                  <option value="4">4 - Tier 3</option>
+                  <option value="5">5 - Founders</option>
+                  <option value="6">6 - VIPs</option>
+                  <option value="7">7 - Moderators</option>
+                  <option value="8">8 - Editors</option>
+                  <option value="9">9 - Admins</option>
+                  <option value="10">10 - Streamers</option>
+                </select></td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                  <button class="text-green-600 hover:text-green-800 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed" (click)="saveCommand(newCommand)">Save</button>
+                  <button class="text-red-600 hover:text-red-800 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed" (click)="resetForm()">Cancel</button>
+                </td>
+            </tr>
+          }
+          @for (command of paginatedCommands; track command._id) {
+          <tr class="hover:bg-purple-50/50 transition-colors duration-200 dark:bg-gray-200 dark:text-white">
+            <td class="px-7 py-4 whitespace-nowrap text-sm font-medium text-purple-900">{{ command.name }}</td>
+            <td class="px-7 py-4 whitespace-nowrap text-sm text-purple-700 font-mono">!{{ command.cmd }}</td>
+            <td class="px-7 py-4 whitespace-nowrap text-sm text-purple-700 font-mono">{{ command.message || (command.reserved ? 'This is a reserved command' : 'Public') }}</td>
+            <td class="px-7 py-4 whitespace-normal text-sm text-purple-600 max-w-xs truncate">{{ command.description || 'N/A' }}</td>
+            <td class="px-7 py-4 whitespace-nowrap text-sm text-purple-700">{{ command.cooldown }}s</td>
+            <td class="px-7 py-4 whitespace-nowrap text-sm text-purple-700">{{ command.userLevel }} - {{ command.userLevelName }}</td>
+            <td class="px-7 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+              <button class="text-blue-600 hover:text-blue-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" [disabled]="true">Edit</button>
+              <button class="text-red-600 hover:text-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" [disabled]="command.reserved" (click)="deleteCommand(command.reserved ? null : command._id)">Delete</button>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="flex items-center justify-between pt-4 px-6 pb-6">
+        <div class="flex items-center space-x-2 text-sm text-purple-700">
+            <span>Show</span>
+            <select (change)="onItemsPerPageChange($event)" [(ngModel)]="itemsPerPage" name="itemsPerPage" class="px-2 py-1 border border-purple-200 rounded-md focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none transition">
+                @for(option of itemsPerPageOptions; track option) {
+                    <option [value]="option">{{ option }}</option>
+                }
+            </select>
+            <span>entries</span>
+        </div>
+      <nav class="flex items-center space-x-2" aria-label="Pagination">
+        <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1"
+          class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-purple-200 bg-white text-sm font-medium text-purple-500 hover:bg-gray-50 disabled:opacity-50">
+          Previous
+        </button>
+        @for(page of getPages(); track page) {
+          <button (click)="changePage(page)" [class.bg-purple-600]="currentPage === page" [class.bg-blue-600]="currentPage === page" [class.hover:bg-purple-200]="currentPage !== page"
+            class="relative inline-flex items-center px-4 py-2 border border-purple-200 bg-white text-sm font-medium text-purple-700">
+            {{ page }}
+          </button>
+        }
+        <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages"
+          class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-purple-200 bg-white text-sm font-medium text-purple-500 hover:bg-gray-50 disabled:opacity-50">
+          Next
+        </button>
+      </nav>
+    </div>
+  </div>
+  } @else {
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
+    @for (command of commands; track command._id) {
+    <div
+      class="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-purple-100 hover:border-purple-200 flex flex-col">
+      <div class="p-6 relative flex-grow">
+        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-600">
+        </div>
+
+        <h2 class="text-xl font-bold text-purple-900 mb-4 group-hover:text-purple-700 transition-colors duration-300">
+          {{ command.name }}
+        </h2>
+
+        <div class="space-y-4 text-purple-700">
+          <div>
+            <h3 class="font-semibold text-sm text-purple-800">Command</h3>
+            <p class="text-purple-600 bg-purple-100 rounded px-2 py-1 font-mono inline-block">!{{ command.cmd }}</p>
+          </div>
+          <div>
+            <h3 class="font-semibold text-sm text-purple-800">Function (message)</h3>
+            <p class="text-purple-600">{{ command.message || (command.reserved ? 'This is a reserved command' : 'Public') }}</p>
+          </div>
+          @if(command.description) {
+          <div>
+            <h3 class="font-semibold text-sm text-purple-800">Description</h3>
+            <p class="text-purple-600">{{ command.description }}</p>
+          </div>
+          }
+          <div>
+            <h3 class="font-semibold text-sm text-purple-800">Cooldown</h3>
+            <p class="text-purple-600">{{ command.cooldown }} seconds</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-purple-50/50 px-6 py-4 border-t border-purple-100 mt-auto">
+        <div class="flex items-center justify-end space-x-3">
+          <button
+            class="px-4 py-2 text-sm font-semibold text-white bg-blue-500 hover:bg-blue-600 rounded-full transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 disabled:opacity-50 disabled:cursor-not-allowed" [disabled]="true">Edit</button>
+          <button
+            class="px-4 py-2 text-sm font-semibold text-white bg-red-500 hover:bg-red-600 rounded-full transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 disabled:opacity-50 disabled:cursor-not-allowed" [disabled]="command.reserved" (click)="deleteCommand(command.reserved ? null : command._id)">Delete</button>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>
