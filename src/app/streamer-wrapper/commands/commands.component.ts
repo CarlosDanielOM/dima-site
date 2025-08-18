@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../../user.service';
 import { User } from '../../user';
 import { Router } from '@angular/router';
@@ -15,7 +15,7 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, F
   templateUrl: './commands.component.html',
   styleUrl: './commands.component.css'
 })
-export class CommandsComponent implements OnInit {
+export class CommandsComponent implements OnInit, OnDestroy {
   user: User | null = null;
   commands: any[] = [];
   paginatedCommands: any[] = [];
@@ -85,6 +85,10 @@ export class CommandsComponent implements OnInit {
       this.commands = commands;
       this.updatePagination();
     });
+  }
+
+  ngOnDestroy() {
+    this.cancelTooltip();
   }
 
   deleteCommand(commandId: string) {
@@ -180,5 +184,36 @@ export class CommandsComponent implements OnInit {
           this.toastService.error('Error', err.error.message);
         }
       });
+  }
+
+  // Tooltip logic for truncated cells
+  tooltip = {
+    visible: false,
+    text: '',
+    x: 0,
+    y: 0,
+  };
+
+  private tooltipTimer: ReturnType<typeof setTimeout> | null = null;
+
+  scheduleTooltip(text: string, event: MouseEvent) {
+    this.cancelTooltip();
+    const offset = 12;
+    const x = event.clientX + offset;
+    const y = event.clientY + offset;
+    this.tooltipTimer = setTimeout(() => {
+      this.tooltip.text = text;
+      this.tooltip.x = x;
+      this.tooltip.y = y;
+      this.tooltip.visible = true;
+    }, 1000);
+  }
+
+  cancelTooltip() {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+      this.tooltipTimer = null;
+    }
+    this.tooltip.visible = false;
   }
 }
