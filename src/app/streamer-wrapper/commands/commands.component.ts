@@ -147,6 +147,10 @@ export class CommandsComponent implements OnInit {
     this.addingCommand = false;
   }
 
+  testFunction(value: any) {
+    console.log(value);
+  }
+
   saveCommand(command: any) {
     if(command.invalid) {
       this.toastService.error('Invalid Form', 'Please fill in all fields.');

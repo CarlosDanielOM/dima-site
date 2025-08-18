@@ -28,6 +28,10 @@ export class AppComponent {
   }
 
   ngOnInit() {
+    if (location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.hostname === "dima.local") { 
+      posthog.opt_out_capturing(); 
+    }
+    
     this.navigationEnd.subscribe((event: NavigationEnd) => {
       posthog.capture('$pageview');
     })

@@ -4,6 +4,12 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* Force preserve critical spacing utilities in production */
+
+/* Background utilities */
+.bg-pink-500 {
+  background-color: #f6339a;
+}
+
 /* Space utilities */
 .space-x-0 > * + * { margin-left: 0px; }
 .space-x-1 > * + * { margin-left: 0.25rem; }

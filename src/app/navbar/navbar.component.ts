@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { UserService } from '../user.service';
@@ -34,7 +34,8 @@ export class NavbarComponent {
     private userService: UserService,
     private authService: AuthService,
     private linksService: LinksService,
-    private sidebarService: SidebarService
+    private sidebarService: SidebarService,
+    private elementRef: ElementRef
   ) {
     this.user = this.userService.getUser();
   }
@@ -66,5 +67,29 @@ export class NavbarComponent {
 
   toggleSidebar() {
     this.sidebarService.toggle();
+  }
+
+  closeDropdown() {
+    this.isDropdownOpen = false;
+  }
+
+  onMenuFocusOut(event: FocusEvent) {
+    const currentTarget = event.currentTarget as HTMLElement | null;
+    const related = event.relatedTarget as HTMLElement | null;
+    if (!currentTarget || !related || !currentTarget.contains(related)) {
+      this.closeDropdown();
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement | null;
+    if (!target) {
+      return;
+    }
+    const clickInside = this.elementRef.nativeElement.contains(target);
+    if (!clickInside) {
+      this.closeDropdown();
+    }
   }
 }
