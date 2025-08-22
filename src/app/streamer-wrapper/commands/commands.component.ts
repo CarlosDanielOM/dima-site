@@ -1,21 +1,23 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { UserService } from '../../user.service';
 import { User } from '../../user';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ToastService } from '../../toast.service';
 import { CommandsService } from '../../services/commands.service';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, List, LayoutGrid } from 'lucide-angular';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Command } from '../../interfaces/command';
+import { TooltipDirective } from '../../tooltip/tooltip.component';
 
 @Component({
   selector: 'app-commands',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, LucideAngularModule, FormsModule, ReactiveFormsModule, TooltipDirective],
   templateUrl: './commands.component.html',
   styleUrl: './commands.component.css'
 })
-export class CommandsComponent implements OnInit, OnDestroy {
+export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
   user: User | null = null;
   commands: any[] = [];
   paginatedCommands: any[] = [];
@@ -56,9 +58,21 @@ export class CommandsComponent implements OnInit, OnDestroy {
     10: 'streamer',
   }
 
+  // Editable cell tracking
+  editingCell: { commandId: string, field: string } | null = null;
+  editingValues: { [key: string]: any } = {};
+
+  // Row edit mode tracking
+  editingRow: string | null = null;
+  editingRowValues: { [key: string]: any } = {};
+
+  // Focus management
+  @ViewChild('editingInput', { static: false }) editingInput?: ElementRef;
+
   constructor(
     private userService: UserService,
     private router: Router,
+    private route: ActivatedRoute,
     private toastService: ToastService,
     private commandsService: CommandsService
   ) {
@@ -74,12 +88,8 @@ export class CommandsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const userCommandsSettings = localStorage.getItem('userCommandsSettings');
-    if (userCommandsSettings) {
-      this.userCommandsSettings = JSON.parse(userCommandsSettings);
-      this.viewMode = (this.userCommandsSettings.viewMode as 'table' | 'card') ?? 'table';
-      this.itemsPerPage = this.userCommandsSettings.itemsPerPage ?? 5;
-    }
+    // Initialize view mode with smart persistence
+    this.initializeViewMode();
 
     this.commandsService.getUserCommands(this.user.id.toString()).subscribe((commands: any) => {
       this.commands = commands;
@@ -88,7 +98,40 @@ export class CommandsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.cancelTooltip();
+  }
+
+  ngAfterViewInit() {
+    // Focus the input after it's rendered
+    if (this.editingCell && this.editingInput) {
+      setTimeout(() => {
+        this.editingInput?.nativeElement.focus();
+      }, 10);
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    if (this.editingCell) {
+      const target = event.target as HTMLElement;
+      const isEditingElement = target.closest('.editing-cell') !== null;
+      if (!isEditingElement) {
+        this.saveEdit();
+      }
+    }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent) {
+    if (this.editingCell && event.key === 'Enter') {
+      event.preventDefault();
+      this.saveEdit();
+    } else if (this.editingCell && event.key === 'Escape') {
+      event.preventDefault();
+      this.cancelEdit();
+    } else if (this.editingRow && event.key === 'Escape') {
+      event.preventDefault();
+      this.cancelRowEdit();
+    }
   }
 
   deleteCommand(commandId: string) {
@@ -109,7 +152,224 @@ export class CommandsComponent implements OnInit, OnDestroy {
   setView(mode: 'table' | 'card') {
     this.viewMode = mode;
     this.userCommandsSettings.viewMode = mode;
-    localStorage.setItem('userCommandsSettings', JSON.stringify(this.userCommandsSettings));
+
+    // Update all persistence layers
+    this.saveViewModeState(mode);
+
+    // Update URL without navigation
+    // Only include page parameter if in table mode and not on page 1
+    const pageParam = (mode === 'table' && this.currentPage > 1) ? this.currentPage : undefined;
+    this.updateURL(mode, pageParam);
+  }
+
+  private initializeViewMode() {
+    // Priority: URL > sessionStorage > localStorage > default
+    const urlMode = this.getViewModeFromURL();
+    const sessionMode = this.getViewModeFromSession();
+    const localMode = this.getViewModeFromLocal();
+
+    let finalMode: 'table' | 'card' = 'table';
+
+    if (urlMode) {
+      finalMode = urlMode;
+    } else if (sessionMode) {
+      finalMode = sessionMode;
+      // Update URL to match session state (include page only if table mode)
+      const pageParam = (sessionMode === 'table' && this.currentPage > 1) ? this.currentPage : undefined;
+      this.updateURL(sessionMode, pageParam);
+    } else if (localMode) {
+      finalMode = localMode;
+      // Update URL and session to match local state
+      const pageParam = (localMode === 'table' && this.currentPage > 1) ? this.currentPage : undefined;
+      this.updateURL(localMode, pageParam);
+      this.saveToSession('viewMode', localMode);
+    }
+
+    this.viewMode = finalMode;
+    this.userCommandsSettings.viewMode = finalMode;
+    this.userCommandsSettings.itemsPerPage = this.getItemsPerPageFromLocal() ?? 5;
+    this.itemsPerPage = this.userCommandsSettings.itemsPerPage;
+
+    // Initialize page state only if in table mode
+    if (finalMode === 'table') {
+      this.initializePageState(finalMode);
+    } else {
+      // In card mode, ensure no page parameter in URL
+      this.initializePageState(finalMode);
+    }
+
+    // Save current state to sessionStorage
+    this.saveToSession('viewMode', finalMode);
+  }
+
+  private getViewModeFromURL(): 'table' | 'card' | null {
+    const params = this.route.snapshot.queryParams;
+    const mode = params['view'];
+    return mode === 'table' || mode === 'card' ? mode : null;
+  }
+
+  private getViewModeFromSession(): 'table' | 'card' | null {
+    const sessionData = sessionStorage.getItem('commandsTabState');
+    if (sessionData) {
+      try {
+        const parsed = JSON.parse(sessionData);
+        const mode = parsed.viewMode;
+        return mode === 'table' || mode === 'card' ? mode : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  private getViewModeFromLocal(): 'table' | 'card' | null {
+    const localData = localStorage.getItem('userCommandsSettings');
+    if (localData) {
+      try {
+        const parsed = JSON.parse(localData);
+        const mode = parsed.viewMode;
+        return mode === 'table' || mode === 'card' ? mode : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  private getItemsPerPageFromLocal(): number | null {
+    const localData = localStorage.getItem('userCommandsSettings');
+    if (localData) {
+      try {
+        const parsed = JSON.parse(localData);
+        return typeof parsed.itemsPerPage === 'number' ? parsed.itemsPerPage : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  private saveViewModeState(mode: 'table' | 'card') {
+    // DISABLED: No longer saving to localStorage - will be handled by profile settings
+    // localStorage.setItem('userCommandsSettings', JSON.stringify(this.userCommandsSettings));
+
+    // Save to sessionStorage
+    this.saveToSession('viewMode', mode);
+  }
+
+  private saveToSession(key: string, value: any) {
+    const sessionData = sessionStorage.getItem('commandsTabState');
+    let data = {};
+    if (sessionData) {
+      try {
+        data = JSON.parse(sessionData);
+      } catch {
+        data = {};
+      }
+    }
+    data = { ...data, [key]: value };
+    sessionStorage.setItem('commandsTabState', JSON.stringify(data));
+  }
+
+  private updateURL(mode: 'table' | 'card', page?: number) {
+    // Get current query params
+    const currentParams = { ...this.route.snapshot.queryParams };
+
+    // Build new query params object
+    const newParams: any = {};
+
+    // Always set the view mode
+    newParams.view = mode;
+
+    // Only add page parameter if in table mode and page > 1
+    if (mode === 'table' && page && page > 1) {
+      newParams.page = page;
+    }
+    // For card mode or page 1, page parameter is omitted (removed)
+
+    // Update URL without triggering navigation
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: newParams,
+      replaceUrl: true // Replace current URL to avoid history stack pollution
+    });
+  }
+
+  private initializePageState(viewMode?: 'table' | 'card') {
+    const currentViewMode = viewMode || this.viewMode;
+
+    // Only initialize page state if in table mode
+    if (currentViewMode !== 'table') {
+      // In card mode, ensure no page parameter in URL
+      this.updateURL(currentViewMode);
+      return;
+    }
+
+    // Priority: URL > sessionStorage > default (1)
+    const urlPage = this.getPageFromURL();
+    const sessionPage = this.getPageFromSessionForMode(currentViewMode);
+
+    if (urlPage) {
+      this.currentPage = urlPage;
+    } else if (sessionPage) {
+      this.currentPage = sessionPage;
+      // Update URL to match session state (only if not page 1)
+      if (sessionPage > 1) {
+        this.updateURL(currentViewMode, sessionPage);
+      }
+    } else {
+      // No page state found, ensure URL is clean (no page param)
+      this.currentPage = 1;
+      this.updateURL(currentViewMode, 1);
+    }
+
+    // Save current page to sessionStorage
+    this.saveToSession('currentPage', this.currentPage);
+  }
+
+  private getPageFromURL(): number | null {
+    const params = this.route.snapshot.queryParams;
+    const page = params['page'];
+    const pageNum = parseInt(page, 10);
+    return !isNaN(pageNum) && pageNum > 0 ? pageNum : null;
+  }
+
+  private getPageFromSession(): number | null {
+    // Only return page from session if we're in table mode
+    if (this.viewMode !== 'table') {
+      return null;
+    }
+
+    const sessionData = sessionStorage.getItem('commandsTabState');
+    if (sessionData) {
+      try {
+        const parsed = JSON.parse(sessionData);
+        const page = parsed.currentPage;
+        return typeof page === 'number' && page > 0 ? page : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  private getPageFromSessionForMode(viewMode: 'table' | 'card'): number | null {
+    // Only return page from session if we're in table mode
+    if (viewMode !== 'table') {
+      return null;
+    }
+
+    const sessionData = sessionStorage.getItem('commandsTabState');
+    if (sessionData) {
+      try {
+        const parsed = JSON.parse(sessionData);
+        const page = parsed.currentPage;
+        return typeof page === 'number' && page > 0 ? page : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
   }
 
   updatePagination() {
@@ -126,6 +386,12 @@ export class CommandsComponent implements OnInit, OnDestroy {
     if (newPage > 0 && newPage <= this.totalPages) {
       this.currentPage = newPage;
       this.updatePagination();
+
+      // Persist page state only in table mode
+      if (this.viewMode === 'table') {
+        this.saveToSession('currentPage', newPage);
+        this.updateURL(this.viewMode, newPage);
+      }
     }
   }
 
@@ -134,8 +400,16 @@ export class CommandsComponent implements OnInit, OnDestroy {
     this.itemsPerPage = Number(selectElement.value);
     this.currentPage = 1;
     this.updatePagination();
+
+    // Update items per page (keep localStorage for user preferences)
     this.userCommandsSettings.itemsPerPage = this.itemsPerPage;
     localStorage.setItem('userCommandsSettings', JSON.stringify(this.userCommandsSettings));
+
+    // Update page state only in table mode (back to page 1)
+    if (this.viewMode === 'table') {
+      this.saveToSession('currentPage', 1);
+      this.updateURL(this.viewMode, 1); // This will remove page param since it's 1
+    }
   }
 
   getPages(): number[] {
@@ -151,8 +425,182 @@ export class CommandsComponent implements OnInit, OnDestroy {
     this.addingCommand = false;
   }
 
-  testFunction(value: any) {
-    console.log(value);
+  startRowEdit(commandId: string) {
+    // Cancel any existing edits
+    this.cancelEdit();
+    this.cancelRowEdit();
+
+    const command = this.commands.find(c => c._id === commandId);
+    if (!command) return;
+
+    this.editingRow = commandId;
+    this.editingRowValues = {
+      ['name']: command.name,
+      ['cmd']: command.cmd,
+      ['message']: command.message || '',
+      ['description']: command.description || '',
+      ['cooldown']: command.cooldown,
+      ['userLevel']: command.userLevel
+    };
+
+    // Focus first input after render
+    setTimeout(() => {
+      if (this.editingInput) {
+        this.editingInput.nativeElement.focus();
+      }
+    }, 10);
+  }
+
+  saveRowEdit() {
+    if (!this.editingRow) return;
+
+    const commandId = this.editingRow;
+    const newValues = this.editingRowValues;
+
+    // Find the command first to check if it's reserved
+    const command = this.commands.find(c => c._id === commandId);
+    if (!command) return;
+
+    // Validate required fields (skip message validation for reserved commands)
+    const isReserved = command.reserved;
+    const messageValid = isReserved || (newValues['message'] && newValues['message'].trim() !== '');
+
+    if (!newValues['name'] || !newValues['cmd'] || !messageValid || newValues['cooldown'] === undefined || newValues['userLevel'] === undefined) {
+      this.toastService.error('Invalid Form', 'Please fill in all required fields.');
+      return;
+    }
+
+    // Update the command, preserving message for reserved commands
+    command.name = newValues['name'];
+    command.cmd = newValues['cmd'];
+    command.message = isReserved ? command.message : (newValues['message'] || '');
+    command.description = newValues['description'] || null;
+    command.cooldown = newValues['cooldown'];
+    command.userLevel = newValues['userLevel'];
+    command.userLevelName = this.userLevels[newValues['userLevel'] as keyof typeof this.userLevels];
+
+    this.commandsService.updateCommand(commandId, command).subscribe();
+
+    this.cancelRowEdit();
+  }
+
+  cancelRowEdit() {
+    this.editingRow = null;
+    this.editingRowValues = {};
+  }
+
+  makeEditable(commandId: string, field: string, currentValue: any) {
+    // Find the command to check if it's reserved
+    const command = this.commands.find(c => c._id === commandId);
+
+    // Prevent editing message field for reserved commands
+    if (command?.reserved && field === 'message') {
+      this.toastService.error('Cannot Edit', 'The function field cannot be edited for reserved commands.');
+      return;
+    }
+
+    this.editingCell = { commandId, field };
+    this.editingValues[commandId + '_' + field] = currentValue;
+
+    // Focus the input after it's rendered
+    setTimeout(() => {
+      if (this.editingInput) {
+        this.editingInput.nativeElement.focus();
+        // Position cursor at the end of the text
+        this.editingInput.nativeElement.setSelectionRange(
+          this.editingInput.nativeElement.value.length,
+          this.editingInput.nativeElement.value.length
+        );
+      }
+    }, 10);
+  }
+
+  canEditField(commandId: string, field: string): boolean {
+    const command = this.commands.find(c => c._id === commandId);
+    // Reserved commands cannot edit the message field
+    if (command?.reserved && field === 'message') {
+      return false;
+    }
+    return true;
+  }
+
+  saveEdit() {
+    if (!this.editingCell) return;
+
+    const { commandId, field } = this.editingCell;
+    const newValue = this.editingValues[commandId + '_' + field];
+
+    const command = this.commands.find(c => c._id === commandId);
+    if (!command || newValue === undefined) {
+      this.cancelEdit();
+      return;
+    }
+
+    if (field === 'userLevel') {
+      const numericValue = parseInt(newValue);
+      command[field] = numericValue;
+      command.userLevelName = this.userLevels[numericValue as keyof typeof this.userLevels];
+
+      this.commandsService.updateCommandField(commandId, field, numericValue).subscribe({
+        next: () => {
+          this.commandsService.updateCommandField(commandId, 'userLevelName',
+            this.userLevels[numericValue as keyof typeof this.userLevels]).subscribe({
+            next: () => {
+            },
+            error: (err) => {
+              this.toastService.error('Error', err.error?.message || 'Failed to update userLevelName');
+              this.refreshCommands();
+            }
+          });
+        },
+        error: (err) => {
+          this.toastService.error('Error', err.error?.message || 'Failed to update userLevel');
+          this.refreshCommands();
+        }
+      });
+    } else {
+      command[field] = newValue;
+      this.commandsService.updateCommandField(commandId, field, newValue).subscribe({
+        next: () => {
+        },
+        error: (err) => {
+          this.toastService.error('Error', err.error?.message || 'Failed to update command');
+          this.refreshCommands();
+        }
+      });
+    }
+
+    this.cancelEdit();
+  }
+
+  cancelEdit() {
+    this.editingCell = null;
+    this.editingValues = {};
+  }
+
+  private refreshCommands() {
+    if (this.user?.id) {
+      this.commandsService.getUserCommands(this.user.id.toString()).subscribe((commands: any) => {
+        this.commands = commands;
+        this.updatePagination();
+      });
+    }
+  }
+
+  isEditing(commandId: string, field: string): boolean {
+    return this.editingCell?.commandId === commandId && this.editingCell?.field === field;
+  }
+
+  isRowEditing(commandId: string): boolean {
+    return this.editingRow === commandId;
+  }
+
+  getEditingValue(commandId: string, field: string): any {
+    return this.editingValues[commandId + '_' + field];
+  }
+
+  getRowEditingValue(field: string): any {
+    return this.editingRowValues[field];
   }
 
   saveCommand(command: any) {
@@ -186,34 +634,4 @@ export class CommandsComponent implements OnInit, OnDestroy {
       });
   }
 
-  // Tooltip logic for truncated cells
-  tooltip = {
-    visible: false,
-    text: '',
-    x: 0,
-    y: 0,
-  };
-
-  private tooltipTimer: ReturnType<typeof setTimeout> | null = null;
-
-  scheduleTooltip(text: string, event: MouseEvent) {
-    this.cancelTooltip();
-    const offset = 12;
-    const x = event.clientX + offset;
-    const y = event.clientY + offset;
-    this.tooltipTimer = setTimeout(() => {
-      this.tooltip.text = text;
-      this.tooltip.x = x;
-      this.tooltip.y = y;
-      this.tooltip.visible = true;
-    }, 1000);
-  }
-
-  cancelTooltip() {
-    if (this.tooltipTimer) {
-      clearTimeout(this.tooltipTimer);
-      this.tooltipTimer = null;
-    }
-    this.tooltip.visible = false;
-  }
 }

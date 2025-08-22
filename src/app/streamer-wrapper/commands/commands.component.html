@@ -86,24 +86,187 @@
           }
           @for (command of paginatedCommands; track command._id) {
           <tr class="hover:bg-purple-50/50 transition-colors duration-200 dark:bg-gray-200 dark:text-white">
-            <td class="px-3 py-3 sm:px-7 sm:py-4 whitespace-nowrap text-sm font-medium text-purple-900 hover:border-2 hover:border-purple-200" (click)="testFunction(command)" (dblclick)="testFunction(command.name)"><div class="truncate">{{ command.name }}</div></td>
-            <td class="px-3 py-3 sm:px-7 sm:py-4 whitespace-nowrap text-sm text-purple-700 font-mono hover:border-2 hover:border-purple-200"><div class="truncate">!{{ command.cmd }}</div></td>
-            <td class="px-3 py-3 sm:px-7 sm:py-4 text-sm text-purple-700 font-mono hover:border-2 hover:border-purple-200">
-              <div class="truncate" (mouseenter)="scheduleTooltip(command.message || (command.reserved ? 'This is a reserved command' : 'Public'), $event)" (mouseleave)="cancelTooltip()">
-                {{ command.message || (command.reserved ? 'This is a reserved command' : 'Public') }}
-              </div>
-            </td>
-            <td class="px-3 py-3 sm:px-7 sm:py-4 text-sm text-purple-600 hover:border-2 hover:border-purple-200">
-              <div class="truncate" (mouseenter)="scheduleTooltip(command.description || 'N/A', $event)" (mouseleave)="cancelTooltip()">
-                {{ command.description || 'N/A' }}
-              </div>
-            </td>
-            <td class="px-3 py-3 sm:px-7 sm:py-4 whitespace-nowrap text-sm text-purple-700 hover:border-2 hover:border-purple-200">{{ command.cooldown }}s</td>
-            <td class="px-3 py-3 sm:px-7 sm:py-4 whitespace-nowrap text-sm text-purple-700 hover:border-2 hover:border-purple-200">{{ command.userLevel }} - {{ command.userLevelName }}</td>
-            <td class="px-3 py-3 sm:px-7 sm:py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-              <button class="text-blue-600 hover:text-blue-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" [disabled]="true">Edit</button>
-              <button class="text-red-600 hover:text-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" [disabled]="command.reserved" (click)="deleteCommand(command.reserved ? null : command._id)">Delete</button>
-            </td>
+            @if (isRowEditing(command._id)) {
+              <!-- Row Edit Mode -->
+              <td class="px-3 py-3 sm:px-7 sm:py-4 whitespace-nowrap text-sm font-medium text-purple-900">
+                <input type="text"
+                       class="editing-cell w-full border border-purple-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
+                       [value]="getRowEditingValue('name')"
+                       (input)="editingRowValues['name'] = $any($event.target).value"
+                       #editingInput>
+              </td>
+              <td class="px-3 py-3 sm:px-7 sm:py-4 whitespace-nowrap text-sm text-purple-700 font-mono">
+                <div class="flex items-center">
+                  <span class="text-purple-700 font-mono">!</span>
+                  <input type="text"
+                         class="editing-cell flex-1 border border-purple-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
+                         [value]="getRowEditingValue('cmd')"
+                         (input)="editingRowValues['cmd'] = $any($event.target).value">
+                </div>
+              </td>
+              <td class="px-3 py-3 sm:px-7 sm:py-4 text-sm text-purple-700 font-mono"
+                  [class.cursor-not-allowed]="!canEditField(command._id, 'message')"
+                  [class.opacity-50]="!canEditField(command._id, 'message')">
+                <input type="text"
+                       class="editing-cell w-full border border-purple-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
+                       [value]="getRowEditingValue('message')"
+                       (input)="editingRowValues['message'] = $any($event.target).value"
+                       [disabled]="!canEditField(command._id, 'message')">
+              </td>
+              <td class="px-3 py-3 sm:px-7 sm:py-4 text-sm text-purple-600">
+                <input type="text"
+                       class="editing-cell w-full border border-purple-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
+                       [value]="getRowEditingValue('description')"
+                       (input)="editingRowValues['description'] = $any($event.target).value">
+              </td>
+              <td class="px-3 py-3 sm:px-7 sm:py-4 whitespace-nowrap text-sm text-purple-700">
+                <div class="flex items-center">
+                  <input type="number"
+                         min="5"
+                         max="60"
+                         class="editing-cell w-full border border-purple-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
+                         [value]="getRowEditingValue('cooldown')"
+                         (input)="editingRowValues['cooldown'] = +$any($event.target).value || 10">
+                  <span class="ml-1 text-purple-700">s</span>
+                </div>
+              </td>
+              <td class="px-3 py-3 sm:px-7 sm:py-4 whitespace-nowrap text-sm text-purple-700">
+                <select class="editing-cell w-full border border-purple-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
+                        [value]="getRowEditingValue('userLevel')"
+                        (change)="editingRowValues['userLevel'] = +$any($event.target).value">
+                  <option value="1">1 - Everyone</option>
+                  <option value="2">2 - Tier 1</option>
+                  <option value="3">3 - Tier 2</option>
+                  <option value="4">4 - Tier 3</option>
+                  <option value="5">5 - Founders</option>
+                  <option value="6">6 - VIPs</option>
+                  <option value="7">7 - Moderators</option>
+                  <option value="8">8 - Editors</option>
+                  <option value="9">9 - Admins</option>
+                  <option value="10">10 - Streamers</option>
+                </select>
+              </td>
+              <td class="px-3 py-3 sm:px-7 sm:py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                <button class="text-green-600 hover:text-green-800 transition-colors" (click)="saveRowEdit()">Save</button>
+                <button class="text-red-600 hover:text-red-800 transition-colors" (click)="cancelRowEdit()">Cancel</button>
+              </td>
+            } @else {
+              <!-- Display Mode -->
+              <td class="px-3 py-3 sm:px-7 sm:py-4 whitespace-nowrap text-sm font-medium text-purple-900 hover:border-2 hover:border-purple-200" (dblclick)="makeEditable(command._id, 'name', command.name)">
+                @if (isEditing(command._id, 'name')) {
+                  <input type="text"
+                         class="editing-cell w-full border border-purple-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
+                         [value]="getEditingValue(command._id, 'name')"
+                         (input)="editingValues[command._id + '_name'] = $any($event.target).value"
+                         (keydown.enter)="$event.stopPropagation(); saveEdit()"
+                         (keydown.escape)="$event.stopPropagation(); cancelEdit()"
+                         (click)="$event.stopPropagation()"
+                         #editingInput>
+                } @else {
+                  <div class="truncate">{{ command.name }}</div>
+                }
+              </td>
+              <td class="px-3 py-3 sm:px-7 sm:py-4 whitespace-nowrap text-sm text-purple-700 font-mono hover:border-2 hover:border-purple-200" (dblclick)="makeEditable(command._id, 'cmd', command.cmd)">
+                @if (isEditing(command._id, 'cmd')) {
+                  <div class="flex items-center">
+                    <span class="text-purple-700 font-mono">!</span>
+                    <input type="text"
+                           class="editing-cell flex-1 border border-purple-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
+                           [value]="getEditingValue(command._id, 'cmd')"
+                           (input)="editingValues[command._id + '_cmd'] = $any($event.target).value"
+                           (keydown.enter)="$event.stopPropagation(); saveEdit()"
+                           (keydown.escape)="$event.stopPropagation(); cancelEdit()"
+                           (click)="$event.stopPropagation()"
+                           #editingInput>
+                  </div>
+                } @else {
+                  <div class="truncate">!{{ command.cmd }}</div>
+                }
+              </td>
+              <td class="px-3 py-3 sm:px-7 sm:py-4 text-sm text-purple-700 font-mono hover:border-2 hover:border-purple-200"
+                  [class.cursor-not-allowed]="!canEditField(command._id, 'message')"
+                  [class.opacity-50]="!canEditField(command._id, 'message')"
+                  (dblclick)="canEditField(command._id, 'message') ? makeEditable(command._id, 'message', command.message || '') : null">
+                @if (isEditing(command._id, 'message')) {
+                  <input type="text"
+                         class="editing-cell w-full border border-purple-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
+                         [value]="getEditingValue(command._id, 'message')"
+                         (input)="editingValues[command._id + '_message'] = $any($event.target).value"
+                         (keydown.enter)="$event.stopPropagation(); saveEdit()"
+                         (keydown.escape)="$event.stopPropagation(); cancelEdit()"
+                         (click)="$event.stopPropagation()"
+                         #editingInput>
+                } @else {
+                  <div class="truncate"
+                       [appTooltip]="command.message || (command.reserved ? 'This is a reserved command' : 'Public')">
+                    {{ command.message || (command.reserved ? 'This is a reserved command' : 'Public') }}
+                  </div>
+                }
+              </td>
+              <td class="px-3 py-3 sm:px-7 sm:py-4 text-sm text-purple-600 hover:border-2 hover:border-purple-200" (dblclick)="makeEditable(command._id, 'description', command.description || '')">
+                @if (isEditing(command._id, 'description')) {
+                  <input type="text"
+                         class="editing-cell w-full border border-purple-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
+                         [value]="getEditingValue(command._id, 'description')"
+                         (input)="editingValues[command._id + '_description'] = $any($event.target).value"
+                         (keydown.enter)="$event.stopPropagation(); saveEdit()"
+                         (keydown.escape)="$event.stopPropagation(); cancelEdit()"
+                         (click)="$event.stopPropagation()"
+                         #editingInput>
+                } @else {
+                  <div class="truncate"
+                       [appTooltip]="command.description || 'N/A'">
+                    {{ command.description || 'N/A' }}
+                  </div>
+                }
+              </td>
+              <td class="px-3 py-3 sm:px-7 sm:py-4 whitespace-nowrap text-sm text-purple-700 hover:border-2 hover:border-purple-200" (dblclick)="makeEditable(command._id, 'cooldown', command.cooldown)">
+                @if (isEditing(command._id, 'cooldown')) {
+                  <div class="flex items-center">
+                    <input type="number"
+                           min="5"
+                           max="60"
+                           class="editing-cell w-full border border-purple-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
+                           [value]="getEditingValue(command._id, 'cooldown')"
+                           (input)="editingValues[command._id + '_cooldown'] = +$any($event.target).value || 10"
+                           (keydown.enter)="$event.stopPropagation(); saveEdit()"
+                           (keydown.escape)="$event.stopPropagation(); cancelEdit()"
+                           (click)="$event.stopPropagation()"
+                           #editingInput>
+                    <span class="ml-1 text-purple-700">s</span>
+                  </div>
+                } @else {
+                  {{ command.cooldown }}s
+                }
+              </td>
+              <td class="px-3 py-3 sm:px-7 sm:py-4 whitespace-nowrap text-sm text-purple-700 hover:border-2 hover:border-purple-200" (dblclick)="makeEditable(command._id, 'userLevel', command.userLevel)">
+                @if (isEditing(command._id, 'userLevel')) {
+                  <select class="editing-cell w-full border border-purple-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
+                          [value]="getEditingValue(command._id, 'userLevel')"
+                          (change)="editingValues[command._id + '_userLevel'] = $any($event.target).value; saveEdit()"
+                          (keydown.escape)="$event.stopPropagation(); cancelEdit()"
+                          (click)="$event.stopPropagation()"
+                          #editingInput>
+                    <option value="1">1 - Everyone</option>
+                    <option value="2">2 - Tier 1</option>
+                    <option value="3">3 - Tier 2</option>
+                    <option value="4">4 - Tier 3</option>
+                    <option value="5">5 - Founders</option>
+                    <option value="6">6 - VIPs</option>
+                    <option value="7">7 - Moderators</option>
+                    <option value="8">8 - Editors</option>
+                    <option value="9">9 - Admins</option>
+                    <option value="10">10 - Streamers</option>
+                  </select>
+                } @else {
+                  {{ command.userLevel }} - {{ command.userLevelName }}
+                }
+              </td>
+              <td class="px-3 py-3 sm:px-7 sm:py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                <button class="text-blue-600 hover:text-blue-800 transition-colors" (click)="startRowEdit(command._id)">Edit</button>
+                <button class="text-red-600 hover:text-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" [disabled]="command.reserved" (click)="deleteCommand(command.reserved ? null : command._id)">Delete</button>
+              </td>
+            }
           </tr>
           }
         </tbody>
@@ -190,13 +353,3 @@
   }
 </div>
 
-@if (tooltip.visible) {
-  <div class="fixed z-50 pointer-events-none"
-       [ngStyle]="{ left: tooltip.x + 'px', top: tooltip.y + 'px' }">
-    <div class="max-w-[80vw] break-words rounded-md shadow-lg border px-3 py-2 text-sm
-                bg-white text-gray-900 border-gray-200
-                dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700">
-      {{ tooltip.text }}
-    </div>
-  </div>
-}

@@ -44,6 +44,34 @@ export class CommandsService {
     )
   }
 
+  updateCommandField(commandID: string, field: string, value: any) {
+    return this.http.put(`${environment.DIMA_API}/commands/${this.userService.getUserId()}/${commandID}`, { [field]: value }, { headers: this.headers as any })
+    .pipe(
+      map((res: any) => {
+        this.toastService.success('Saved', `${field} updated successfully`);
+        return res.command;
+      }),
+      catchError((err: any) => {
+        this.toastService.error('Error', err.error.message);
+        return throwError(() => err);
+      })
+    );
+  }
+
+  updateCommand(commandID: string, command: Command) {
+    return this.http.put(`${environment.DIMA_API}/commands/${this.userService.getUserId()}/${commandID}`, command, { headers: this.headers as any })
+    .pipe(
+      map((res: any) => {
+        this.toastService.success('Saved', 'Command updated successfully');
+        return res.command;
+      }),
+      catchError((err: any) => {
+        this.toastService.error('Error', err.error.message);
+        return throwError(() => err);
+      })
+    );
+  }
+
   deleteCommand(commandId: string) {
     return this.http.delete(`${environment.DIMA_API}/commands/${this.userService.getUserId()}/${commandId}`, { headers: this.headers as any })
     .pipe(
