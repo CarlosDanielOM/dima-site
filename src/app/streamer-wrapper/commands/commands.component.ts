@@ -66,8 +66,20 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
   editingRow: string | null = null;
   editingRowValues: { [key: string]: any } = {};
 
+  // Card edit mode tracking
+  editingCard: string | null = null;
+  editingCardValues: { [key: string]: any } = {};
+
   // Focus management
   @ViewChild('editingInput', { static: false }) editingInput?: ElementRef;
+
+  // Rate limiting
+  private requestTimestamps: number[] = [];
+  private readonly RATE_LIMIT_REQUESTS = 15;
+  private readonly RATE_LIMIT_WINDOW = 60 * 1000; // 60 seconds in milliseconds
+  private readonly RATE_LIMIT_BLOCK_DURATION = 60 * 1000; // 60 seconds
+  private isRateLimited = false;
+  private rateLimitEndTime = 0;
 
   constructor(
     private userService: UserService,
@@ -140,7 +152,13 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
+    // Check rate limit before proceeding
+    if (!this.checkRateLimit()) {
+      return;
+    }
+
     if (confirm('Are you sure you want to delete this command?')) {
+      this.recordRequest();
       this.commandsService.deleteCommand(commandId).subscribe((res: any) => {
         this.toastService.success('Command Deleted', 'The command has been deleted.');
         this.commands = this.commands.filter((command) => command._id !== commandId);
@@ -489,7 +507,153 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.editingRowValues = {};
   }
 
+  startCardEdit(commandId: string) {
+    // Check rate limit before allowing edit
+    if (!this.checkRateLimit()) {
+      return;
+    }
+
+    // Cancel any existing edits
+    this.cancelEdit();
+    this.cancelRowEdit();
+    this.cancelCardEdit();
+
+    const command = this.commands.find(c => c._id === commandId);
+    if (!command) return;
+
+    this.editingCard = commandId;
+    this.editingCardValues = {
+      ['name']: command.name,
+      ['cmd']: command.cmd,
+      ['message']: command.message || '',
+      ['description']: command.description || '',
+      ['cooldown']: command.cooldown,
+      ['userLevel']: command.userLevel
+    };
+
+    // Focus first input after render
+    setTimeout(() => {
+      if (this.editingInput) {
+        this.editingInput.nativeElement.focus();
+      }
+    }, 10);
+  }
+
+  saveCardEdit() {
+    if (!this.editingCard) return;
+
+    const commandId = this.editingCard;
+    const newValues = this.editingCardValues;
+
+    // Find the command first to check if it's reserved
+    const command = this.commands.find(c => c._id === commandId);
+    if (!command) return;
+
+    // Check rate limit before proceeding
+    if (!this.checkRateLimit()) {
+      this.cancelCardEdit();
+      return;
+    }
+
+    // Validate required fields (skip message validation for reserved commands)
+    const isReserved = command.reserved;
+    const messageValid = isReserved || (newValues['message'] && newValues['message'].trim() !== '');
+
+    if (!newValues['name'] || !newValues['cmd'] || !messageValid || newValues['cooldown'] === undefined || newValues['userLevel'] === undefined) {
+      this.toastService.error('Invalid Form', 'Please fill in all required fields.');
+      return;
+    }
+
+    // Check if any values have actually changed
+    const hasNameChanged = command.name !== newValues['name'];
+    const hasCmdChanged = command.cmd !== newValues['cmd'];
+    const hasMessageChanged = !isReserved && command.message !== (newValues['message'] || '');
+    const hasDescriptionChanged = (command.description || '') !== (newValues['description'] || '');
+    const hasCooldownChanged = command.cooldown !== newValues['cooldown'];
+    const hasUserLevelChanged = command.userLevel !== newValues['userLevel'];
+
+    const hasAnyChange = hasNameChanged || hasCmdChanged || hasMessageChanged ||
+                        hasDescriptionChanged || hasCooldownChanged || hasUserLevelChanged;
+
+    // If no changes, just cancel edit without API call
+    if (!hasAnyChange) {
+      this.cancelCardEdit();
+      return;
+    }
+
+    // Update the command, preserving message for reserved commands
+    command.name = newValues['name'];
+    command.cmd = newValues['cmd'];
+    command.message = isReserved ? command.message : (newValues['message'] || '');
+    command.description = newValues['description'] || null;
+    command.cooldown = newValues['cooldown'];
+    command.userLevel = newValues['userLevel'];
+    command.userLevelName = this.userLevels[newValues['userLevel'] as keyof typeof this.userLevels];
+
+    this.recordRequest();
+    this.commandsService.updateCommand(commandId, command).subscribe();
+
+    this.cancelCardEdit();
+  }
+
+  cancelCardEdit() {
+    this.editingCard = null;
+    this.editingCardValues = {};
+  }
+
+  isCardEditing(commandId: string): boolean {
+    return this.editingCard === commandId;
+  }
+
+  getCardEditingValue(field: string): any {
+    return this.editingCardValues[field];
+  }
+
+  // Rate limiting methods
+  public checkRateLimit(): boolean {
+    const now = Date.now();
+
+    // If currently rate limited, check if block period is over
+    if (this.isRateLimited) {
+      if (now >= this.rateLimitEndTime) {
+        // Block period is over, reset rate limiting
+        this.isRateLimited = false;
+        this.requestTimestamps = [];
+        this.rateLimitEndTime = 0;
+      } else {
+        // Still rate limited
+        const remainingSeconds = Math.ceil((this.rateLimitEndTime - now) / 1000);
+        this.toastService.error('Rate Limited', `You have been rate limited for ${remainingSeconds} seconds. Please wait before making more requests.`);
+        return false;
+      }
+    }
+
+    // Clean old timestamps outside the window
+    this.requestTimestamps = this.requestTimestamps.filter(
+      timestamp => now - timestamp < this.RATE_LIMIT_WINDOW
+    );
+
+    // Check if we've exceeded the limit
+    if (this.requestTimestamps.length >= this.RATE_LIMIT_REQUESTS) {
+      this.isRateLimited = true;
+      this.rateLimitEndTime = now + this.RATE_LIMIT_BLOCK_DURATION;
+      this.toastService.error('Rate Limited', 'You have exceeded the rate limit of 15 requests per minute. You are blocked for 60 seconds.');
+      return false;
+    }
+
+    return true;
+  }
+
+  private recordRequest() {
+    this.requestTimestamps.push(Date.now());
+  }
+
   makeEditable(commandId: string, field: string, currentValue: any) {
+    // Check rate limit before allowing edit
+    if (!this.checkRateLimit()) {
+      return;
+    }
+
     // Find the command to check if it's reserved
     const command = this.commands.find(c => c._id === commandId);
 
@@ -536,11 +700,33 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
+    // Check rate limit before proceeding
+    if (!this.checkRateLimit()) {
+      this.cancelEdit();
+      return;
+    }
+
+    // Check if the value has actually changed
+    let hasChanged = false;
+    if (field === 'userLevel') {
+      const numericValue = parseInt(newValue);
+      hasChanged = command[field] !== numericValue;
+    } else {
+      hasChanged = command[field] !== newValue;
+    }
+
+    // If no change, just cancel edit without API call
+    if (!hasChanged) {
+      this.cancelEdit();
+      return;
+    }
+
     if (field === 'userLevel') {
       const numericValue = parseInt(newValue);
       command[field] = numericValue;
       command.userLevelName = this.userLevels[numericValue as keyof typeof this.userLevels];
 
+      this.recordRequest();
       this.commandsService.updateCommandField(commandId, field, numericValue).subscribe({
         next: () => {
           this.commandsService.updateCommandField(commandId, 'userLevelName',
@@ -560,6 +746,7 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
       });
     } else {
       command[field] = newValue;
+      this.recordRequest();
       this.commandsService.updateCommandField(commandId, field, newValue).subscribe({
         next: () => {
         },
@@ -609,6 +796,12 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
+    // Check rate limit before proceeding
+    if (!this.checkRateLimit()) {
+      this.cancelCardEdit();
+      return;
+    }
+
     const newCommand = {
       name: command.value.name,
       cmd: command.value.cmd,
@@ -621,6 +814,7 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
       channel: this.userService.getLogin()
     }
 
+    this.recordRequest();
     this.commandsService.createCommand(newCommand as any).subscribe({
         next: (res: any) => {
           this.commands.push(res);
