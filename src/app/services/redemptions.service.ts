@@ -14,7 +14,7 @@ import { ToastService } from '../toast.service';
 export class RedemptionsService {
 
   private headers: HttpHeaders | null = null;
-  private readonly REDEMPTIONS_TTL_MS = 60_000; // 1 minute
+  private readonly REDEMPTIONS_TTL_MS = 300_000; // 5 minutes
   
   constructor(
     private http: HttpClient,

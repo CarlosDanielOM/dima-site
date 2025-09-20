@@ -3,6 +3,7 @@ export interface Redemptions {
     channelID: string,
     channel: string,
     rewardID?: string,
+    id?: string,
     title: string,
     type: string,
     prompt: string,
