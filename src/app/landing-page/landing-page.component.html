@@ -1,27 +1,30 @@
-<div class="flex flex-col min-h-[100dvh] bg-purple-100">
+<div class="flex flex-col min-h-[100dvh] bg-gradient-to-b from-purple-50 via-purple-100 to-purple-200 relative overflow-hidden">
+    <div class="parallax-layer" data-depth="0.03"><div class="aurora-blob blob-1"></div></div>
+    <div class="parallax-layer" data-depth="0.06"><div class="aurora-blob blob-2"></div></div>
+    <div class="parallax-layer" data-depth="0.09"><div class="aurora-blob blob-3"></div></div>
     <header class="px-4 lg:px-6 h-14 flex items-center">
       <a class="flex items-center justify-center" href="#">
         <lucide-icon name="twitch" class="h-6 w-6 text-purple-600"></lucide-icon>
         <span class="ml-2 text-2xl font-bold text-purple-900">DomDimaBot</span>
       </a>
       <nav class="ml-auto flex gap-4 sm:gap-6">
-        <a class="text-sm font-medium hover:underline underline-offset-4 text-purple-900" href="#features">
+        <a class="nav-pill text-sm font-medium text-purple-900" href="#features">
           Features
         </a>
-        <a class="text-sm font-medium hover:underline underline-offset-4 text-purple-900" href="#pricing">
+        <a class="nav-pill text-sm font-medium text-purple-900" href="#pricing">
           Pricing
         </a>
-        <a class="text-sm font-medium hover:underline underline-offset-4 text-purple-900" href="#contact">
+        <a class="nav-pill text-sm font-medium text-purple-900" href="#contact">
           Contact
         </a>
       </nav>
     </header>
     <main class="flex-1">
-      <section class="w-full py-12 md:py-24 lg:py-32 xl:py-48">
+      <section class="w-full py-12 md:py-24 lg:py-32 xl:py-48 reveal-init">
         <div class="container mx-auto px-4 md:px-6">
           <div class="flex flex-col items-center space-y-4 text-center">
             <div class="space-y-2">
-              <h1 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none text-purple-900">
+              <h1 class="gradient-text text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
                 Meet DomDimaBot: Your Ultimate Twitch Chat Companion
               </h1>
               <p class="mx-auto max-w-[700px] text-purple-800 md:text-xl">
@@ -29,16 +32,16 @@
               </p>
             </div>
             <div class="space-x-4">
-              <a class="p-4 rounded-xl bg-purple-600 text-white hover:bg-purple-700 hover:cursor-pointer" (click)="loginWithTwitch()">
+              <a class="btn-gradient hover:cursor-pointer inline-flex items-center" (click)="loginWithTwitch()">
                 <p class="inline">
                   <lucide-icon [name]="twitchIcon" class="text-white inline h-8 w-8"></lucide-icon>
                   Login with Twitch
                 </p>
               </a>
-              <button class="p-4 rounded-xl border-2 border-purple-600 text-purple-600 hover:bg-purple-100 hover:cursor-pointer">
+              <button class="btn-outline-gradient hover:cursor-pointer">
                 Learn More
               </button>
-              <button class="p-4 rounded-xl border-2 border-purple-600 text-purple-600 hover:bg-purple-100 hover:cursor-pointer" (click)="openDiscord()">
+              <button class="btn-outline-gradient hover:cursor-pointer" (click)="openDiscord()">
                 <p class="inline">
                   Join Discord
                 </p>
@@ -47,52 +50,52 @@
           </div>
         </div>
       </section>
-      <section class="w-full py-12 bg-purple-200">
+      <section class="w-full py-12 bg-purple-200/60 backdrop-blur reveal-init">
         <div class="container mx-auto px-4 md:px-6">
           <div class="grid gap-8 sm:grid-cols-3">
-            <div class="flex flex-col items-center space-y-2 border-purple-300 p-4 rounded-lg bg-white shadow-sm">
-              <lucide-icon [name]="activityIcon" class="h-8 w-8 text-purple-600"></lucide-icon>
+            <div class="glass-card card-hover flex flex-col items-center space-y-2 border-purple-300 p-4 rounded-lg">
+              <lucide-icon [name]="activityIcon" class="h-8 w-8 text-purple-600 glow-icon"></lucide-icon>
               <h3 class="text-xl font-bold text-purple-900">Active Channels</h3>
-              <p class="text-3xl font-bold text-purple-600">25</p>
+              <p class="text-3xl font-bold text-purple-600" [countUp]="siteStats.activeChannels"></p>
             </div>
-            <div class="flex flex-col items-center space-y-2 border-purple-300 p-4 rounded-lg bg-white shadow-sm">
-              <lucide-icon [name]="tvIcon" class="h-8 w-8 text-purple-600"></lucide-icon>
+            <div class="glass-card card-hover flex flex-col items-center space-y-2 border-purple-300 p-4 rounded-lg">
+              <lucide-icon [name]="tvIcon" class="h-8 w-8 text-purple-600 glow-icon"></lucide-icon>
               <h3 class="text-xl font-bold text-purple-900">Live Channels</h3>
-              <p class="text-3xl font-bold text-purple-600">N/A</p>
+              <p class="text-3xl font-bold text-purple-600" [countUp]="siteStats.liveChannels"></p>
             </div>
-            <div class="flex flex-col items-center space-y-2 border-purple-300 p-4 rounded-lg bg-white shadow-sm">
-              <lucide-icon [name]="usersIcon" class="h-8 w-8 text-purple-600"></lucide-icon>
+            <div class="glass-card card-hover flex flex-col items-center space-y-2 border-purple-300 p-4 rounded-lg">
+              <lucide-icon [name]="usersIcon" class="h-8 w-8 text-purple-600 glow-icon"></lucide-icon>
               <h3 class="text-xl font-bold text-purple-900">Registered Channels</h3>
-              <p class="text-3xl font-bold text-purple-600">41</p>
+              <p class="text-3xl font-bold text-purple-600" [countUp]="siteStats.registeredChannels"></p>
             </div>
           </div>
         </div>
       </section>
-      <section id="features" class="w-full py-12 md:py-24 lg:py-32">
+      <section id="features" class="w-full py-12 md:py-24 lg:py-32 reveal-init">
         <div class="container mx-auto px-4 md:px-6">
           <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-12 text-purple-900">
             Features
           </h2>
           <div class="grid gap-10 sm:grid-cols-2 md:grid-cols-3">
-            <div class="flex flex-col items-center space-y-3 text-center">
-              <lucide-icon [name]="messageCircleIcon" class="h-12 w-12 text-purple-600"></lucide-icon>
+            <div class="glass-card card-hover flex flex-col items-center space-y-3 text-center p-6 rounded-lg">
+              <lucide-icon [name]="messageCircleIcon" class="h-12 w-12 text-purple-600 glow-icon"></lucide-icon>
               <h3 class="text-xl font-bold text-purple-900">Smart Chat Moderation</h3>
               <p class="text-purple-800">Automatically filter spam and inappropriate content to keep your chat clean.</p>
             </div>
-            <div class="flex flex-col items-center space-y-3 text-center">
-              <lucide-icon [name]="zapIcon" class="h-12 w-12 text-purple-600"></lucide-icon>
+            <div class="glass-card card-hover flex flex-col items-center space-y-3 text-center p-6 rounded-lg">
+              <lucide-icon [name]="zapIcon" class="h-12 w-12 text-purple-600 glow-icon"></lucide-icon>
               <h3 class="text-xl font-bold text-purple-900">Custom Commands</h3>
               <p class="text-purple-800">Create personalized commands to interact with your audience effortlessly.</p>
             </div>
-            <div class="flex flex-col items-center space-y-3 text-center">
-              <lucide-icon [name]="settingsIcon" class="h-12 w-12 text-purple-600"></lucide-icon>
+            <div class="glass-card card-hover flex flex-col items-center space-y-3 text-center p-6 rounded-lg">
+              <lucide-icon [name]="settingsIcon" class="h-12 w-12 text-purple-600 glow-icon"></lucide-icon>
               <h3 class="text-xl font-bold text-purple-900">Easy Integration</h3>
               <p class="text-purple-800">Seamlessly integrate DomDimaBot with your Twitch channel in just a few clicks.</p>
             </div>
           </div>
         </div>
       </section>
-      <section id="pricing" class="w-full py-12 md:py-24 lg:py-32 bg-purple-200">
+      <section id="pricing" class="w-full py-12 md:py-24 lg:py-32 bg-purple-200/60 backdrop-blur reveal-init">
         <div class="container mx-auto px-4 md:px-6">
           <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-12 text-purple-900">
             Choose Your Plan
@@ -107,7 +110,7 @@
             </div>
           </div> -->
           <div class="grid gap-6 lg:grid-cols-3">
-            <div key="basic" class="flex flex-col p-6 bg-white rounded-lg shadow-lg">
+            <div key="basic" class="glass-card card-hover flex flex-col p-6 rounded-lg">
                 <h3 class="text-2xl font-bold text-purple-900">BASIC</h3> 
                 <div class="mt-4 text-purple-900 text-4xl font-bold">$0.00 USD</div>
                 <p class="mt-2 text-purple-700">This is the free plan for new users.</p>
@@ -125,9 +128,9 @@
                         <span class="text-purple-800">Basic Analytics</span>
                     </li>
                 </ul>
-                <button class="mt-6 p-2 rounded-xl bg-purple-600 text-white hover:bg-purple-700 hover:cursor-pointer" (click)="loginWithTwitch()">Choose Plan</button>
+                <button class="mt-6 btn-gradient hover:cursor-pointer" (click)="loginWithTwitch()">Choose Plan</button>
             </div>
-            <div key="premium" class="flex flex-col p-6 bg-white rounded-lg shadow-lg">
+            <div key="premium" class="glass-card card-hover flex flex-col p-6 rounded-lg">
                 <h3 class="text-2xl font-bold text-purple-900">PREMIUM</h3> 
                 <div class="mt-4 text-purple-900 text-4xl font-bold">$ 5 USD</div>
                 <p class="mt-2 text-purple-700">Coming soon.</p>
@@ -149,9 +152,9 @@
                         <span class="text-purple-800">Everything in Basic</span>
                     </li>
                 </ul> -->
-                <button class="mt-6 p-2 rounded-xl bg-purple-600 text-white hover:bg-purple-700 disabled:bg-slate-700 disabled:cursor-not-allowed hover:cursor-pointer" (click)="loginWithTwitch()" disabled>Choose Plan</button>
+                <button class="mt-6 btn-gradient disabled:bg-slate-700 disabled:cursor-not-allowed hover:cursor-pointer" (click)="loginWithTwitch()" disabled>Choose Plan</button>
             </div>
-            <div key="ai" class="flex flex-col p-6 bg-white rounded-lg shadow-lg">
+            <div key="ai" class="glass-card card-hover flex flex-col p-6 rounded-lg">
                 <h3 class="text-2xl font-bold text-purple-900">AI</h3> 
                 <div class="mt-4 text-purple-900 text-4xl font-bold">$ N/A</div>
                 <p class="mt-2 text-purple-700">To be implemented soon.</p>
@@ -173,12 +176,12 @@
                         <span class="text-purple-800">Everything in Premium</span>
                     </li>
                 </ul> -->
-                <button class="mt-6 p-2 rounded-xl bg-purple-600 text-white hover:bg-purple-700 hover:cursor-pointer disabled:bg-slate-700 disabled:cursor-not-allowed" (click)="loginWithTwitch()" disabled>Choose Plan</button>
+                <button class="mt-6 btn-gradient hover:cursor-pointer disabled:bg-slate-700 disabled:cursor-not-allowed" (click)="loginWithTwitch()" disabled>Choose Plan</button>
             </div>
           </div>
         </div>
       </section>
-      <section id="cta" class="w-full py-12 md:py-24 lg:py-32">
+      <section id="cta" class="w-full py-12 md:py-24 lg:py-32 reveal-init">
         <div class="container mx-auto px-4 md:px-6">
           <div class="flex flex-col items-center space-y-4 text-center">
             <div class="space-y-2">
@@ -190,7 +193,7 @@
               </p>
             </div>
             <div class="w-full max-w-sm space-y-2">
-              <button class="w-full bg-[#9146FF] hover:bg-[#7D2EFF] text-white font-semibold py-2 px-4 rounded-md flex items-center justify-center space-x-2" (click)="loginWithTwitch()">
+              <button class="w-full btn-gradient text-white font-semibold py-2 px-4 rounded-md flex items-center justify-center space-x-2" (click)="loginWithTwitch()">
                 <lucide-icon [name]="twitchIcon" class="h-5 w-5"></lucide-icon>
                 <span>Sign Up with Twitch</span>
               </button>

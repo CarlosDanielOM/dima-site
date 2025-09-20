@@ -56,7 +56,7 @@ export class ModuleService {
           EN: 'Enable or disable chat events, like follows, bits, subs, etc, and set their respective messages and thresholds.',
           ES: 'Activa o desactiva eventos de chat, como follows, bits, subs, etc, y establece sus respectivos mensajes y umbrales.',
         },
-        releaseStage: 'beta',
+        releaseStage: 'stable',
         premium: false,
         premium_plus: false,
       },
@@ -69,8 +69,20 @@ export class ModuleService {
           ES: 'Crea, edita y gestiona triggers para tu contenido. Los triggers son videos cortos que pueden ser activados por recompensas de Twitch.',
         },
         releaseStage: 'coming_soon',
-        premium: false,
-        premium_plus: false,
+        premium: true,
+        premium_plus: true,
+      },
+      {
+        name: 'Redemptions',
+        path: 'redemptions',
+        icon: Settings,
+        description: {
+          EN: 'Create, edit, and manage redemptions for your content. Redemptions are rewards that can be redeemed by viewers.',
+          ES: 'Crea, edita y gestiona redemptions para tu contenido. Las redemptions son recompensas que pueden ser canjeadas por los espectadores.',
+        },
+        releaseStage: 'alpha',
+        premium: true,
+        premium_plus: true,
       },
     ];
     return of(mockModules);

@@ -6,6 +6,7 @@ import { catchError, map } from 'rxjs/operators';
 import { Command } from '../interfaces/command';
 import { throwError } from 'rxjs';
 import { ToastService } from '../toast.service';
+import { CacheService } from './cache.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,22 +14,26 @@ import { ToastService } from '../toast.service';
 export class CommandsService {
 
   private headers: HttpHeaders | null = null;
-  
+
+  private readonly COMMANDS_TTL_MS = 1000 * 60 * 5; // 5 minutes
+
   constructor(
     private http: HttpClient,
     private userService: UserService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private cacheService: CacheService
   ) {
     this.headers = new HttpHeaders().set('Authorization', `${this.userService.getToken()}`);
   }
 
   getUserCommands(userId: string) {
-    return this.http.get<Command[]>(`${environment.DIMA_API}/commands/${userId}`, { headers: this.headers as any })
+    const cacheKey = `commands:${userId}`;
+    return this.cacheService.getOrSet(cacheKey, this.COMMANDS_TTL_MS, () => this.http.get<Command[]>(`${environment.DIMA_API}/commands/${userId}`, { headers: this.headers as any })
     .pipe(
       map((res: any) => {
         return res.commands;
       })
-    );
+    ));
   }
 
   createCommand(command: Command) {

@@ -9,6 +9,8 @@ import { LucideAngularModule, List, LayoutGrid } from 'lucide-angular';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { Command } from '../../interfaces/command';
 import { TooltipDirective } from '../../tooltip/tooltip.component';
+import { ConfirmationService } from '../../services/confirmation.service';
+import { ThemesService } from '../../services/themes.service';
 
 @Component({
   selector: 'app-commands',
@@ -72,6 +74,7 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Focus management
   @ViewChild('editingInput', { static: false }) editingInput?: ElementRef;
+  @ViewChild('newCommandRow') newCommandRow?: ElementRef;
 
   // Rate limiting
   private requestTimestamps: number[] = [];
@@ -86,7 +89,9 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private route: ActivatedRoute,
     private toastService: ToastService,
-    private commandsService: CommandsService
+    private commandsService: CommandsService,
+    private confirmationService: ConfirmationService,
+    private themeService: ThemesService
   ) {
   }
 
@@ -146,7 +151,32 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  deleteCommand(commandId: string) {
+  @HostListener('document:focusin', ['$event'])
+  onFocusIn(event: FocusEvent) {
+    if (this.addingCommand && this.newCommandRow?.nativeElement.contains(event.target)) {
+      const newCommandTr = this.newCommandRow?.nativeElement as HTMLTableRowElement;
+      if (newCommandTr) {
+        newCommandTr.classList.remove('light-mode-blink', 'dark-mode-blink');
+      }
+    }
+  }
+
+  @HostListener('document:focusout', ['$event'])
+  onFocusOut(event: FocusEvent) {
+    // Reapply blinking animation if leaving the new command row entirely and it's still in adding mode
+    if (this.addingCommand && !this.newCommandRow?.nativeElement.contains(event.relatedTarget)) {
+      const newCommandTr = this.newCommandRow?.nativeElement as HTMLTableRowElement;
+      if (newCommandTr) {
+        if (this.isDarkMode()) {
+          newCommandTr.classList.add('dark-mode-blink');
+        } else {
+          newCommandTr.classList.add('light-mode-blink');
+        }
+      }
+    }
+  }
+
+  async deleteCommand(commandId: string) {
     if (!commandId) {
       this.toastService.error('Action Not Allowed', 'You cannot delete a reserved command.');
       return;
@@ -157,7 +187,15 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    if (confirm('Are you sure you want to delete this command?')) {
+    let deleteConfirmed = await this.confirmationService.confirm({
+      title: { EN: 'Delete Command', ES: 'Eliminar Comando' },
+      message: { EN: 'Are you sure you want to delete this command?', ES: '¿Estás seguro de querer eliminar este comando?' },
+      confirmText: { EN: 'Delete', ES: 'Eliminar' },
+      cancelText: { EN: 'Cancel', ES: 'Cancelar' },
+      variant: 'danger'
+    });
+
+    if (deleteConfirmed) {
       this.recordRequest();
       this.commandsService.deleteCommand(commandId).subscribe((res: any) => {
         this.toastService.success('Command Deleted', 'The command has been deleted.');
@@ -826,6 +864,10 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
           this.toastService.error('Error', err.error.message);
         }
       });
+  }
+
+  public isDarkMode(): boolean {
+    return this.themeService.isDarkMode();
   }
 
 }

@@ -28,6 +28,7 @@ import {
 import { EventsubService } from '../../eventsub.service';
 import { ToastService } from '../../toast.service';
 import { UserService } from '../../user.service';
+import { ConfirmationService } from '../../services/confirmation.service';
 
 // Interfaces remain the same
 export interface CheerTier {
@@ -196,7 +197,8 @@ export class ChatEventsComponent implements OnInit {
   constructor(
     private eventsubService: EventsubService,
     private toastService: ToastService,
-    private userService: UserService
+    private userService: UserService,
+    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit(): void {
@@ -398,7 +400,7 @@ export class ChatEventsComponent implements OnInit {
     return sourceControl.value === requiredValue;
   }
 
-  deleteEvent(eventToDelete: ChatEvent): void {
+  async deleteEvent(eventToDelete: ChatEvent): Promise<void> {
     if (!this.canBeDisabled(eventToDelete)) {
       this.toastService.info(
         this.actionNotAllowedMessages.title[this.lang],
@@ -407,8 +409,18 @@ export class ChatEventsComponent implements OnInit {
       return;
     }
 
-    const confirmationMessage = `${this.deleteConfirmationMessages.areYouSure[this.lang]} "${eventToDelete.name}"?\n\n${this.deleteConfirmationMessages.warning[this.lang]}`;
-    const confirmation = window.confirm(confirmationMessage);
+    const confirmationMessage = {
+      EN: `${this.deleteConfirmationMessages.areYouSure[this.lang]} "${eventToDelete.name}"?\n\n${this.deleteConfirmationMessages.warning[this.lang]}`,
+      ES: `${this.deleteConfirmationMessages.areYouSure[this.lang]} "${eventToDelete.name}"?\n\n${this.deleteConfirmationMessages.warning[this.lang]}`
+    };
+    
+    const confirmation = await this.confirmationService.confirm({
+      title: this.deleteConfirmationMessages.title,
+      message: { EN: confirmationMessage.EN, ES: confirmationMessage.ES },
+      confirmText: { EN: 'Delete', ES: 'Eliminar' },
+      cancelText: { EN: 'Cancel', ES: 'Cancelar' },
+      variant: 'danger'
+    });
 
     if (confirmation) {
       this.isLoading = true; // Show loading state

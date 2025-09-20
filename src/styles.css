@@ -1,5 +1,23 @@
 /* You can add global styles to this file, and also import other style files */
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@keyframes pulse-light {
+  0%, 100% { background-color: #f3f4f6; } /* Tailwind gray-100 */
+  50% { background-color: #e9d5ff; } /* Tailwind purple-100 */
+}
+
+@keyframes pulse-dark {
+  0%, 100% { background-color: #e5e7eb; } /* Tailwind gray-200 */
+  50% { background-color: #d8b4fe; } /* Tailwind purple-200 */
+}
+
+.light-mode-blink {
+  animation: pulse-light 2s infinite ease-in-out;
+}
+
+.dark-mode-blink {
+  animation: pulse-dark 2s infinite ease-in-out;
+}
 
 @custom-variant dark (&:where(.dark, .dark *));
 

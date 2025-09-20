@@ -18,7 +18,7 @@
                 </button>
             </div>
             <div class="relative" (focusout)="onMenuFocusOut($event)" tabindex="-1">
-                <button (click)="toggleDropdown()" class="relative h-8 w-8 rounded-full bg-transparent hover:bg-purple-600" aria-haspopup="menu" [attr.aria-expanded]="isDropdownOpen">
+                <button (click)="toggleDropdown()" class="relative h-8 w-8 overflow-hidden rounded-full bg-transparent hover:bg-purple-600" aria-haspopup="menu" [attr.aria-expanded]="isDropdownOpen">
                     <img src="{{user.profile_image_url}}" alt="User avatar" class="rounded-full" />
                 </button>
                 <div *ngIf="isDropdownOpen" class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50" role="menu" tabindex="0">

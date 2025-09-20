@@ -11,6 +11,7 @@ import {
 } from 'lucide-angular';
 import { Module, ReleaseStage, StageInfo } from '../../services/module.service';
 import { ModuleService } from '../../services/module.service';
+import { UserService } from '../../user.service';
 
 @Component({
   selector: 'app-module-view',
@@ -25,7 +26,7 @@ export class ModuleViewComponent implements OnInit {
   lockIcon = Lock;
 
   // MOCK: This would come from an authentication service.
-  userPremiumStatus: 'none' | 'premium' | 'premium_plus' = 'premium';
+  userPremiumStatus: 'none' | 'premium' | 'premium_plus' = 'none';
 
   modules: Module[] = [];
   isLoading = true;
@@ -69,9 +70,14 @@ export class ModuleViewComponent implements OnInit {
     },
   };
 
-  constructor(private moduleService: ModuleService) {}
+  constructor(
+    private moduleService: ModuleService,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
+    this.userPremiumStatus = this.userService.getPremiumStatus() as 'none' | 'premium' | 'premium_plus';
+    
     this.moduleService.getModules().subscribe((modules) => {
       this.modules = modules;
       this.isLoading = false;

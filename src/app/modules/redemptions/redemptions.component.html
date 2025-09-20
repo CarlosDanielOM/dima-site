@@ -1,0 +1,67 @@
+<div class="w-full mx-auto px-4 py-6">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">
+      {{ labels.heading[lang] }}
+    </h1>
+  </div>
+
+  @if (isLoading) {
+    <div class="text-gray-600">Loading...</div>
+  } @else {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+      @for (r of customRedemptions; track r.rewardID || r.eventsubID) {
+        <div class="rounded-xl shadow border overflow-hidden bg-white">
+          <div 
+            class="h-2 w-full"
+            [style.background]="getCardColor(r)">
+          </div>
+          <div class="p-4" [style.filter]="getDisabledFilter(r.isEnabled)">
+            <div class="flex items-start justify-between">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-900">{{ r.title }}</h2>
+                <p class="text-sm text-gray-600">{{ r.prompt }}</p>
+              </div>
+              <span class="text-xs font-medium px-2 py-1 rounded-full"
+                [class.bg-green-100]="r.isEnabled"
+                [class.text-green-700]="r.isEnabled"
+                [class.bg-gray-100]="!r.isEnabled"
+                [class.text-gray-700]="!r.isEnabled">
+                {{ r.isEnabled ? labels.enabled[lang] : labels.disabled[lang] }}
+              </span>
+            </div>
+
+            <div class="mt-4 grid grid-cols-2 gap-3">
+              <div class="bg-gray-50 rounded-lg p-3">
+                <div class="text-xs text-gray-500">{{ labels.cost[lang] }}</div>
+                <div class="text-base font-semibold text-gray-900">{{ r.cost }}</div>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-3">
+                <div class="text-xs text-gray-500">{{ labels.cooldown[lang] }}</div>
+                <div class="text-base font-semibold text-gray-900">{{ r.cooldown }}s</div>
+              </div>
+            </div>
+
+            <div class="mt-4 flex items-center justify-end gap-2">
+              <button type="button"
+                class="px-3 py-1.5 text-sm font-medium rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200"
+                (click)="onEdit(r)">{{ labels.edit[lang] }}</button>
+              <button type="button"
+                class="px-3 py-1.5 text-sm font-medium rounded-md bg-red-500 text-white hover:bg-red-600"
+                (click)="onDelete(r)">{{ labels.delete[lang] }}</button>
+              <button type="button"
+                class="px-3 py-1.5 text-sm font-medium rounded-md"
+                [class.bg-green-500]="!r.isEnabled"
+                [class.hover\:bg-green-600]="!r.isEnabled"
+                [class.bg-yellow-500]="r.isEnabled"
+                [class.hover\:bg-yellow-600]="r.isEnabled"
+                [class.text-white]="true"
+                (click)="onToggleEnable(r)">
+                {{ r.isEnabled ? labels.disable[lang] : labels.enable[lang] }}
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

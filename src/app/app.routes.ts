@@ -10,6 +10,8 @@ import { ModuleViewComponent } from './modules/module-view/module-view.component
 import { ClipsComponent } from './modules/clips/clips.component';
 import { ChatEventsComponent } from './modules/chat-events/chat-events.component';
 import { CommandsComponent } from './streamer-wrapper/commands/commands.component';
+import { TriggersComponent } from './modules/triggers/triggers.component';
+import { RedemptionsComponent } from './modules/redemptions/redemptions.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent, title: 'Login' },
@@ -24,6 +26,8 @@ export const routes: Routes = [
             { path: '', component: ModuleViewComponent, title: 'Module' },
             { path: 'clips', component: ClipsComponent, title: 'Clips' },
             { path: 'chat-events', component: ChatEventsComponent, title: 'Chat Events' },
+            { path: 'redemptions', component: RedemptionsComponent, title: 'Redemptions' },
+            { path: 'triggers', component: WipComponent, title: 'Triggers' },
             { path: ':module', component: WipComponent, title: 'To be implemented' },
         ]},
         { path: 'settings', component: WipComponent, title: 'Settings' },

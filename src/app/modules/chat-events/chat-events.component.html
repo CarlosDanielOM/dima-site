@@ -1,4 +1,4 @@
-<div class="container mx-auto px-4 py-8">
+<div class="w-full mx-auto px-4 py-8">
   <div class="text-center mb-12">
     <h1 class="text-4xl font-bold mb-4 text-purple-900 tracking-tight">
       Chat Events
@@ -86,7 +86,7 @@
               @if (shouldShowControl(control, event)) {
                 <div class="flex flex-col">
                   <label [for]="control.id" class="mb-1 text-sm font-medium text-purple-700 flex items-center">
-                    <span>{{ control.label[lang] || control.label['EN'] }}</span>
+                    <span>{{ control.label }}</span>
                     @if(control.id === 'cheerTiers') {
                       <lucide-icon [name]="crownIcon" class="w-4 h-4 ml-1.5 text-yellow-500"></lucide-icon>
                     }
