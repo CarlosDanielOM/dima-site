@@ -147,26 +147,6 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
   private handleReferral(): void {
     this.refferal = (this.router.url).split('/')[1] ?? null;
-    if(this.refferal) {
-      if(this.refferal == 'dev') {
-        let userData = {
-          login: 'cdom201',
-          display_name: 'CDOM201',
-          actived: true,
-          email: 'carlos@carlosdaniel.info',
-          id: 533538623,
-          profile_image_url: 'https://static-cdn.jtvnw.net/jtv_user_pictures/0936ac6e-acf4-4a99-8b4d-a56012cb1859-profile_image-300x300.png',
-          premium: true,
-          premium_until: '',
-          premium_plus: true,
-          chat_enabled: true,
-          token: 'asdas65d4asdas654'
-        }
-        this.userService.createUser(userData);
-        this.userService.createRouteUser(userData);
-        this.router.navigate(['/cdom201/dashboard']);
-      }
-    }
   }
 
   loginWithTwitch() {
