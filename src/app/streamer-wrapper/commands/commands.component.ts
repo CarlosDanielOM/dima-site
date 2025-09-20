@@ -36,6 +36,7 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
     description: new FormControl('', []),
     cooldown: new FormControl(10, [Validators.required, Validators.min(5), Validators.max(60)]),
     userLevel: new FormControl(1, [Validators.required, Validators.min(1), Validators.max(10)]),
+    enabled: new FormControl(true),
   });
   addingCommand: boolean = false;
 
@@ -203,6 +204,50 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
         this.updatePagination();
       });
     }
+  }
+
+  disableCommand(commandId: string) {
+    if (!commandId) {
+      this.toastService.error('Action Not Allowed', 'Invalid command.');
+      return;
+    }
+
+    // Check rate limit before proceeding
+    if (!this.checkRateLimit()) {
+      return;
+    }
+
+    this.recordRequest();
+    this.commandsService.disableCommand(commandId).subscribe((res: any) => {
+      // Update the command in the local array
+      const commandIndex = this.commands.findIndex((command) => command._id === commandId);
+      if (commandIndex !== -1) {
+        this.commands[commandIndex].enabled = false;
+        this.updatePagination();
+      }
+    });
+  }
+
+  enableCommand(commandId: string) {
+    if (!commandId) {
+      this.toastService.error('Action Not Allowed', 'Invalid command.');
+      return;
+    }
+
+    // Check rate limit before proceeding
+    if (!this.checkRateLimit()) {
+      return;
+    }
+
+    this.recordRequest();
+    this.commandsService.enableCommand(commandId).subscribe((res: any) => {
+      // Update the command in the local array
+      const commandIndex = this.commands.findIndex((command) => command._id === commandId);
+      if (commandIndex !== -1) {
+        this.commands[commandIndex].enabled = true;
+        this.updatePagination();
+      }
+    });
   }
 
   setView(mode: 'table' | 'card') {
@@ -849,6 +894,7 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
       cooldown: command.value.cooldown,
       userLevel: command.value.userLevel,
       userLevelName: this.userLevels[command.value.userLevel as keyof typeof this.userLevels],
+      enabled: command.value.enabled,
       channel: this.userService.getLogin()
     }
 

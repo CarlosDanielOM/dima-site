@@ -40,6 +40,9 @@ export class CommandsService {
     return this.http.post(`${environment.DIMA_API}/commands/${this.userService.getUserId()}`, command, { headers: this.headers as any }).pipe(
       map((res: any) => {
         this.toastService.success('Command Created', 'The command has been created.');
+        // Invalidate cache for this user's commands
+        const cacheKey = `commands:${this.userService.getUserId()}`;
+        this.cacheService.clear(cacheKey);
         return res.command;
       }),
       catchError((err: any) => {
@@ -54,6 +57,9 @@ export class CommandsService {
     .pipe(
       map((res: any) => {
         this.toastService.success('Saved', `${field} updated successfully`);
+        // Invalidate cache for this user's commands
+        const cacheKey = `commands:${this.userService.getUserId()}`;
+        this.cacheService.clear(cacheKey);
         return res.command;
       }),
       catchError((err: any) => {
@@ -68,6 +74,9 @@ export class CommandsService {
     .pipe(
       map((res: any) => {
         this.toastService.success('Saved', 'Command updated successfully');
+        // Invalidate cache for this user's commands
+        const cacheKey = `commands:${this.userService.getUserId()}`;
+        this.cacheService.clear(cacheKey);
         return res.command;
       }),
       catchError((err: any) => {
@@ -81,9 +90,46 @@ export class CommandsService {
     return this.http.delete(`${environment.DIMA_API}/commands/${this.userService.getUserId()}/${commandId}`, { headers: this.headers as any })
     .pipe(
       map((res: any) => {
+        // Invalidate cache for this user's commands
+        const cacheKey = `commands:${this.userService.getUserId()}`;
+        this.cacheService.clear(cacheKey);
         return res;
       })
     );
   }
-  
+
+  disableCommand(commandId: string) {
+    return this.http.put(`${environment.DIMA_API}/commands/${this.userService.getUserId()}/${commandId}`, { enabled: false }, { headers: this.headers as any })
+    .pipe(
+      map((res: any) => {
+        this.toastService.success('Command Disabled', 'The command has been disabled.');
+        // Invalidate cache for this user's commands
+        const cacheKey = `commands:${this.userService.getUserId()}`;
+        this.cacheService.clear(cacheKey);
+        return res.command;
+      }),
+      catchError((err: any) => {
+        this.toastService.error('Error', err.error.message);
+        return throwError(() => err);
+      })
+    );
+  }
+
+  enableCommand(commandId: string) {
+    return this.http.put(`${environment.DIMA_API}/commands/${this.userService.getUserId()}/${commandId}`, { enabled: true }, { headers: this.headers as any })
+    .pipe(
+      map((res: any) => {
+        this.toastService.success('Command Enabled', 'The command has been enabled.');
+        // Invalidate cache for this user's commands
+        const cacheKey = `commands:${this.userService.getUserId()}`;
+        this.cacheService.clear(cacheKey);
+        return res.command;
+      }),
+      catchError((err: any) => {
+        this.toastService.error('Error', err.error.message);
+        return throwError(() => err);
+      })
+    );
+  }
+
 }
