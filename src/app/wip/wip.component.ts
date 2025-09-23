@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './wip.component.html',
-  styleUrl: './wip.component.css'
+  styleUrls: ['./wip.component.css']
 })
 export class WipComponent {
 
