@@ -1,2 +1,38 @@
-<h2>Work in Progress</h2>
-<p>This page is under construction. Please check back later.</p>
+<div class="wip-container">
+  <div class="wip-content">
+    <!-- Construction Icon -->
+    <div class="construction-icon">
+      <lucide-icon [name]="Construction" size="96"></lucide-icon>
+    </div>
+
+    <!-- Main Messages -->
+    <h1 class="wip-title">{{currentMessages.title}}</h1>
+    <h2 class="wip-subtitle">{{currentMessages.subtitle}}</h2>
+    <p class="wip-message">{{currentMessages.message}}</p>
+
+    <!-- Language Toggle -->
+    <div class="language-toggle">
+      <button
+        class="lang-btn"
+        [class.active]="currentLanguage === 'en'"
+        (click)="toggleLanguage()">
+        English
+      </button>
+      <span class="divider">|</span>
+      <button
+        class="lang-btn"
+        [class.active]="currentLanguage === 'es'"
+        (click)="toggleLanguage()">
+        Español
+      </button>
+    </div>
+
+    <!-- Progress Animation -->
+    <div class="progress-indicator">
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+      <p class="progress-text">Coming Soon...</p>
+    </div>
+  </div>
+</div>
