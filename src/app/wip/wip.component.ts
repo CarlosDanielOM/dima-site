@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
+import { LucideAngularModule, Construction } from 'lucide-angular';
 
 @Component({
   selector: 'app-wip',
   standalone: true,
-  imports: [],
+  imports: [LucideAngularModule],
   templateUrl: './wip.component.html',
-  styleUrl: './wip.component.css'
+  styleUrls: ['./wip.component.css']
 })
 export class WipComponent {
-
+  constructionIcon = Construction;
 }

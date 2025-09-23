@@ -1,0 +1,4 @@
+/* Keep styles minimal; most layout uses utility classes */
+:host {
+  display: block;
+}
