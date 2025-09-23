@@ -1,0 +1,179 @@
+.wip-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.wip-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 600px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeIn 0.8s ease-out;
+}
+
+.construction-icon {
+  margin-bottom: 2rem;
+}
+
+.construction-icon lucide-icon {
+  color: #667eea;
+  opacity: 0.8;
+  animation: pulse 2s infinite;
+}
+
+.wip-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.wip-subtitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.wip-message {
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  max-width: 500px;
+}
+
+.language-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.lang-btn {
+  background: none;
+  border: none;
+  color: #667eea;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.lang-btn:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.lang-btn.active {
+  background: #667eea;
+  color: white;
+}
+
+.divider {
+  color: #ccc;
+  font-weight: 300;
+}
+
+.progress-indicator {
+  margin-top: 1rem;
+}
+
+.progress-bar {
+  width: 200px;
+  height: 4px;
+  background: rgba(102, 126, 234, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0 auto 1rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  border-radius: 2px;
+  animation: progress 3s ease-in-out infinite;
+}
+
+.progress-text {
+  color: #888;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes progress {
+  0% {
+    width: 0%;
+  }
+  50% {
+    width: 70%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .wip-container {
+    padding: 1rem;
+  }
+
+  .wip-content {
+    padding: 2rem 1.5rem;
+  }
+
+  .wip-title {
+    font-size: 2rem;
+  }
+
+  .wip-subtitle {
+    font-size: 1.25rem;
+  }
+
+  .wip-message {
+    font-size: 1rem;
+  }
+
+  .construction-icon lucide-icon {
+    size: 72px;
+  }
+}
