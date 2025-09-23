@@ -1,0 +1,38 @@
+/* Full-screen centered layout */
+.wip-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 32px;
+  text-align: center;
+}
+
+.wip-content {
+  max-width: 780px;
+}
+
+.wip-icon {
+  font-size: 96px;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.wip-title {
+  margin: 0;
+  font-size: 32px;
+}
+
+.wip-subtitle {
+  margin: 8px 0 0 0;
+  font-size: 18px;
+  color: #60646c;
+}
+
+.wip-divider {
+  margin: 24px auto;
+  border: none;
+  height: 1px;
+  width: 180px;
+  background: #e2e8f0;
+}
