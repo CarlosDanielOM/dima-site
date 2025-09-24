@@ -12,9 +12,11 @@ import { ChatEventsComponent } from './modules/chat-events/chat-events.component
 import { CommandsComponent } from './streamer-wrapper/commands/commands.component';
 import { TriggersComponent } from './modules/triggers/triggers.component';
 import { RedemptionsComponent } from './modules/redemptions/redemptions.component';
+import { LogoutComponent } from './logout/logout.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent, title: 'Login' },
+    { path: 'logout', component: LogoutComponent, title: 'Logout' },
     { path: '', title: 'DomDimaBot', children: [
         { path: '', component: LandingPageComponent, title: 'DomDimaBot' },
         { path: ':streamer', component: LandingPageComponent, title: 'DomDimaBot' },

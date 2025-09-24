@@ -47,11 +47,11 @@
                                 <span>{{ getCurrentLanguageInfo().nativeName || 'English' }}</span>
                             </button>
                         </div>
-                        <a href="#" (click)="closeDropdown()" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
+                        <a href="profile/settings" (click)="closeDropdown()" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
                             <i-lucide [name]="userIcon" class="w-4 h-4"></i-lucide>
                             <span>Profile Settings</span>
                         </a>
-                        <a href="#" (click)="closeDropdown()" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
+                        <a href="logout" (click)="closeDropdown()" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
                             <i-lucide [name]="logoutIcon" class="w-4 h-4"></i-lucide>
                             <span>Logout</span>
                         </a>
