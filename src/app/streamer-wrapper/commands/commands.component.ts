@@ -189,10 +189,10 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     let deleteConfirmed = await this.confirmationService.confirm({
-      title: { EN: 'Delete Command', ES: 'Eliminar Comando' },
-      message: { EN: 'Are you sure you want to delete this command?', ES: '¿Estás seguro de querer eliminar este comando?' },
-      confirmText: { EN: 'Delete', ES: 'Eliminar' },
-      cancelText: { EN: 'Cancel', ES: 'Cancelar' },
+      title: { en: 'Delete Command', es: 'Eliminar Comando' },
+      message: { en: 'Are you sure you want to delete this command?', es: '¿Estás seguro de querer eliminar este comando?' },
+      confirmText: { en: 'Delete', es: 'Eliminar' },
+      cancelText: { en: 'Cancel', es: 'Cancelar' },
       variant: 'danger'
     });
 

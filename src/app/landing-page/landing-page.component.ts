@@ -2,6 +2,7 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, OnDestroy } from '@angular/c
 import { Router } from '@angular/router';
 import { LinksService } from '../links.service';
 import { UserService } from '../user.service';
+import { LanguageService } from '../services/language.service';
 import { LucideAngularModule } from 'lucide-angular';
 import { CountUpDirective } from '../directives/count-up.directive';
 import {
@@ -55,7 +56,8 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     private router: Router,
     private linksService: LinksService,
     private userService: UserService,
-    private websocketService: WebsocketService
+    private websocketService: WebsocketService,
+    private languageService: LanguageService
   ) {
     let scope = encodeURIComponent('user:read:email');
     this.twitchAuthUrl = `${this.linksService.getTwitchAuthUrl()}&scope=${scope}`;

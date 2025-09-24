@@ -4,6 +4,8 @@ import { RedemptionsService } from '../../services/redemptions.service';
 import { Redemptions } from '../../interfaces/redemptions';
 import { ToastService } from '../../toast.service';
 import { ConfirmationService } from '../../services/confirmation.service';
+import { ReleaseStageService } from '../../services/release-stage.service';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-redemptions',
@@ -20,52 +22,112 @@ export class RedemptionsComponent implements OnInit {
   isLoadingTwitch = true;
   refreshCooldown = 0;
   twitchRefreshCooldown = 0;
-  lang: 'EN' | 'ES' = (localStorage.getItem('lang') as 'EN' | 'ES') || 'EN';
+  lang: 'en' | 'es' = 'en';
   labels = {
-    heading: { EN: 'Redemptions', ES: 'Recompensas' },
-    cost: { EN: 'Cost', ES: 'Costo' },
-    cooldown: { EN: 'Cooldown', ES: 'Enfriamiento' },
-    enabled: { EN: 'Enabled', ES: 'Habilitado' },
-    disabled: { EN: 'Disabled', ES: 'Deshabilitado' },
-    edit: { EN: 'Edit', ES: 'Editar' },
-    delete: { EN: 'Delete', ES: 'Eliminar' },
-    enable: { EN: 'Enable', ES: 'Habilitar' },
-    disable: { EN: 'Disable', ES: 'Deshabilitar' },
-    confirmDeleteTitle: { EN: 'Confirm Delete', ES: 'Confirmar Eliminación' },
-    confirmDeleteMsg: { EN: 'Are you sure you want to delete this redemption?', ES: '¿Estás seguro de eliminar esta redención?' },
-    deletedTitle: { EN: 'Deleted', ES: 'Eliminado' },
-    deletedMsg: { EN: 'Redemption deleted successfully.', ES: 'Redención eliminada correctamente.' },
-    cancelTitle: { EN: 'Cancelled', ES: 'Cancelado' },
-    cancelMsg: { EN: 'Action was cancelled.', ES: 'La acción fue cancelada.' },
-    enabledTitle: { EN: 'Enabled', ES: 'Habilitado' },
-    enabledMsg: { EN: 'Redemption has been enabled.', ES: 'La redención ha sido habilitada.' },
-    disabledTitle: { EN: 'Disabled', ES: 'Deshabilitado' },
-    disabledMsg: { EN: 'Redemption has been disabled.', ES: 'La redención ha sido deshabilitada.' },
-    errorTitle: { EN: 'Error', ES: 'Error' },
-    errorMsg: { EN: 'Redemption ID is required.', ES: 'El ID de la redención es requerido.' },
-    refresh: { EN: 'Refresh', ES: 'Actualizar' },
-    refreshTooltip: { EN: 'Refresh data from server', ES: 'Actualizar datos del servidor' },
-    refreshTitle: { EN: 'Refreshing...', ES: 'Actualizando...' },
-    refreshSuccess: { EN: 'Data refreshed successfully', ES: 'Datos actualizados correctamente' },
-    uniqueTwitchTitle: { EN: 'Unique Twitch Redemptions', ES: 'Redenciones Únicas de Twitch' },
-    uniqueTwitchInfo: { EN: 'Shows only Twitch redemptions not already in your custom redemptions', ES: 'Muestra solo las redenciones de Twitch que no están en tus redenciones personalizadas' },
-    noUniqueFound: { EN: 'No unique Twitch redemptions found', ES: 'No se encontraron redenciones únicas de Twitch' },
-    allTwitchAvailable: { EN: 'All Twitch redemptions are already available as custom redemptions', ES: 'Todas las redenciones de Twitch ya están disponibles como redenciones personalizadas' },
-    noTwitchFound: { EN: 'No Twitch redemptions found', ES: 'No se encontraron redenciones de Twitch' },
-    cooldownActive: { EN: 'Refresh cooldown active', ES: 'Enfriamiento activo para actualizar' },
-    cooldownSeconds: { EN: 'seconds remaining', ES: 'segundos restantes' }
+    heading: { en: 'Redemptions', es: 'Recompensas' },
+    cost: { en: 'Cost', es: 'Costo' },
+    cooldown: { en: 'Cooldown', es: 'Enfriamiento' },
+    enabled: { en: 'Enabled', es: 'Habilitado' },
+    disabled: { en: 'Disabled', es: 'Deshabilitado' },
+    edit: { en: 'Edit', es: 'Editar' },
+    delete: { en: 'Delete', es: 'Eliminar' },
+    enable: { en: 'Enable', es: 'Habilitar' },
+    disable: { en: 'Disable', es: 'Deshabilitar' },
+    confirmDeleteTitle: { en: 'Confirm Delete', es: 'Confirmar Eliminación' },
+    confirmDeleteMsg: { en: 'Are you sure you want to delete this redemption?', es: '¿Estás seguro de eliminar esta redención?' },
+    deletedTitle: { en: 'Deleted', es: 'Eliminado' },
+    deletedMsg: { en: 'Redemption deleted successfully.', es: 'Redención eliminada correctamente.' },
+    cancelTitle: { en: 'Cancelled', es: 'Cancelado' },
+    cancelMsg: { en: 'Action was cancelled.', es: 'La acción fue cancelada.' },
+    enabledTitle: { en: 'Enabled', es: 'Habilitado' },
+    enabledMsg: { en: 'Redemption has been enabled.', es: 'La redención ha sido habilitada.' },
+    disabledTitle: { en: 'Disabled', es: 'Deshabilitado' },
+    disabledMsg: { en: 'Redemption has been disabled.', es: 'La redención ha sido deshabilitada.' },
+    errorTitle: { en: 'Error', es: 'Error' },
+    errorMsg: { en: 'Redemption ID is required.', es: 'El ID de la redención es requerido.' },
+    refresh: { en: 'Refresh', es: 'Actualizar' },
+    refreshTooltip: { en: 'Refresh data from server', es: 'Actualizar datos del servidor' },
+    refreshTitle: { en: 'Refreshing...', es: 'Actualizando...' },
+    refreshSuccess: { en: 'Data refreshed successfully', es: 'Datos actualizados correctamente' },
+    uniqueTwitchTitle: { en: 'Unique Twitch Redemptions', es: 'Redenciones Únicas de Twitch' },
+    uniqueTwitchInfo: { en: 'Shows only Twitch redemptions not already in your custom redemptions', es: 'Muestra solo las redenciones de Twitch que no están en tus redenciones personalizadas' },
+    noUniqueFound: { en: 'No unique Twitch redemptions found', es: 'No se encontraron redenciones únicas de Twitch' },
+    allTwitchAvailable: { en: 'All Twitch redemptions are already available as custom redemptions', es: 'Todas las redenciones de Twitch ya están disponibles como redenciones personalizadas' },
+    noTwitchFound: { en: 'No Twitch redemptions found', es: 'No se encontraron redenciones de Twitch' },
+    cooldownActive: { en: 'Refresh cooldown active', es: 'Enfriamiento activo para actualizar' },
+    cooldownSeconds: { en: 'seconds remaining', es: 'segundos restantes' }
   };
   
   constructor(
     private redemptionsService: RedemptionsService,
     private toastService: ToastService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private releaseStageService: ReleaseStageService,
+    public languageService: LanguageService
   ) {}
 
   ngOnInit() {
+    this.lang = this.languageService.getCurrentLanguage();
     this.loadRedemptions();
     this.loadTwitchRedemptions();
     this.startCooldownTimers();
+  }
+
+  // Helper methods for translations
+  getLabel(key: keyof typeof this.labels): string {
+    return this.languageService.getTranslation(this.labels[key]) || 'Missing translation';
+  }
+
+  getHeading(): string {
+    return this.languageService.getTranslation(this.labels.heading) || 'Redemptions';
+  }
+
+  getRefreshText(): string {
+    return this.languageService.getTranslation(this.labels.refresh) || 'Refresh';
+  }
+
+  getCooldownActive(): string {
+    return this.languageService.getTranslation(this.labels.cooldownActive) || 'Refresh cooldown active';
+  }
+
+  getCooldownSeconds(): string {
+    return this.languageService.getTranslation(this.labels.cooldownSeconds) || 'seconds remaining';
+  }
+
+  getRefreshTooltip(): string {
+    return this.languageService.getTranslation(this.labels.refreshTooltip) || 'Refresh data from server';
+  }
+
+  getEnabled(): string {
+    return this.languageService.getTranslation(this.labels.enabled) || 'Enabled';
+  }
+
+  getDisabled(): string {
+    return this.languageService.getTranslation(this.labels.disabled) || 'Disabled';
+  }
+
+  getCost(): string {
+    return this.languageService.getTranslation(this.labels.cost) || 'Cost';
+  }
+
+  getCooldown(): string {
+    return this.languageService.getTranslation(this.labels.cooldown) || 'Cooldown';
+  }
+
+  getEdit(): string {
+    return this.languageService.getTranslation(this.labels.edit) || 'Edit';
+  }
+
+  getDelete(): string {
+    return this.languageService.getTranslation(this.labels.delete) || 'Delete';
+  }
+
+  getEnable(): string {
+    return this.languageService.getTranslation(this.labels.enable) || 'Enable';
+  }
+
+  getDisable(): string {
+    return this.languageService.getTranslation(this.labels.disable) || 'Disable';
   }
 
   private startCooldownTimers() {
@@ -98,7 +160,7 @@ export class RedemptionsComponent implements OnInit {
       error: (error) => {
         console.error('Error loading redemptions:', error);
         this.isLoading = false;
-        this.toastService.error(this.labels.errorTitle[this.lang], 'Failed to load redemptions');
+        this.toastService.error(this.labels.errorTitle[this.lang], this.labels.errorMsg[this.lang]);
       }
     });
   }
@@ -157,8 +219,8 @@ export class RedemptionsComponent implements OnInit {
     let deleteConfirmed = await this.confirmationService.confirm({
       title: this.labels.confirmDeleteTitle,
       message: this.labels.confirmDeleteMsg,
-      confirmText: { EN: 'Delete', ES: 'Eliminar' },
-      cancelText: { EN: 'Cancel', ES: 'Cancelar' },
+      confirmText: { en: 'Delete', es: 'Eliminar' },
+      cancelText: { en: 'Cancel', es: 'Cancelar' },
       variant: 'danger'
     });
 

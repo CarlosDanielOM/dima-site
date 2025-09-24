@@ -1,7 +1,7 @@
 <div class="w-full mx-auto px-4 py-6">
   <div class="mb-6 flex items-center justify-between">
     <h1 class="text-2xl font-bold text-gray-900">
-      {{ labels.heading[lang] }}
+      {{ getHeading() }}
     </h1>
     <div class="flex gap-2">
       <button type="button"
@@ -14,19 +14,19 @@
         [class.disabled:cursor-not-allowed]="true"
         (click)="refreshData()"
         [disabled]="isLoading || isLoadingTwitch || refreshCooldown > 0"
-        [title]="refreshCooldown > 0 ? (labels.cooldownActive[lang] + ': ' + refreshCooldown + ' ' + labels.cooldownSeconds[lang]) : labels.refreshTooltip[lang]">
+        [title]="refreshCooldown > 0 ? (getCooldownActive() + ': ' + refreshCooldown + ' ' + getCooldownSeconds()) : getRefreshTooltip()">
         <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
         </svg>
         @if (refreshCooldown > 0) {
           Cooldown ({{ refreshCooldown }}s)
         } @else {
-          {{ labels.refresh[lang] }}
+          {{ getRefreshText() }}
         }
       </button>
       @if (refreshCooldown > 0) {
         <div class="text-xs text-gray-500 mt-1">
-          {{ refreshCooldown }} {{ labels.cooldownSeconds[lang] }}
+          {{ refreshCooldown }} {{ getCooldownSeconds() }}
         </div>
       }
     </div>
@@ -61,17 +61,17 @@
                 [class.text-green-700]="r.isEnabled"
                 [class.bg-gray-100]="!r.isEnabled"
                 [class.text-gray-700]="!r.isEnabled">
-                {{ r.isEnabled ? labels.enabled[lang] : labels.disabled[lang] }}
+                {{ r.isEnabled ? getEnabled() : getDisabled() }}
               </span>
             </div>
 
             <div class="mt-4 grid grid-cols-2 gap-3">
               <div class="bg-gray-50 rounded-lg p-3">
-                <div class="text-xs text-gray-500">{{ labels.cost[lang] }}</div>
+                <div class="text-xs text-gray-500">{{ getCost() }}</div>
                 <div class="text-base font-semibold text-gray-900">{{ r.cost }}</div>
               </div>
               <div class="bg-gray-50 rounded-lg p-3">
-                <div class="text-xs text-gray-500">{{ labels.cooldown[lang] }}</div>
+                <div class="text-xs text-gray-500">{{ getCooldown() }}</div>
                 <div class="text-base font-semibold text-gray-900">{{ r.cooldown }}s</div>
               </div>
             </div>
@@ -79,10 +79,10 @@
             <div class="mt-4 flex items-center justify-end gap-2">
               <button type="button"
                 class="px-3 py-1.5 text-sm font-medium rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200"
-                (click)="onEdit(r)">{{ labels.edit[lang] }}</button>
+                (click)="onEdit(r)">{{ getEdit() }}</button>
               <button type="button"
                 class="px-3 py-1.5 text-sm font-medium rounded-md bg-red-500 text-white hover:bg-red-600"
-                (click)="onDelete(r)">{{ labels.delete[lang] }}</button>
+                (click)="onDelete(r)">{{ getDelete() }}</button>
               <button type="button"
                 class="px-3 py-1.5 text-sm font-medium rounded-md"
                 [class.bg-green-500]="!r.isEnabled"
@@ -91,7 +91,7 @@
                 [class.hover\:bg-yellow-600]="r.isEnabled"
                 [class.text-white]="true"
                 (click)="onToggleEnable(r)">
-                {{ r.isEnabled ? labels.disable[lang] : labels.enable[lang] }}
+                {{ r.isEnabled ? getDisable() : getEnable() }}
               </button>
             </div>
           </div>
@@ -103,7 +103,7 @@
     <div class="mt-12">
       <div class="mb-6 flex items-center justify-between">
         <h2 class="text-xl font-semibold text-gray-900">
-          {{ labels.uniqueTwitchTitle[lang] }}
+          {{ getLabel('uniqueTwitchTitle') }}
           <span class="text-sm font-normal text-gray-500 ml-2">
             ({{ uniqueTwitchRedemptions.length }} of {{ twitchRedemptions.length }})
           </span>
@@ -113,7 +113,7 @@
             <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
             </svg>
-            {{ labels.uniqueTwitchInfo[lang] }}
+            {{ getLabel('uniqueTwitchInfo') }}
           </div>
           <button type="button"
             class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors duration-200"
@@ -125,7 +125,7 @@
             [class.disabled:cursor-not-allowed]="true"
             (click)="refreshTwitchRedemptions()"
             [disabled]="isLoadingTwitch || twitchRefreshCooldown > 0"
-            [title]="twitchRefreshCooldown > 0 ? (labels.cooldownActive[lang] + ': ' + twitchRefreshCooldown + ' ' + labels.cooldownSeconds[lang]) : 'Refresh unique Twitch redemptions'">
+            [title]="twitchRefreshCooldown > 0 ? (getCooldownActive() + ': ' + twitchRefreshCooldown + ' ' + getCooldownSeconds()) : 'Refresh unique Twitch redemptions'">
             <svg class="w-3 h-3 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
             </svg>
@@ -137,7 +137,7 @@
           </button>
           @if (twitchRefreshCooldown > 0) {
             <div class="text-xs text-gray-500 mt-1">
-              {{ twitchRefreshCooldown }} {{ labels.cooldownSeconds[lang] }}
+              {{ twitchRefreshCooldown }} {{ getCooldownSeconds() }}
             </div>
           }
         </div>
@@ -155,12 +155,12 @@
         </div>
       } @else if (uniqueTwitchRedemptions.length === 0) {
         <div class="text-center py-8 text-gray-500">
-          <div class="mb-2">{{ labels.noUniqueFound[lang] }}</div>
+          <div class="mb-2">{{ getLabel('noUniqueFound') }}</div>
           <div class="text-sm text-gray-400">
             @if (twitchRedemptions.length > 0) {
-              {{ labels.allTwitchAvailable[lang] }}
+              {{ getLabel('allTwitchAvailable') }}
             } @else {
-              {{ labels.noTwitchFound[lang] }}
+              {{ getLabel('noTwitchFound') }}
             }
           </div>
         </div>
@@ -180,17 +180,17 @@
                     [class.text-green-700]="r.isEnabled"
                     [class.bg-gray-100]="!r.isEnabled"
                     [class.text-gray-700]="!r.isEnabled">
-                    {{ r.isEnabled ? labels.enabled[lang] : labels.disabled[lang] }}
+                    {{ r.isEnabled ? getEnabled() : getDisabled() }}
                   </span>
                 </div>
 
                 <div class="mt-4 grid grid-cols-2 gap-3">
                   <div class="bg-purple-100 rounded-lg p-3">
-                    <div class="text-xs text-purple-600">{{ labels.cost[lang] }}</div>
+                    <div class="text-xs text-purple-600">{{ getCost() }}</div>
                     <div class="text-base font-semibold text-gray-900">{{ r.cost }}</div>
                   </div>
                   <div class="bg-purple-100 rounded-lg p-3">
-                    <div class="text-xs text-purple-600">{{ labels.cooldown[lang] }}</div>
+                    <div class="text-xs text-purple-600">{{ getCooldown() }}</div>
                     <div class="text-base font-semibold text-gray-900">{{ r.cooldown }}s</div>
                   </div>
                 </div>
@@ -199,7 +199,7 @@
                   <!-- <button type="button"
                     class="px-3 py-1.5 text-sm font-medium rounded-md bg-purple-500 text-white hover:bg-purple-600"
                     (click)="onToggleEnable(r)">
-                    {{ r.isEnabled ? labels.disable[lang] : labels.enable[lang] }}
+                    {{ r.isEnabled ? getDisable() : getEnable() }}
                   </button> -->
                   <button type="button"
                     class="px-3 py-1.5 text-sm font-medium rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200"

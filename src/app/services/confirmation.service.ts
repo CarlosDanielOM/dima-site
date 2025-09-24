@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
 export interface BilingualText {
-    EN: string;
-    ES: string;
+    en: string;
+    es: string;
 }
 
 export interface ConfirmOptions {
@@ -28,10 +28,10 @@ export class ConfirmationService {
 
     confirm(options: ConfirmOptions): Promise<boolean> {
         const defaultOptions: ConfirmOptions = {
-            title: { EN: 'Confirm', ES: 'Confirmar' },
-            message: { EN: 'Are you sure?', ES: '¿Estás seguro?' },
-            confirmText: { EN: 'Confirm', ES: 'Confirmar' },
-            cancelText: { EN: 'Cancel', ES: 'Cancelar' },
+            title: { en: 'Confirm', es: 'Confirmar' },
+            message: { en: 'Are you sure?', es: '¿Estás seguro?' },
+            confirmText: { en: 'Confirm', es: 'Confirmar' },
+            cancelText: { en: 'Cancel', es: 'Cancelar' },
             variant: 'default'
         };
         const merged = { ...defaultOptions, ...options } as ConfirmOptions;

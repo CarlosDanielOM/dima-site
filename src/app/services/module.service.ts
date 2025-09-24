@@ -1,30 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Video, Calendar, Settings } from 'lucide-angular';
 import { Observable, of } from 'rxjs';
-
-// --- Interfaces ---
-export type ReleaseStage =
-  | 'stable'
-  | 'beta'
-  | 'alpha'
-  | 'maintenance'
-  | 'coming_soon';
-
-export interface StageInfo {
-  message: { EN: string; ES: string };
-  color: string;
-  icon: any;
-}
-
-export interface Module {
-  name: string;
-  path: string;
-  icon: any;
-  description: { EN: string; ES: string };
-  releaseStage: ReleaseStage;
-  premium: boolean;
-  premium_plus: boolean;
-}
+import { ReleaseStage } from '../interfaces/releasestage';
+import { StageInfo } from '../interfaces/stageinfo';
+import { Module } from '../interfaces/module';
 
 @Injectable({
   providedIn: 'root',
@@ -41,8 +20,8 @@ export class ModuleService {
         path: 'clips',
         icon: Video,
         description: {
-          EN: 'Select a clip viewer design and adjust settings.',
-          ES: 'Selecciona un diseño de visualizador de clips y ajusta los ajustes.',
+          en: 'Select a clip viewer design and adjust settings.',
+          es: 'Selecciona un diseño de visualizador de clips y ajusta los ajustes.',
         },
         releaseStage: 'stable',
         premium: false,
@@ -53,8 +32,8 @@ export class ModuleService {
         path: 'chat-events',
         icon: Calendar,
         description: {
-          EN: 'Enable or disable chat events, like follows, bits, subs, etc, and set their respective messages and thresholds.',
-          ES: 'Activa o desactiva eventos de chat, como follows, bits, subs, etc, y establece sus respectivos mensajes y umbrales.',
+          en: 'Enable or disable chat events, like follows, bits, subs, etc, and set their respective messages and thresholds.',
+          es: 'Activa o desactiva eventos de chat, como follows, bits, subs, etc, y establece sus respectivos mensajes y umbrales.',
         },
         releaseStage: 'stable',
         premium: false,
@@ -65,8 +44,8 @@ export class ModuleService {
         path: 'triggers',
         icon: Settings,
         description: {
-          EN: 'Create, edit, and manage triggers for your content. Triggers are short videos that can be triggered by twitch rewards.',
-          ES: 'Crea, edita y gestiona triggers para tu contenido. Los triggers son videos cortos que pueden ser activados por recompensas de Twitch.',
+          en: 'Create, edit, and manage triggers for your content. Triggers are short videos that can be triggered by twitch rewards.',
+          es: 'Crea, edita y gestiona triggers para tu contenido. Los triggers son videos cortos que pueden ser activados por recompensas de Twitch.',
         },
         releaseStage: 'coming_soon',
         premium: true,
@@ -77,8 +56,8 @@ export class ModuleService {
         path: 'redemptions',
         icon: Settings,
         description: {
-          EN: 'Create, edit, and manage redemptions for your content. Redemptions are rewards that can be redeemed by viewers.',
-          ES: 'Crea, edita y gestiona redemptions para tu contenido. Las redemptions son recompensas que pueden ser canjeadas por los espectadores.',
+          en: 'Create, edit, and manage redemptions for your content. Redemptions are rewards that can be redeemed by viewers.',
+          es: 'Crea, edita y gestiona redemptions para tu contenido. Las redemptions son recompensas que pueden ser canjeadas por los espectadores.',
         },
         releaseStage: 'alpha',
         premium: true,

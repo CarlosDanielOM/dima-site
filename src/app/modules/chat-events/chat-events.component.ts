@@ -29,6 +29,9 @@ import { EventsubService } from '../../eventsub.service';
 import { ToastService } from '../../toast.service';
 import { UserService } from '../../user.service';
 import { ConfirmationService } from '../../services/confirmation.service';
+import { ReleaseStageService } from '../../services/release-stage.service';
+import { LanguageService } from '../../services/language.service';
+import { ReleaseStage } from '../../interfaces/releasestage';
 
 // Interfaces remain the same
 export interface CheerTier {
@@ -42,7 +45,7 @@ export interface CheerTier {
 export interface ConfigControl {
   id: string;
   dbId?: string;
-  label: { EN: string; ES: string; };
+  label: { en: string; es: string; };
   type: 'text' | 'number' | 'checkbox' | 'message-tiers' | 'select';
   value: string | number | boolean | CheerTier[];
   placeholder?: string;
@@ -50,22 +53,19 @@ export interface ConfigControl {
   canDisable?: boolean;
 }
 
-export type ReleaseStage = 'stable' | 'beta' | 'alpha' | 'maintenance' | 'coming_soon' | 'unavailable' | 'deprecated';
-export interface StageInfo { message: { EN: string; ES: string; }; color: string; icon: any; }
-
 export interface ChatEvent {
   name:string;
   type: string;
   version: string;
   condition?: { [key: string]: string | undefined; };
-  description: { EN: string; ES: string; };
+  description: { en: string; es: string; };
   icon: any;
   color: string;
   textColor: string;
   releaseStage: ReleaseStage;
   enabled: boolean;
-  premium: boolean;
-  premium_plus: boolean;
+  premium?: boolean;
+  premium_plus?: boolean;
   isConfiguring?: boolean;
   isSubscribed?: boolean;
   config?: ConfigControl[];
@@ -83,7 +83,7 @@ export interface ChatEvent {
   styleUrl: './chat-events.component.css',
 })
 export class ChatEventsComponent implements OnInit {
-  lang: 'EN' | 'ES' = (localStorage.getItem('lang') as 'EN' | 'ES') || 'EN';
+  lang: 'en' | 'es' = this.languageService.getCurrentLanguage();
   crownIcon = Crown;
   checkIcon = Check;
   xIcon = X;
@@ -121,27 +121,27 @@ export class ChatEventsComponent implements OnInit {
 
   permissionMessages = {
     needs_premium: {
-      EN: 'Requires Premium',
-      ES: 'Requiere Premium',
+      en: 'Requires Premium',
+      es: 'Requiere Premium',
     },
     needs_premium_plus: {
-      EN: 'Requires Premium Plus',
-      ES: 'Requiere Premium Plus',
+      en: 'Requires Premium Plus',
+      es: 'Requiere Premium Plus',
     },
   };
 
   deleteConfirmationMessages = {
     title: {
-      EN: 'Confirm Deletion',
-      ES: 'Confirmar Eliminación',
+      en: 'Confirm Deletion',
+      es: 'Confirmar Eliminación',
     },
     areYouSure: {
-      EN: 'Are you sure you want to delete the event',
-      ES: '¿Estás seguro de que quieres eliminar el evento',
+      en: 'Are you sure you want to delete the event',
+      es: '¿Estás seguro de que quieres eliminar el evento',
     },
     warning: {
-      EN: 'All associated data will be erased and it will need to be reconfigured if you want to use it again.',
-      ES: 'Todos los datos asociados se borrarán y deberá reconfigurarse si quieres volver a usarlo.',
+      en: 'All associated data will be erased and it will need to be reconfigured if you want to use it again.',
+      es: 'Todos los datos asociados se borrarán y deberá reconfigurarse si quieres volver a usarlo.',
     }
   };
 
@@ -158,38 +158,29 @@ export class ChatEventsComponent implements OnInit {
 
   actionNotAllowedMessages = {
     title: {
-      EN: 'Action Not Allowed',
-      ES: 'Acción no permitida',
+      en: 'Action Not Allowed',
+      es: 'Acción no permitida',
     },
     cannotDisable: {
-      EN: 'This event cannot be disabled. To turn it off, clear the message in its configuration.',
-      ES: 'Este evento no se puede desactivar. Para apagarlo, borra el contenido del mensaje en su configuración.',
+      en: 'This event cannot be disabled. To turn it off, clear the message in its configuration.',
+      es: 'Este evento no se puede desactivar. Para apagarlo, borra el contenido del mensaje en su configuración.',
     },
     cannotDelete: {
-      EN: 'This event cannot be deleted because it is essential for the bot to work properly.',
-      ES: 'Este evento no se puede eliminar porque es esencial para el funcionamiento del bot.',
+      en: 'This event cannot be deleted because it is essential for the bot to work properly.',
+      es: 'Este evento no se puede eliminar porque es esencial para el funcionamiento del bot.',
     }
   };
 
   statusMessages = {
-    notCreated: { EN: 'Not Created', ES: 'No Creado' },
-    enabled: { EN: 'Enabled', ES: 'Activado' },
-    disabled: { EN: 'Disabled', ES: 'Desactivado' },
-    betaEnabled: { EN: 'Beta Enabled', ES: 'Beta Activada' },
-    tryTheBeta: { EN: 'Try the Beta!', ES: '¡Prueba la Beta!' },
-    alphaEnabled: { EN: 'Alpha Enabled', ES: 'Alfa Activada' },
-    tryTheAlpha: { EN: 'Try the Alpha!', ES: '¡Prueba la Alfa!' },
+    notCreated: { en: 'Not Created', es: 'No Creado' },
+    enabled: { en: 'Enabled', es: 'Activado' },
+    disabled: { en: 'Disabled', es: 'Desactivado' },
+    betaEnabled: { en: 'Beta Enabled', es: 'Beta Activada' },
+    tryTheBeta: { en: 'Try the Beta!', es: '¡Prueba la Beta!' },
+    alphaEnabled: { en: 'Alpha Enabled', es: 'Alfa Activada' },
+    tryTheAlpha: { en: 'Try the Alpha!', es: '¡Prueba la Alfa!' },
   };
 
-  stageMap: Record<ReleaseStage, StageInfo> = {
-    stable: { message: { EN: '', ES: '' }, color: '', icon: null },
-    beta: { message: { EN: 'Beta', ES: 'Beta' }, color: 'text-orange-500', icon: FlaskConical },
-    alpha: { message: { EN: 'Alpha', ES: 'Alfa' }, color: 'text-purple-600', icon: FlaskConical },
-    maintenance: { message: { EN: 'Maintenance', ES: 'Mantenimiento' }, color: 'text-yellow-500', icon: Wrench },
-    coming_soon: { message: { EN: 'Coming Soon', ES: 'Próximamente' }, color: 'text-blue-500', icon: Clock },
-    unavailable: { message: { EN: 'Unavailable', ES: 'No Disponible' }, color: 'text-red-500', icon: Lock },
-    deprecated: { message: { EN: 'Deprecated', ES: 'Obsoleto' }, color: 'text-red-500', icon: Lock },
-  };
   
   chatEvents: ChatEvent[] = [];
   isLoading = true;
@@ -198,16 +189,44 @@ export class ChatEventsComponent implements OnInit {
     private eventsubService: EventsubService,
     private toastService: ToastService,
     private userService: UserService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private releaseStageService: ReleaseStageService,
+    private languageService: LanguageService
   ) {}
 
   ngOnInit(): void {
     this.userPremiumStatus = this.userService.getPremiumStatus() as 'none' | 'premium' | 'premium_plus';
-    
+    this.lang = this.languageService.getCurrentLanguage();
+
     this.eventsubService.getEvents().subscribe(events => {
       this.chatEvents = events;
       this.isLoading = false;
     });
+  }
+
+  // Helper functions for translations
+  getEventDescription(description: { en: string; es: string }): string {
+    if (!description || typeof description !== 'object') {
+      console.error('Invalid description object:', description);
+      return 'Invalid description';
+    }
+    return this.languageService.getTranslation(description);
+  }
+
+  getControlLabel(label: { en: string; es: string }): string {
+    if (!label || typeof label !== 'object') {
+      console.error('Invalid label object:', label);
+      return 'Invalid label';
+    }
+    return this.languageService.getTranslation(label);
+  }
+
+  getPermissionMessage(type: 'needs_premium' | 'needs_premium_plus'): string {
+    return this.languageService.getTranslation(this.permissionMessages[type]);
+  }
+
+  getCurrentLanguage(): 'en' | 'es' {
+    return this.languageService.getCurrentLanguage();
   }
 
   // NEW: A single function to determine the visual status, including permissions
@@ -215,10 +234,10 @@ export class ChatEventsComponent implements OnInit {
     const access = this.getUserAccess(event);
     if (!access.canAccess && access.reason) {
       // New logic to add context to the permission message
-      let message = this.permissionMessages[access.reason][this.lang];
+      let message = this.getPermissionMessage(access.reason);
       if (event.releaseStage === 'alpha' || event.releaseStage === 'beta') {
-        const stageInfo = this.stageMap[event.releaseStage];
-        message += ` (${stageInfo.message[this.lang]} Access)`;
+        const stageInfo = this.releaseStageService.getStageInfo(event.releaseStage);
+        message += ` (${this.languageService.getTranslation(stageInfo.message)} Access)`;
       }
       return {
         text: message,
@@ -229,23 +248,23 @@ export class ChatEventsComponent implements OnInit {
 
     // Handle Alpha and Beta stages specifically
     if (event.releaseStage === 'alpha' || event.releaseStage === 'beta') {
-      const stageInfo = this.stageMap[event.releaseStage];
+      const stageInfo = this.releaseStageService.getStageInfo(event.releaseStage);
 
       if (event.isSubscribed === false) {
         // Not subscribed, show call to action
         const text = event.releaseStage === 'alpha'
-          ? this.statusMessages.tryTheAlpha[this.lang]
-          : this.statusMessages.tryTheBeta[this.lang];
+          ? this.languageService.getTranslation(this.statusMessages.tryTheAlpha)
+          : this.languageService.getTranslation(this.statusMessages.tryTheBeta);
         return { text, icon: stageInfo.icon, color: stageInfo.color };
       } else {
         // Is subscribed, check if enabled or disabled
         if (event.enabled) {
           const text = event.releaseStage === 'alpha'
-            ? this.statusMessages.alphaEnabled[this.lang]
-            : this.statusMessages.betaEnabled[this.lang];
+            ? this.languageService.getTranslation(this.statusMessages.alphaEnabled)
+            : this.languageService.getTranslation(this.statusMessages.betaEnabled);
           return { text, icon: stageInfo.icon, color: stageInfo.color };
         } else {
-          return { text: this.statusMessages.disabled[this.lang], icon: this.xIcon, color: 'text-red-500' };
+          return { text: this.languageService.getTranslation(this.statusMessages.disabled), icon: this.xIcon, color: 'text-red-500' };
         }
       }
     }
@@ -253,19 +272,19 @@ export class ChatEventsComponent implements OnInit {
     // Handle Stable stage
     if (event.releaseStage === 'stable') {
       if (event.isSubscribed === false) {
-        return { text: this.statusMessages.notCreated[this.lang], icon: this.plusCircleIcon, color: 'text-gray-500' };
+        return { text: this.languageService.getTranslation(this.statusMessages.notCreated), icon: this.plusCircleIcon, color: 'text-gray-500' };
       } else {
         if (event.enabled) {
-          return { text: this.statusMessages.enabled[this.lang], icon: this.checkIcon, color: 'text-green-500' };
+          return { text: this.languageService.getTranslation(this.statusMessages.enabled), icon: this.checkIcon, color: 'text-green-500' };
         } else {
-          return { text: this.statusMessages.disabled[this.lang], icon: this.xIcon, color: 'text-red-500' };
+          return { text: this.languageService.getTranslation(this.statusMessages.disabled), icon: this.xIcon, color: 'text-red-500' };
         }
       }
     }
-    
+
     // Fallback for other stages like 'coming_soon', 'maintenance'
-    const stageInfo = this.stageMap[event.releaseStage];
-    return { text: stageInfo.message[this.lang], icon: stageInfo.icon, color: stageInfo.color };
+    const stageInfo = this.releaseStageService.getStageInfo(event.releaseStage);
+    return { text: this.languageService.getTranslation(stageInfo.message), icon: stageInfo.icon, color: stageInfo.color };
   }
 
   canBeDisabled(event: ChatEvent): boolean {
@@ -277,30 +296,7 @@ export class ChatEventsComponent implements OnInit {
 
   // NEW: Helper to check if the user has permission to interact with the event
   getUserAccess(event: ChatEvent): { canAccess: boolean; reason?: 'needs_premium' | 'needs_premium_plus' } {
-    const isPremiumPlus = this.userPremiumStatus === 'premium_plus';
-    const isPremium = this.userPremiumStatus === 'premium';
-
-    // Event requires Premium Plus subscription
-    if (event.premium_plus && !isPremiumPlus) {
-      return { canAccess: false, reason: 'needs_premium_plus' };
-    }
-
-    // Event requires at least a Premium subscription
-    if (event.premium && !isPremium && !isPremiumPlus) {
-      return { canAccess: false, reason: 'needs_premium' };
-    }
-    
-    // // Alpha features are exclusive to Premium Plus
-    // if (event.releaseStage === 'alpha' && !isPremiumPlus) {
-    //     return { canAccess: true, reason: 'needs_premium_plus' };
-    // }
-
-    // // Beta features are available to Premium and Premium Plus
-    // if (event.releaseStage === 'beta' && !isPremium && !isPremiumPlus) {
-    //     return { canAccess: true, reason: 'needs_premium' };
-    // }
-
-    return { canAccess: true };
+    return this.releaseStageService.getUserAccess(event, this.userPremiumStatus);
   }
   
   toggleConfigure(eventName: string): void {
@@ -326,8 +322,8 @@ export class ChatEventsComponent implements OnInit {
   toggleFeature(eventToToggle: ChatEvent): void {
     if (!this.canBeDisabled(eventToToggle) && eventToToggle.enabled) {
       this.toastService.info(
-        this.actionNotAllowedMessages.title[this.lang],
-        this.actionNotAllowedMessages.cannotDisable[this.lang]
+        this.languageService.getTranslation(this.actionNotAllowedMessages.title),
+        this.languageService.getTranslation(this.actionNotAllowedMessages.cannotDisable)
       );
       return;
     }
@@ -403,22 +399,22 @@ export class ChatEventsComponent implements OnInit {
   async deleteEvent(eventToDelete: ChatEvent): Promise<void> {
     if (!this.canBeDisabled(eventToDelete)) {
       this.toastService.info(
-        this.actionNotAllowedMessages.title[this.lang],
-        this.actionNotAllowedMessages.cannotDelete[this.lang]
+        this.languageService.getTranslation(this.actionNotAllowedMessages.title),
+        this.languageService.getTranslation(this.actionNotAllowedMessages.cannotDelete)
       );
       return;
     }
 
     const confirmationMessage = {
-      EN: `${this.deleteConfirmationMessages.areYouSure[this.lang]} "${eventToDelete.name}"?\n\n${this.deleteConfirmationMessages.warning[this.lang]}`,
-      ES: `${this.deleteConfirmationMessages.areYouSure[this.lang]} "${eventToDelete.name}"?\n\n${this.deleteConfirmationMessages.warning[this.lang]}`
+      en: `${this.languageService.getTranslation(this.deleteConfirmationMessages.areYouSure)} "${eventToDelete.name}"?\n\n${this.languageService.getTranslation(this.deleteConfirmationMessages.warning)}`,
+      es: `${this.languageService.getTranslation(this.deleteConfirmationMessages.areYouSure)} "${eventToDelete.name}"?\n\n${this.languageService.getTranslation(this.deleteConfirmationMessages.warning)}`
     };
     
     const confirmation = await this.confirmationService.confirm({
       title: this.deleteConfirmationMessages.title,
-      message: { EN: confirmationMessage.EN, ES: confirmationMessage.ES },
-      confirmText: { EN: 'Delete', ES: 'Eliminar' },
-      cancelText: { EN: 'Cancel', ES: 'Cancelar' },
+      message: { en: confirmationMessage.en, es: confirmationMessage.es },
+      confirmText: { en: 'Delete', es: 'Eliminar' },
+      cancelText: { en: 'Cancel', es: 'Cancelar' },
       variant: 'danger'
     });
 

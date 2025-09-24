@@ -13,7 +13,7 @@ import { ConfirmationService, ConfirmRequest } from '../../services/confirmation
 export class ConfirmationModalComponent implements OnDestroy {
     isOpen = false;
     request: ConfirmRequest | null = null;
-    lang: 'EN' | 'ES' = (localStorage.getItem('lang') as 'EN' | 'ES') || 'EN';
+    lang: 'en' | 'es' = (localStorage.getItem('lang') as 'en' | 'es') || 'en';
 
     private sub: Subscription;
 

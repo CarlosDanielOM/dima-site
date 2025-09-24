@@ -6,18 +6,19 @@ import { SafePipe } from '../../safe.pipe';
 import { UserService } from '../../user.service';
 import { HttpClient } from '@angular/common/http';
 import { ToastService } from '../../toast.service';
-
-export type ReleaseStage = 'stable' | 'beta' | 'alpha' | 'maintenance' | 'coming_soon';
+import { ReleaseStageService } from '../../services/release-stage.service';
+import { ReleaseStage } from '../../interfaces/releasestage';
+import { LanguageService } from '../../services/language.service';
 
 interface Design {
   id: string;
   name: {
-    EN: string;
-    ES: string;
+    en: string;
+    es: string;
   };
   description: {
-    EN: string;
-    ES: string;
+    en: string;
+    es: string;
   };
   previewUrl: string;
   premium: boolean;
@@ -41,11 +42,6 @@ export class ClipsComponent {
   checkCircleIcon = CheckCircle;
   xCircleIcon = XCircle;
   alertTriangleIcon = AlertTriangle;
-  lockIcon = Lock;
-  wrenchIcon = Wrench;
-  flaskConicalIcon = FlaskConical;
-  boxesIcon = Boxes;
-  lang: 'EN' | 'ES' = localStorage.getItem('lang') as 'EN' | 'ES' || 'EN';
   userId = 0;
   login = '';
   isPremium = false;
@@ -55,7 +51,9 @@ export class ClipsComponent {
   constructor(
     private userService: UserService,
     private http: HttpClient,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private releaseStageService: ReleaseStageService,
+    private languageService: LanguageService
   ) {}
 
   ngOnInit() {
@@ -64,17 +62,26 @@ export class ClipsComponent {
     this.login = this.userService.getLogin();
   }
 
+  // Helper methods for translations
+  getDesignName(design: Design): string {
+    return this.languageService.getTranslation(design.name);
+  }
+
+  getDesignDescription(design: Design): string {
+    return this.languageService.getTranslation(design.description);
+  }
+
   get designs(): Design[] {
     return [
       {
         id: 'design1',
         name: {
-          EN: 'Classic Design',
-          ES: 'Diseño Clásico'
+          en: 'Classic Design',
+          es: 'Diseño Clásico'
         },
         description: {
-          EN: 'Shows the clips with the users streamer information on the right side',
-          ES: 'Muestra los clips con la información del streamer del usuario en el lado derecho'
+          en: 'Shows the clips with the users streamer information on the right side',
+          es: 'Muestra los clips con la información del streamer del usuario en el lado derecho'
         },
         previewUrl: `https://api.domdimabot.com/clip/${this.userId}`,
         premium: false,
@@ -85,12 +92,12 @@ export class ClipsComponent {
       {
         id: 'design2',
         name: {
-          EN: 'Simple Design',
-          ES: 'Diseño Simple'
+          en: 'Simple Design',
+          es: 'Diseño Simple'
         },
         description: {
-          EN: 'Contemporary design with sleek animations and effects',
-          ES: 'Diseño contemporáneo con animaciones y efectos suaves'
+          en: 'Contemporary design with sleek animations and effects',
+          es: 'Diseño contemporáneo con animaciones y efectos suaves'
         },
         previewUrl: `https://api.domdimabot.com/clip/${this.userId}?design=2`,
         premium: false,
@@ -101,12 +108,12 @@ export class ClipsComponent {
       {
         id: 'design3',
         name: {
-          EN: 'Custom Design',
-          ES: 'Diseño Personalizado'
+          en: 'Custom Design',
+          es: 'Diseño Personalizado'
         },
         description: {
-          EN: 'Fully customizable design with premium features',
-          ES: 'Diseño completamente personalizable con características premium'
+          en: 'Fully customizable design with premium features',
+          es: 'Diseño completamente personalizable con características premium'
         },
         previewUrl: `https://api.domdimabot.com/clip/${this.userId}?design=custom`,
         premium: true,
@@ -118,31 +125,19 @@ export class ClipsComponent {
   }
 
   getDesignStatus(design: Design): { text: string; icon: any; color: string } {
-    if (design.releaseStage === 'maintenance') {
-      return { text: 'Maintenance', icon: this.wrenchIcon, color: 'text-orange-500' };
-    }
-    if (design.releaseStage === 'coming_soon') {
-      return { text: 'Coming Soon', icon: this.boxesIcon, color: 'text-blue-500' };
-    }
     const isLocked = (design.premium && !this.isPremium) || (design.premium_plus && !this.isPremium);
-    if (isLocked) {
-      return { text: 'Premium Required', icon: this.lockIcon, color: 'text-red-500' };
-    }
-    if (this.selectedDesign?.id === design.id) {
-        return { text: 'Selected', icon: this.checkCircleIcon, color: 'text-purple-500' };
-    }
-    return { text: 'Available', icon: this.checkCircleIcon, color: 'text-green-500' };
+    const isSelected = this.selectedDesign?.id === design.id;
+
+    return this.releaseStageService.getSimpleStatus(
+      design.releaseStage,
+      isLocked,
+      isSelected,
+      !isLocked && !['maintenance', 'coming_soon'].includes(design.releaseStage)
+    );
   }
 
-  getStageInfo(stage: ReleaseStage): { text: string, color: string } | null {
-    const info: { [key in ReleaseStage]?: { text: string, color: string } } = {
-      stable: { text: 'Stable', color: 'bg-purple-500 text-white' },
-      beta: { text: 'Beta', color: 'bg-yellow-500 text-white' },
-      alpha: { text: 'Alpha', color: 'bg-red-500 text-white' },
-      maintenance: { text: 'Maintenance', color: 'bg-gray-500 text-white' },
-      coming_soon: { text: 'Coming Soon', color: 'bg-blue-500 text-white' },
-    };
-    return info[stage] || null;
+  getStageInfo(stage: string): { text: string, color: string } | null {
+    return this.releaseStageService.getStageBadgeInfo(stage as any);
   }
 
   getSelectedDesignUrl(): string {
@@ -168,9 +163,8 @@ export class ClipsComponent {
   }
 
   canSelectDesign(design: Design): boolean {
-    const isLocked = (design.premium && !this.isPremium) || (design.premium_plus && !this.isPremium);
-    const isUnavailable = ['maintenance', 'coming_soon'].includes(design.releaseStage);
-    return !isLocked && !isUnavailable;
+    const userPremiumStatus = this.isPremium ? 'premium' : 'none';
+    return this.releaseStageService.canSelectItem(design, userPremiumStatus);
   }
 
   copyUrl() {

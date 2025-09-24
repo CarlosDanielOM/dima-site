@@ -2,7 +2,8 @@ import { Component, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { UserService } from '../user.service';
-import { LucideAngularModule, Twitch, Settings, LayoutDashboard, Terminal, User, LogOut, CircuitBoard, Menu } from 'lucide-angular';
+import { LanguageService, SupportedLanguage } from '../services/language.service';
+import { LucideAngularModule, Twitch, Settings, LayoutDashboard, Terminal, User, LogOut, CircuitBoard, Menu, Languages } from 'lucide-angular';
 import { AuthService } from '../auth.service';
 import { LinksService } from '../links.service';
 import { SidebarService } from '../services/sidebar.service';
@@ -27,6 +28,7 @@ export class NavbarComponent {
   logoutIcon = LogOut;
   circuitBoardIcon = CircuitBoard;
   menuIcon = Menu;
+  languageIcon = Languages;
 
   authUrl = '';
 
@@ -35,6 +37,7 @@ export class NavbarComponent {
     private authService: AuthService,
     private linksService: LinksService,
     private sidebarService: SidebarService,
+    private languageService: LanguageService,
     private elementRef: ElementRef
   ) {
     this.user = this.userService.getUser();
@@ -91,5 +94,29 @@ export class NavbarComponent {
     if (!clickInside) {
       this.closeDropdown();
     }
+  }
+
+  // Language switching methods
+  getCurrentLanguage(): SupportedLanguage {
+    return this.languageService.getCurrentLanguage();
+  }
+
+  getCurrentLanguageInfo() {
+    const currentLang = this.getCurrentLanguage();
+    return this.languageService.getLanguageInfo(currentLang);
+  }
+
+  getAvailableLanguages() {
+    return this.languageService.getAvailableLanguages();
+  }
+
+  switchLanguage(language: SupportedLanguage) {
+    this.languageService.setLanguage(language);
+    this.closeDropdown();
+  }
+
+  toggleLanguage() {
+    this.languageService.toggleLanguage();
+    this.closeDropdown();
   }
 }

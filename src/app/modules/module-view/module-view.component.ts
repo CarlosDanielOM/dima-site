@@ -1,17 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import {
-  LucideAngularModule,
-  Crown,
-  Lock,
-  FlaskConical,
-  Wrench,
-  Clock,
-} from 'lucide-angular';
-import { Module, ReleaseStage, StageInfo } from '../../services/module.service';
+import { LucideAngularModule, Crown, Lock } from 'lucide-angular';
+import { Module } from '../../interfaces/module';
 import { ModuleService } from '../../services/module.service';
 import { UserService } from '../../user.service';
+import { LanguageService } from '../../services/language.service';
+import { ReleaseStageService, DisplayStatus } from '../../services/release-stage.service';
 
 @Component({
   selector: 'app-module-view',
@@ -21,7 +16,6 @@ import { UserService } from '../../user.service';
   styleUrl: './module-view.component.css',
 })
 export class ModuleViewComponent implements OnInit {
-  lang: 'EN' | 'ES' = (localStorage.getItem('lang') as 'EN' | 'ES') || 'EN';
   crownIcon = Crown;
   lockIcon = Lock;
 
@@ -31,49 +25,27 @@ export class ModuleViewComponent implements OnInit {
   modules: Module[] = [];
   isLoading = true;
 
+  // Translation messages using the language service
   permissionMessages = {
     needs_premium: {
-      EN: 'Requires Premium',
-      ES: 'Requiere Premium',
+      en: 'Requires Premium',
+      es: 'Requiere Premium',
     },
     needs_premium_plus: {
-      EN: 'Requires Premium Plus',
-      ES: 'Requiere Premium Plus',
-    },
-  };
-
-  stageMap: Record<ReleaseStage, StageInfo> = {
-    stable: {
-      message: { EN: 'Available', ES: 'Disponible' },
-      color: 'text-green-500',
-      icon: null,
-    },
-    beta: {
-      message: { EN: 'Beta', ES: 'Beta' },
-      color: 'text-orange-500',
-      icon: FlaskConical,
-    },
-    alpha: {
-      message: { EN: 'Alpha', ES: 'Alfa' },
-      color: 'text-purple-600',
-      icon: FlaskConical,
-    },
-    maintenance: {
-      message: { EN: 'Maintenance', ES: 'Mantenimiento' },
-      color: 'text-yellow-500',
-      icon: Wrench,
-    },
-    coming_soon: {
-      message: { EN: 'Coming Soon', ES: 'Próximamente' },
-      color: 'text-blue-500',
-      icon: Clock,
+      en: 'Requires Premium Plus',
+      es: 'Requiere Premium Plus',
     },
   };
 
   constructor(
     private moduleService: ModuleService,
-    private userService: UserService
+    private userService: UserService,
+    private languageService: LanguageService,
+    private releaseStageService: ReleaseStageService
   ) {}
+
+  // Computed properties for reactive language handling
+  currentLanguage = this.languageService.currentLanguage;
 
   ngOnInit(): void {
     this.userPremiumStatus = this.userService.getPremiumStatus() as 'none' | 'premium' | 'premium_plus';
@@ -88,35 +60,20 @@ export class ModuleViewComponent implements OnInit {
     canAccess: boolean;
     reason?: 'needs_premium' | 'needs_premium_plus';
   } {
-    if (module.premium_plus && this.userPremiumStatus !== 'premium_plus') {
-      return { canAccess: false, reason: 'needs_premium_plus' };
-    }
-    if (module.premium && this.userPremiumStatus === 'none') {
-      return { canAccess: false, reason: 'needs_premium' };
-    }
-    return { canAccess: true };
+    return this.releaseStageService.getUserAccess(module, this.userPremiumStatus);
   }
 
-  getModuleDisplayStatus(module: Module): {
-    text: string;
-    icon: any;
-    color: string;
-  } {
-    const access = this.getUserAccess(module);
-    if (!access.canAccess && access.reason) {
-      return {
-        text: this.permissionMessages[access.reason][this.lang],
-        icon: this.lockIcon,
-        color: 'text-yellow-600',
-      };
-    }
-
-    const stageInfo = this.stageMap[module.releaseStage];
+  getModuleDisplayStatus(module: Module): DisplayStatus {
+    const result = this.releaseStageService.getDisplayStatus(module as any, this.userPremiumStatus, this.permissionMessages);
     return {
-      text: stageInfo.message[this.lang],
-      icon: stageInfo.icon,
-      color: stageInfo.color,
+      text: result.text,
+      icon: result.icon,
+      color: result.color
     };
+  }
+
+  getModuleDescription(description: { en: string; es: string }): string {
+    return this.languageService.getTranslation(description);
   }
 
   trackByName(index: number, module: Module): string {
