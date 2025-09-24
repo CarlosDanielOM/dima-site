@@ -1,11 +1,11 @@
 <!-- Mobile Sidebar -->
-<div class="fixed inset-0 z-40 md:hidden dark:bg-gray-900 dark:text-white" *ngIf="isOpen">
+<div class="fixed inset-0 z-40 md:hidden text-gray-900 dark:text-white" *ngIf="isOpen">
   <!-- Backdrop -->
-  <div class="fixed inset-0 bg-black/30" (click)="toggleSidebar()"></div>
+  <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" (click)="toggleSidebar()"></div>
   <!-- Sidebar -->
-  <div class="fixed inset-y-0 left-0 shadow-lg mt-16 transition-all duration-300 ease-in-out z-50"
+  <div class="fixed inset-y-0 left-0 mt-16 transition-all duration-300 ease-in-out z-50 shadow-xl border-r border-white/40 dark:border-white/10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 supports-[backdrop-filter]:dark:bg-slate-900/70"
        [class.w-[240px]]="isOpen">
-    <nav class="flex flex-col h-full">
+    <nav class="flex flex-col h-full text-gray-900 dark:text-slate-100">
       
       <div class="overflow-y-auto flex-1">
         <div class="space-y-2 py-4">
@@ -13,7 +13,7 @@
             @if(!link.disabled) {
               <a
                 [routerLink]="link.href"
-                class="flex items-center py-2 px-4 text-sm font-medium rounded-md hover:bg-purple-100 w-full"
+                class="flex items-center py-2 px-4 text-sm font-medium rounded-md hover:bg-purple-100/80 dark:hover:bg-purple-500/20 transition-colors w-full"
                 (click)="toggleSidebar()"
               >
                 <i-lucide [name]="link.icon" class="w-5 h-5 mr-2 flex-shrink-0"></i-lucide>
@@ -27,7 +27,7 @@
                 }
               </a>
             } @else {
-              <div class="flex items-center py-2 px-4 text-sm font-medium rounded-md hover:bg-purple-100 w-full opacity-50">
+              <div class="flex items-center py-2 px-4 text-sm font-medium rounded-md hover:bg-purple-100/80 dark:hover:bg-purple-500/20 transition-colors w-full opacity-50">
                 <i-lucide [name]="constructionIcon" class="w-5 h-5 mr-2 flex-shrink-0"></i-lucide>
                 <span class="whitespace-nowrap" [class.hidden]="!isOpen">{{ link.label }}</span>
                 @if(link.premium_plus) {
@@ -47,7 +47,7 @@
 </div>
 
 <!-- Desktop Sidebar -->
-<div class="hidden md:block h-[calc(100vh-64px)] fixed left-0 top-16 w-[240px] bg-white border-r border-gray-200 dark:bg-gray-900 dark:text-white">
+<div class="hidden md:block h-[calc(100vh-64px)] fixed left-0 top-16 w-[240px] border border-white/40 dark:border-white/10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 supports-[backdrop-filter]:dark:bg-slate-900/70 shadow-xl text-gray-900 dark:text-slate-100">
   <nav class="flex flex-col h-full">
     <div class="overflow-y-auto flex-1">
       <div class="space-y-2 px-4 py-4">
@@ -55,7 +55,7 @@
           @if(!link.disabled) {
             <a
               [routerLink]="link.href"
-              class="flex items-center py-2 px-4 text-sm font-medium rounded-md hover:bg-purple-100 w-full"
+              class="flex items-center py-2 px-4 text-sm font-medium rounded-md hover:bg-purple-100/80 dark:hover:bg-purple-500/20 transition-colors w-full"
             >
               <i-lucide [name]="link.icon" class="w-5 h-5 mr-2 flex-shrink-0"></i-lucide>
               <span class="whitespace-nowrap">{{ link.label }}</span>
@@ -68,7 +68,7 @@
               }
             </a>
           } @else {
-            <div class="flex items-center py-2 px-4 text-sm font-medium rounded-md hover:bg-purple-100 w-full opacity-50">
+            <div class="flex items-center py-2 px-4 text-sm font-medium rounded-md hover:bg-purple-100/80 dark:hover:bg-purple-500/20 transition-colors w-full opacity-50">
               <i-lucide [name]="constructionIcon" class="w-5 h-5 mr-2 flex-shrink-0"></i-lucide>
               <span class="whitespace-nowrap">{{ link.label }}</span>
               @if(link.premium_plus) {
