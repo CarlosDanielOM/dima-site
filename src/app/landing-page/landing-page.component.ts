@@ -6,7 +6,6 @@ import { LanguageService } from '../services/language.service';
 import { LucideAngularModule } from 'lucide-angular';
 import { CountUpDirective } from '../directives/count-up.directive';
 import {
-  Twitch,
   Activity,
   Tv,
   Users,
@@ -31,7 +30,6 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
   refferal: string = '';
   twitchAuthUrl: string = '';
-  twitchIcon = Twitch;
   activityIcon = Activity;
   tvIcon = Tv;
   usersIcon = Users;
@@ -43,7 +41,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   siteStats = {
     activeChannels: 40,
     liveChannels: 8,
-    registeredChannels: 62
+    registeredChannels: 63
   }
 
   private analyticsNamespaces = [

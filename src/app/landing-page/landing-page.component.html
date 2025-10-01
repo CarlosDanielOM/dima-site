@@ -4,7 +4,7 @@
     <div class="parallax-layer" data-depth="0.09"><div class="aurora-blob blob-3"></div></div>
     <header class="px-4 lg:px-6 h-14 flex items-center">
       <a class="flex items-center justify-center" href="#">
-        <lucide-icon name="twitch" class="h-6 w-6 text-purple-600"></lucide-icon>
+        <svg class="w-6 h-6 mr-2" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitch</title><path fill="#9146FF" d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
         <span class="ml-2 text-2xl font-bold text-purple-900">DomDimaBot</span>
       </a>
       <nav class="ml-auto flex gap-4 sm:gap-6">
@@ -32,11 +32,9 @@
               </p>
             </div>
             <div class="space-x-4">
-              <a class="btn-gradient hover:cursor-pointer inline-flex items-center" (click)="loginWithTwitch()">
-                <p class="inline">
-                  <lucide-icon [name]="twitchIcon" class="text-white inline h-8 w-8"></lucide-icon>
-                  Login with Twitch
-                </p>
+              <a class="btn-gradient hover:cursor-pointer inline-flex items-center gap-2" (click)="loginWithTwitch()">
+                <svg class="w-6 h-6" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitch</title><path fill="#9146FF" d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
+                <span>Login with Twitch</span>
               </a>
               <button class="btn-outline-gradient hover:cursor-pointer">
                 Learn More
@@ -194,7 +192,7 @@
             </div>
             <div class="w-full max-w-sm space-y-2">
               <button class="w-full btn-gradient text-white font-semibold py-2 px-4 rounded-md flex items-center justify-center space-x-2" (click)="loginWithTwitch()">
-                <lucide-icon [name]="twitchIcon" class="h-5 w-5"></lucide-icon>
+                <svg class="w-6 h-6" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitch</title><path fill="#9146FF" d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
                 <span>Sign Up with Twitch</span>
               </button>
               <p class="text-xs text-purple-700">
