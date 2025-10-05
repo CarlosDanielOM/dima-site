@@ -39,9 +39,9 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   checkIcon = Check;
 
   siteStats = {
-    activeChannels: 40,
-    liveChannels: 8,
-    registeredChannels: 63
+    activeChannels: 0,
+    liveChannels: 0,
+    registeredChannels: 0
   }
 
   private analyticsNamespaces = [
@@ -107,8 +107,8 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
   private async connectAnalyticsNamespaces(): Promise<void> {
     try {
-      // Connect to all analytics namespaces
-      await Promise.all(this.analyticsNamespaces.map(ns => this.websocketService.connectNamespace(ns)));
+      // Use the optimized batch connection method
+      await this.websocketService.connectMultipleNamespaces(this.analyticsNamespaces);
       console.log('WebSocket namespace connections established for analytics');
     } catch (error) {
       console.error('Failed to connect to WebSocket:', error);
@@ -118,20 +118,26 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   private setupAnalyticsListeners(): void {
     // Active channels (expects event name 'active-channels')
     this.websocketService.onNamespace('/site/analytics/active-channels', 'active-channels', (data: any) => {
-      const value = this.extractCount(data, ['active', 'count']);
-      if (typeof value === 'number') this.siteStats.activeChannels = value;
+      const value = parseInt(data);
+      if (typeof value === 'number') {
+        this.siteStats.activeChannels = value;
+      }
     });
 
     // Live channels (expects event name 'live-channels')
     this.websocketService.onNamespace('/site/analytics/live-channels', 'live-channels', (data: any) => {
-      const value = this.extractCount(data, ['live', 'count']);
-      if (typeof value === 'number') this.siteStats.liveChannels = value;
+      const value = parseInt(data);
+      if (typeof value === 'number') {
+        this.siteStats.liveChannels = value;
+      }
     });
 
     // Registered channels (expects event name 'registered-channels')
     this.websocketService.onNamespace('/site/analytics/registered-channels', 'registered-channels', (data: any) => {
-      const value = this.extractCount(data, ['registered', 'count']);
-      if (typeof value === 'number') this.siteStats.registeredChannels = value;
+      const value = parseInt(data);
+      if (typeof value === 'number') {
+        this.siteStats.registeredChannels = value;
+      }
     });
   }
 

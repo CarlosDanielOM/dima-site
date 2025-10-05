@@ -18,6 +18,10 @@ export interface WebSocketConfig {
   reconnectionAttempts?: number;
   reconnectionDelay?: number;
   reconnectionDelayMax?: number;
+  timeout?: number;
+  forceNew?: boolean;
+  upgrade?: boolean;
+  rememberUpgrade?: boolean;
 }
 
 @Injectable({
@@ -33,16 +37,24 @@ export class WebsocketService implements OnDestroy {
   private maxReconnectAttempts = 5;
   private activeEndpoints = new Set<string>();
   private namespaceSockets = new Map<string, Socket>();
+  private connectionPool = new Map<string, Socket>();
+  private preWarmedConnections = new Set<string>();
 
   constructor() {
     // Optional: Auto-connect with default endpoint
     // this.connect();
+    
+    // Pre-warm connections for better performance (disabled in development/testing)
+    if (environment.production) {
+      this.preWarmConnections();
+    }
   }
 
   ngOnDestroy(): void {
     this.disconnect();
     this.connectionState$.complete();
     this.error$.complete();
+    this.cleanupConnectionPool();
   }
 
   /**
@@ -89,24 +101,43 @@ export class WebsocketService implements OnDestroy {
       this.connectionState$.next(ConnectionState.CONNECTING);
 
       const defaultConfig: WebSocketConfig = {
-        transports: ['websocket'],
+        transports: ['websocket', 'polling'], // Add polling as fallback for faster initial connection
         reconnection: true,
         reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
-        reconnectionDelayMax: 5000,
+        reconnectionDelay: 500, // Faster initial reconnection
+        reconnectionDelayMax: 3000, // Reduced max delay
+        timeout: 5000, // Connection timeout
+        forceNew: false, // Reuse existing connections when possible
+        upgrade: true, // Allow transport upgrades
+        rememberUpgrade: true, // Remember successful upgrades
         ...config
       };
 
       // Use environment-based URL - connect to base URL, not specific namespace
       const baseUrl = environment.production
         ? environment.DIMA_API.replace(/^http/, 'ws')
-        : 'ws://localhost:3000';
+        : environment.DIMA_API.replace(/^http/, 'ws');
 
       // Connect to root namespace, endpoints will be used as event names
       const socketUrl = baseUrl;
 
       try {
-        this.ws = io(socketUrl, defaultConfig);
+        // Try to use a pre-warmed connection first (only in production)
+        if (environment.production) {
+          const pooledConnection = this.getPooledConnection(socketUrl);
+          if (pooledConnection && pooledConnection.connected) {
+            this.ws = pooledConnection;
+            this.preWarmedConnections.delete('main');
+            this.connectionPool.delete('main');
+            console.log('Using pre-warmed connection');
+          } else {
+            this.ws = io(socketUrl, defaultConfig);
+          }
+        } else {
+          // In development/testing, always create fresh connections
+          this.ws = io(socketUrl, defaultConfig);
+        }
+        
         this.currentEndpoint = endpoint;
         this.activeEndpoints.add(endpoint);
         this.setupEventListeners(resolve, reject);
@@ -228,17 +259,17 @@ export class WebsocketService implements OnDestroy {
       }
 
       const defaultConfig: WebSocketConfig = {
-        transports: ['websocket'],
+        transports: ['websocket', 'polling'], // Add polling as fallback for faster initial connection
         reconnection: true,
         reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
-        reconnectionDelayMax: 5000,
+        reconnectionDelay: 500, // Faster initial reconnection
+        reconnectionDelayMax: 3000, // Reduced max delay
+        timeout: 5000, // Connection timeout
+        forceNew: false, // Reuse existing connections when possible
+        upgrade: true, // Allow transport upgrades
+        rememberUpgrade: true, // Remember successful upgrades
         ...config
       };
-
-      // const baseUrl = environment.production
-      //   ? environment.DIMA_API.replace(/^http/, 'ws')
-      //   : 'ws://localhost:3000';
 
       const baseUrl = environment.DIMA_API.replace(/^http/, 'ws');
 
@@ -300,6 +331,20 @@ export class WebsocketService implements OnDestroy {
     socket.removeAllListeners();
     socket.disconnect();
     this.namespaceSockets.delete(ns);
+  }
+
+  /**
+   * Connect to multiple namespaces efficiently in parallel
+   */
+  async connectMultipleNamespaces(namespacePaths: string[], config: Partial<WebSocketConfig> = {}): Promise<void> {
+    const connectionPromises = namespacePaths.map(ns => this.connectNamespace(ns, config));
+    
+    try {
+      await Promise.allSettled(connectionPromises);
+      console.log(`Connected to ${namespacePaths.length} namespaces`);
+    } catch (error) {
+      console.error('Failed to connect to some namespaces:', error);
+    }
   }
 
   /**
@@ -368,7 +413,7 @@ export class WebsocketService implements OnDestroy {
     }
 
     this.reconnectAttempts++;
-    const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 5000);
+    const delay = Math.min(500 * Math.pow(1.5, this.reconnectAttempts), 3000); // Faster reconnection
 
     setTimeout(() => {
       if (this.currentEndpoint && !this.ws?.connected) {
@@ -378,5 +423,112 @@ export class WebsocketService implements OnDestroy {
         });
       }
     }, delay);
+  }
+
+  /**
+   * Pre-warm connections for faster initial connection
+   */
+  private preWarmConnections(): void {
+    // Pre-warm the main connection in the background
+    setTimeout(() => {
+      this.preWarmMainConnection();
+    }, 100);
+  }
+
+  /**
+   * Pre-warm the main WebSocket connection
+   */
+  private preWarmMainConnection(): void {
+    if (this.ws?.connected || this.preWarmedConnections.has('main')) {
+      return;
+    }
+
+    const baseUrl = environment.DIMA_API.replace(/^http/, 'ws');
+
+    const preWarmConfig = {
+      transports: ['websocket', 'polling'],
+      reconnection: false, // Don't auto-reconnect for pre-warming
+      timeout: 3000,
+      forceNew: true
+    };
+
+    try {
+      const preWarmSocket = io(baseUrl, preWarmConfig);
+      
+      preWarmSocket.on('connect', () => {
+        console.log('Pre-warmed connection established');
+        this.preWarmedConnections.add('main');
+        this.connectionPool.set('main', preWarmSocket);
+      });
+
+      preWarmSocket.on('connect_error', () => {
+        // Silently fail for pre-warming
+        preWarmSocket.disconnect();
+      });
+
+      // Clean up pre-warm connection after 30 seconds if not used
+      setTimeout(() => {
+        if (preWarmSocket.connected && !this.ws?.connected) {
+          preWarmSocket.disconnect();
+          this.preWarmedConnections.delete('main');
+          this.connectionPool.delete('main');
+        }
+      }, 30000);
+
+    } catch (error) {
+      // Silently fail for pre-warming
+    }
+  }
+
+  /**
+   * Get a pre-warmed connection from the pool
+   */
+  private getPooledConnection(url: string): Socket | null {
+    return this.connectionPool.get(url) || null;
+  }
+
+  /**
+   * Clean up connection pool
+   */
+  private cleanupConnectionPool(): void {
+    this.connectionPool.forEach(socket => {
+      if (socket.connected) {
+        socket.disconnect();
+      }
+    });
+    this.connectionPool.clear();
+    this.preWarmedConnections.clear();
+  }
+
+  /**
+   * Force disconnect all connections (useful for testing)
+   */
+  forceDisconnectAll(): void {
+    console.log('Force disconnecting all WebSocket connections...');
+    
+    // Disconnect main connection
+    if (this.ws) {
+      this.ws.removeAllListeners();
+      this.ws.disconnect();
+      this.ws = null;
+    }
+    
+    // Disconnect all namespace connections
+    this.namespaceSockets.forEach(socket => {
+      socket.removeAllListeners();
+      socket.disconnect();
+    });
+    this.namespaceSockets.clear();
+    
+    // Clean up connection pool
+    this.cleanupConnectionPool();
+    
+    // Reset state
+    this.currentEndpoint = null;
+    this.activeEndpoints.clear();
+    this.reconnectAttempts = 0;
+    this.connectionState$.next(ConnectionState.DISCONNECTED);
+    
+    console.log('All WebSocket connections disconnected');
   }
 }
