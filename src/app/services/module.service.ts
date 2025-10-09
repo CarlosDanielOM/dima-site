@@ -59,9 +59,9 @@ export class ModuleService {
           en: 'Create, edit, and manage redemptions for your content. Redemptions are rewards that can be redeemed by viewers.',
           es: 'Crea, edita y gestiona redemptions para tu contenido. Las redemptions son recompensas que pueden ser canjeadas por los espectadores.',
         },
-        releaseStage: 'alpha',
-        premium: true,
-        premium_plus: true,
+        releaseStage: 'beta',
+        premium: false,
+        premium_plus: false,
       },
     ];
     return of(mockModules);

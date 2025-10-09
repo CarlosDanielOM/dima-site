@@ -99,7 +99,12 @@ export class RedemptionsComponent implements OnInit {
     message: { en: 'Message', es: 'Mensaje' },
     noMessageAvailable: { en: 'No Message Available', es: 'Sin Mensaje Disponible' },
     createReward: { en: 'Create Reward', es: 'Crear Recompensa' },
-    createRewardTooltip: { en: 'Create a new custom reward', es: 'Crear una nueva recompensa personalizada' }
+    createRewardTooltip: { en: 'Create a new custom reward', es: 'Crear una nueva recompensa personalizada' },
+    twitchReadOnlyTitle: { en: 'Twitch Reward (Read-Only)', es: 'Recompensa de Twitch (Solo Lectura)' },
+    twitchReadOnlyInfo: { en: 'This reward was created directly in Twitch and cannot be modified here. To customize it, delete it from Twitch and recreate it using this app. Future update may allowed adding limited abilities but no customization', es: 'Esta recompensa fue creada directamente en Twitch y no puede ser modificada aquí. Para personalizarla, elimínala de Twitch y recréala usando esta aplicación. Futuras actualizaciones podran permitir agregar habilidades limitadas pero no personalizar la recompensa.' },
+    twitchReadOnlyTooltip: { en: 'Twitch rewards are read-only. Delete from Twitch and recreate here to customize.', es: 'Las recompensas de Twitch son de solo lectura. Elimina de Twitch y recrea aquí para personalizar.' },
+    deleteFromTwitch: { en: 'Delete from Twitch', es: 'Eliminar de Twitch' },
+    deleteFromTwitchTooltip: { en: 'Delete this reward from Twitch to recreate it as a custom reward', es: 'Elimina esta recompensa de Twitch para recrearla como una recompensa personalizada' }
   };
   
   constructor(
@@ -264,6 +269,31 @@ export class RedemptionsComponent implements OnInit {
 
   getCreateRewardTooltip(): string {
     return this.languageService.getTranslation(this.labels.createRewardTooltip) || 'Create a new custom reward';
+  }
+
+  getTwitchReadOnlyTitle(): string {
+    return this.languageService.getTranslation(this.labels.twitchReadOnlyTitle) || 'Twitch Reward (Read-Only)';
+  }
+
+  getTwitchReadOnlyInfo(): string {
+    return this.languageService.getTranslation(this.labels.twitchReadOnlyInfo) || 'This reward was created directly in Twitch and cannot be modified here. To customize it, delete it from Twitch and recreate it using this app.';
+  }
+
+  getTwitchReadOnlyTooltip(): string {
+    return this.languageService.getTranslation(this.labels.twitchReadOnlyTooltip) || 'Twitch rewards are read-only. Delete from Twitch and recreate here to customize.';
+  }
+
+  getDeleteFromTwitch(): string {
+    return this.languageService.getTranslation(this.labels.deleteFromTwitch) || 'Delete from Twitch';
+  }
+
+  getDeleteFromTwitchTooltip(): string {
+    return this.languageService.getTranslation(this.labels.deleteFromTwitchTooltip) || 'Delete this reward from Twitch to recreate it as a custom reward';
+  }
+
+  // Helper method to check if a redemption is a Twitch reward
+  isTwitchReward(redemption: Redemptions): boolean {
+    return redemption.type === 'twitch' || !redemption.rewardID;
   }
 
   // Color picker methods
@@ -448,6 +478,7 @@ export class RedemptionsComponent implements OnInit {
     this.isLoadingTwitch = true;
     this.redemptionsService.getTwitchRedemptions(forceRefresh).subscribe({
       next: (redemptions) => {
+        console.log('Twitch redemptions:', redemptions);
         // Map Twitch API response to our Redemptions interface
         this.twitchRedemptions = redemptions.map((twitchReward: any) => ({
           eventsubID: twitchReward.id,

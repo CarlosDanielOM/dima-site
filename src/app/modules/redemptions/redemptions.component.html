@@ -54,10 +54,14 @@
       @for (r of customRedemptions; track r.rewardID || r.eventsubID) {
         <div class="rounded-xl shadow border overflow-hidden bg-white relative">
           <div 
-            class="h-2 w-full cursor-pointer hover:opacity-80 transition-opacity color-bar"
+            class="h-2 w-full transition-opacity color-bar"
+            [class.cursor-pointer]="!isTwitchReward(r)"
+            [class.hover:opacity-80]="!isTwitchReward(r)"
+            [class.cursor-not-allowed]="isTwitchReward(r)"
+            [class.opacity-60]="isTwitchReward(r)"
             [style.background]="getCardColor(r)"
-            (dblclick)="onColorDoubleClick(r)"
-            title="Double-click to change color">
+            (dblclick)="!isTwitchReward(r) && onColorDoubleClick(r)"
+            [title]="isTwitchReward(r) ? getTwitchReadOnlyTooltip() : 'Double-click to change color'">
           </div>
           
           <!-- Color Picker Popup -->
@@ -208,9 +212,13 @@
                       #titleInput>
                   </div>
                 } @else {
-                  <h2 class="text-lg font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded"
-                    (dblclick)="onFieldDoubleClick(r, 'title')"
-                    title="Double-click to edit">{{ r.title }}</h2>
+                  <h2 class="text-lg font-semibold text-gray-900"
+                    [class.cursor-pointer]="!isTwitchReward(r)"
+                    [class.hover:bg-gray-100]="!isTwitchReward(r)"
+                    [class.cursor-not-allowed]="isTwitchReward(r)"
+                    [class.opacity-60]="isTwitchReward(r)"
+                    (dblclick)="!isTwitchReward(r) && onFieldDoubleClick(r, 'title')"
+                    [title]="isTwitchReward(r) ? getTwitchReadOnlyTooltip() : 'Double-click to edit'">{{ r.title }}</h2>
                 }
                 
                 @if (isEditingField(r, 'prompt')) {
@@ -241,9 +249,16 @@
                       #promptInput></textarea>
                   </div>
                 } @else {
-                  <p class="text-sm text-gray-600 cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded"
-                    (dblclick)="onFieldDoubleClick(r, 'prompt')"
-                    title="Double-click to edit">{{ r.prompt }}</p>
+                  <p class="text-sm text-gray-600"
+                    [class.cursor-pointer]="!isTwitchReward(r)"
+                    [class.hover:bg-gray-100]="!isTwitchReward(r)"
+                    [class.cursor-not-allowed]="isTwitchReward(r)"
+                    [class.opacity-60]="isTwitchReward(r)"
+                    [class.px-1]="!isTwitchReward(r)"
+                    [class.py-0.5]="!isTwitchReward(r)"
+                    [class.rounded]="!isTwitchReward(r)"
+                    (dblclick)="!isTwitchReward(r) && onFieldDoubleClick(r, 'prompt')"
+                    [title]="isTwitchReward(r) ? getTwitchReadOnlyTooltip() : 'Double-click to edit'">{{ r.prompt }}</p>
                 }
                 
                 <!-- Redemption Message -->
@@ -277,9 +292,13 @@
                         #messageInput></textarea>
                     </div>
                   } @else {
-                    <div class="text-sm text-gray-700 bg-gray-50 rounded px-2 py-1 border-l-2 border-gray-300 cursor-pointer hover:bg-gray-100"
-                      (dblclick)="onFieldDoubleClick(r, 'message')"
-                      title="Double-click to edit">
+                    <div class="text-sm text-gray-700 bg-gray-50 rounded px-2 py-1 border-l-2 border-gray-300"
+                      [class.cursor-pointer]="!isTwitchReward(r)"
+                      [class.hover:bg-gray-100]="!isTwitchReward(r)"
+                      [class.cursor-not-allowed]="isTwitchReward(r)"
+                      [class.opacity-60]="isTwitchReward(r)"
+                      (dblclick)="!isTwitchReward(r) && onFieldDoubleClick(r, 'message')"
+                      [title]="isTwitchReward(r) ? getTwitchReadOnlyTooltip() : 'Double-click to edit'">
                       {{ getRedemptionMessage(r) }}
                     </div>
                   }
@@ -328,9 +347,16 @@
                       #costInput>
                   </div>
                 } @else {
-                  <div class="text-base font-semibold text-gray-900 cursor-pointer hover:bg-gray-200 px-1 py-0.5 rounded"
-                    (dblclick)="onFieldDoubleClick(r, 'cost')"
-                    title="Double-click to edit">{{ r.cost }}</div>
+                  <div class="text-base font-semibold text-gray-900"
+                    [class.cursor-pointer]="!isTwitchReward(r)"
+                    [class.hover:bg-gray-200]="!isTwitchReward(r)"
+                    [class.cursor-not-allowed]="isTwitchReward(r)"
+                    [class.opacity-60]="isTwitchReward(r)"
+                    [class.px-1]="!isTwitchReward(r)"
+                    [class.py-0.5]="!isTwitchReward(r)"
+                    [class.rounded]="!isTwitchReward(r)"
+                    (dblclick)="!isTwitchReward(r) && onFieldDoubleClick(r, 'cost')"
+                    [title]="isTwitchReward(r) ? getTwitchReadOnlyTooltip() : 'Double-click to edit'">{{ r.cost }}</div>
                 }
               </div>
               <div class="bg-gray-50 rounded-lg p-3">
@@ -366,9 +392,16 @@
                       #cooldownInput>
                   </div>
                 } @else {
-                  <div class="text-base font-semibold text-gray-900 cursor-pointer hover:bg-gray-200 px-1 py-0.5 rounded"
-                    (dblclick)="onFieldDoubleClick(r, 'cooldown')"
-                    title="Double-click to edit">{{ r.cooldown }}s</div>
+                  <div class="text-base font-semibold text-gray-900"
+                    [class.cursor-pointer]="!isTwitchReward(r)"
+                    [class.hover:bg-gray-200]="!isTwitchReward(r)"
+                    [class.cursor-not-allowed]="isTwitchReward(r)"
+                    [class.opacity-60]="isTwitchReward(r)"
+                    [class.px-1]="!isTwitchReward(r)"
+                    [class.py-0.5]="!isTwitchReward(r)"
+                    [class.rounded]="!isTwitchReward(r)"
+                    (dblclick)="!isTwitchReward(r) && onFieldDoubleClick(r, 'cooldown')"
+                    [title]="isTwitchReward(r) ? getTwitchReadOnlyTooltip() : 'Double-click to edit'">{{ r.cooldown }}s</div>
                 }
               </div>
             </div>
@@ -632,33 +665,44 @@
             </div> -->
 
             <div class="mt-4 flex flex-wrap items-center justify-end gap-2">
-              @if (isInBulkEditMode(r)) {
-                <button type="button"
-                  class="px-3 py-1.5 text-sm font-medium rounded-md bg-green-500 text-white hover:bg-green-600 flex-shrink-0"
-                  (click)="saveBulkEdit(r)">{{ getSaveAll() }}</button>
-                <button type="button"
-                  class="px-3 py-1.5 text-sm font-medium rounded-md bg-gray-500 text-white hover:bg-gray-600 flex-shrink-0"
-                  (click)="cancelBulkEdit(r)">{{ getCancelAll() }}</button>
-                <button type="button"
-                  class="px-3 py-1.5 text-sm font-medium rounded-md bg-blue-500 text-white hover:bg-blue-600 flex-shrink-0"
-                  (click)="exitBulkEditMode(r)">{{ getExitEditMode() }}</button>
+              @if (isTwitchReward(r)) {
+                <!-- Twitch Reward Actions -->
+                <div class="flex items-center gap-2 text-xs text-orange-600 bg-orange-50 px-3 py-1.5 rounded-md border border-orange-200">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  <span>{{ getTwitchReadOnlyTitle() }}</span>
+                </div>
               } @else {
-                <button type="button"
-                  class="px-3 py-1.5 text-sm font-medium rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200 flex-shrink-0"
-                  (click)="onEdit(r)">{{ getEdit() }}</button>
-                <button type="button"
-                  class="px-3 py-1.5 text-sm font-medium rounded-md bg-red-500 text-white hover:bg-red-600 flex-shrink-0"
-                  (click)="onDelete(r)">{{ getDelete() }}</button>
-                <button type="button"
-                  class="px-3 py-1.5 text-sm font-medium rounded-md flex-shrink-0"
-                  [class.bg-green-500]="!r.isEnabled"
-                  [class.hover\:bg-green-600]="!r.isEnabled"
-                  [class.bg-yellow-500]="r.isEnabled"
-                  [class.hover\:bg-yellow-600]="r.isEnabled"
-                  [class.text-white]="true"
-                  (click)="onToggleEnable(r)">
-                  {{ r.isEnabled ? getDisable() : getEnable() }}
-                </button>
+                <!-- Custom Reward Actions -->
+                @if (isInBulkEditMode(r)) {
+                  <button type="button"
+                    class="px-3 py-1.5 text-sm font-medium rounded-md bg-green-500 text-white hover:bg-green-600 flex-shrink-0"
+                    (click)="saveBulkEdit(r)">{{ getSaveAll() }}</button>
+                  <button type="button"
+                    class="px-3 py-1.5 text-sm font-medium rounded-md bg-gray-500 text-white hover:bg-gray-600 flex-shrink-0"
+                    (click)="cancelBulkEdit(r)">{{ getCancelAll() }}</button>
+                  <button type="button"
+                    class="px-3 py-1.5 text-sm font-medium rounded-md bg-blue-500 text-white hover:bg-blue-600 flex-shrink-0"
+                    (click)="exitBulkEditMode(r)">{{ getExitEditMode() }}</button>
+                } @else {
+                  <button type="button"
+                    class="px-3 py-1.5 text-sm font-medium rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200 flex-shrink-0"
+                    (click)="onEdit(r)">{{ getEdit() }}</button>
+                  <button type="button"
+                    class="px-3 py-1.5 text-sm font-medium rounded-md bg-red-500 text-white hover:bg-red-600 flex-shrink-0"
+                    (click)="onDelete(r)">{{ getDelete() }}</button>
+                  <button type="button"
+                    class="px-3 py-1.5 text-sm font-medium rounded-md flex-shrink-0"
+                    [class.bg-green-500]="!r.isEnabled"
+                    [class.hover\:bg-green-600]="!r.isEnabled"
+                    [class.bg-yellow-500]="r.isEnabled"
+                    [class.hover\:bg-yellow-600]="r.isEnabled"
+                    [class.text-white]="true"
+                    (click)="onToggleEnable(r)">
+                    {{ r.isEnabled ? getDisable() : getEnable() }}
+                  </button>
+                }
               }
             </div>
           </div>
@@ -734,11 +778,35 @@
       } @else {
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           @for (r of uniqueTwitchRedemptions; track r.rewardID || r.eventsubID) {
-            <div class="rounded-xl shadow border overflow-hidden bg-purple-50">
+            <div class="rounded-xl shadow border overflow-hidden bg-purple-50 relative">
+              <!-- Read-Only Indicator -->
+              <div class="absolute top-2 right-2 z-10">
+                <div class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full border border-orange-200"
+                  [title]="getTwitchReadOnlyTooltip()">
+                  <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  Read-Only
+                </div>
+              </div>
+              
               <div class="h-2 w-full bg-purple-500"></div>
               <div class="p-4" [style.filter]="getDisabledFilter(r.isEnabled)">
+                <!-- Read-Only Information Banner -->
+                <div class="mb-4 bg-orange-50 border border-orange-200 rounded-lg p-3">
+                  <div class="flex items-start gap-2">
+                    <svg class="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div class="text-xs text-orange-700">
+                      <div class="font-medium mb-1">{{ getTwitchReadOnlyTitle() }}</div>
+                      <div>{{ getTwitchReadOnlyInfo() }}</div>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="flex items-start justify-between">
-                  <div>
+                  <div class="flex-1">
                     <h3 class="text-lg font-semibold text-gray-900">{{ r.title }}</h3>
                     <p class="text-sm text-gray-600">{{ r.prompt }}</p>
                   </div>
@@ -763,14 +831,14 @@
                 </div>
 
                 <div class="mt-4 flex items-center justify-end gap-2">
-                  <!-- <button type="button"
-                    class="px-3 py-1.5 text-sm font-medium rounded-md bg-purple-500 text-white hover:bg-purple-600"
-                    (click)="onToggleEnable(r)">
-                    {{ r.isEnabled ? getDisable() : getEnable() }}
-                  </button> -->
                   <button type="button"
-                    class="px-3 py-1.5 text-sm font-medium rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200"
-                    >Enabled comming soon
+                    class="px-3 py-1.5 text-sm font-medium rounded-md bg-orange-500 text-white hover:bg-orange-600"
+                    [title]="getDeleteFromTwitchTooltip()">
+                    <svg class="w-3 h-3 mr-1 inline" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd"></path>
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    {{ getDeleteFromTwitch() }}
                   </button>
                 </div>
               </div>
