@@ -5,6 +5,13 @@
     </h1>
     <div class="flex gap-2">
       <button type="button"
+        class="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 bg-green-500 hover:bg-green-600 text-white"
+        (click)="openCreateRewardModal()"
+        [title]="getCreateRewardTooltip()">
+        <lucide-icon [name]="plusIcon" class="w-4 h-4 mr-2 inline"></lucide-icon>
+        {{ getCreateReward() }}
+      </button>
+      <button type="button"
         class="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200"
         [class.bg-blue-500]="refreshCooldown === 0"
         [class.hover:bg-blue-600]="refreshCooldown === 0"
@@ -773,4 +780,10 @@
       }
     </div>
   }
+
+  <!-- Create Reward Modal -->
+  <app-create-reward-modal 
+    [(isOpen)]="showCreateRewardModal"
+    (rewardCreated)="onRewardCreated($event)">
+  </app-create-reward-modal>
 </div>

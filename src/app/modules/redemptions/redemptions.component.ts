@@ -8,18 +8,20 @@ import { ConfirmationService } from '../../services/confirmation.service';
 import { ReleaseStageService } from '../../services/release-stage.service';
 import { LanguageService } from '../../services/language.service';
 import { UserService } from '../../user.service';
-import { Crown, LucideAngularModule } from 'lucide-angular';
+import { Crown, LucideAngularModule, Plus } from 'lucide-angular';
+import { CreateRewardModalComponent } from '../../shared/create-reward-modal/create-reward-modal.component';
 
 @Component({
   selector: 'app-redemptions',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule, CreateRewardModalComponent],
   templateUrl: './redemptions.component.html',
   styleUrl: './redemptions.component.css'
 })
 export class RedemptionsComponent implements OnInit {
 
   crownIcon = Crown;
+  plusIcon = Plus;
 
   redemptions: Redemptions[] = [];
   twitchRedemptions: Redemptions[] = [];
@@ -28,6 +30,9 @@ export class RedemptionsComponent implements OnInit {
   refreshCooldown = 0;
   twitchRefreshCooldown = 0;
   lang: 'en' | 'es' = 'en';
+  
+  // Create reward modal state
+  showCreateRewardModal = false;
   
   // Cached computed properties to avoid getter calls on every change detection
   private _customRedemptions: Redemptions[] = [];
@@ -92,7 +97,9 @@ export class RedemptionsComponent implements OnInit {
     premiumRequired: { en: 'Premium subscription required', es: 'Suscripción premium requerida' },
     premiumPlusRequired: { en: 'Premium Plus subscription required', es: 'Suscripción Premium Plus requerida' },
     message: { en: 'Message', es: 'Mensaje' },
-    noMessageAvailable: { en: 'No Message Available', es: 'Sin Mensaje Disponible' }
+    noMessageAvailable: { en: 'No Message Available', es: 'Sin Mensaje Disponible' },
+    createReward: { en: 'Create Reward', es: 'Crear Recompensa' },
+    createRewardTooltip: { en: 'Create a new custom reward', es: 'Crear una nueva recompensa personalizada' }
   };
   
   constructor(
@@ -249,6 +256,14 @@ export class RedemptionsComponent implements OnInit {
 
   getNoMessageAvailable(): string {
     return this.languageService.getTranslation(this.labels.noMessageAvailable) || 'No Message Available';
+  }
+
+  getCreateReward(): string {
+    return this.languageService.getTranslation(this.labels.createReward) || 'Create Reward';
+  }
+
+  getCreateRewardTooltip(): string {
+    return this.languageService.getTranslation(this.labels.createRewardTooltip) || 'Create a new custom reward';
   }
 
   // Color picker methods
@@ -864,5 +879,28 @@ export class RedemptionsComponent implements OnInit {
     setTimeout(() => {
       this.toastService.success(this.labels.refreshSuccess[this.lang], '');
     }, 500);
+  }
+
+  // Create reward methods
+  openCreateRewardModal() {
+    this.showCreateRewardModal = true;
+  }
+
+  closeCreateRewardModal() {
+    this.showCreateRewardModal = false;
+  }
+
+  onRewardCreated(rewardData: any) {
+    this.redemptionsService.createRedemption(rewardData).subscribe({
+      next: (createdReward) => {
+        this.toastService.success('Success', 'Reward created successfully');
+        this.loadRedemptions(true); // Refresh the list
+        this.closeCreateRewardModal();
+      },
+      error: (error) => {
+        console.error('Error creating reward:', error);
+        this.toastService.error('Error', 'Failed to create reward');
+      }
+    });
   }
 }

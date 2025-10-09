@@ -26,7 +26,17 @@ export class RedemptionsService {
   }
 
   createRedemption(redemption: Redemptions) {
-    
+    return this.http.post(`${environment.DIMA_API}/rewards/${this.userService.getUserId()}`, redemption, { headers: this.headers as any }).pipe(
+      map((res: any) => {
+        this.toastService.success('Redemption Created', 'The redemption has been created.');
+        this.invalidateRedemptionsCache();
+        return res.redemption;
+      }),
+      catchError((err: any) => {
+        this.toastService.error('Error', err.error.message);
+        return throwError(() => err);
+      })
+    )
   }
 
   getRedemptions(forceRefresh = false) {

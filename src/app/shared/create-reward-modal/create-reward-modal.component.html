@@ -1,0 +1,265 @@
+<!-- Modal Overlay -->
+@if (isOpen) {
+  <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <!-- Background overlay -->
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" (click)="closeModal()"></div>
+
+      <!-- Modal panel -->
+      <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <!-- Header -->
+        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium text-gray-900" id="modal-title">
+              {{ getCreateReward() }}
+            </h3>
+            <button type="button" 
+              class="text-gray-400 hover:text-gray-600 transition-colors"
+              (click)="closeModal()">
+              <lucide-icon [name]="xIcon" class="w-5 h-5"></lucide-icon>
+            </button>
+          </div>
+
+          <!-- Form -->
+          <form (ngSubmit)="onSubmit()" #rewardForm="ngForm">
+            <div class="space-y-4">
+              <!-- Title (Required) -->
+              <div>
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
+                  {{ getTitle() }} <span class="text-red-500">*</span>
+                </label>
+                <input type="text" 
+                  id="title"
+                  name="title"
+                  [(ngModel)]="newReward.title"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  [class.border-red-500]="validationErrors['title']"
+                  placeholder="Enter reward title"
+                  required>
+                @if (validationErrors['title']) {
+                  <p class="mt-1 text-sm text-red-600">{{ validationErrors['title'] }}</p>
+                }
+              </div>
+
+              <!-- Cost (Required) -->
+              <div>
+                <label for="cost" class="block text-sm font-medium text-gray-700 mb-1">
+                  {{ getCost() }} <span class="text-red-500">*</span>
+                </label>
+                <input type="number" 
+                  id="cost"
+                  name="cost"
+                  [(ngModel)]="newReward.cost"
+                  min="1"
+                  step="1"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  [class.border-red-500]="validationErrors['cost']"
+                  placeholder="Enter cost in points"
+                  required>
+                @if (validationErrors['cost']) {
+                  <p class="mt-1 text-sm text-red-600">{{ validationErrors['cost'] }}</p>
+                }
+              </div>
+
+              <!-- Prompt (Optional) -->
+              <div>
+                <label for="prompt" class="block text-sm font-medium text-gray-700 mb-1">
+                  {{ getPrompt() }}
+                </label>
+                <textarea 
+                  id="prompt"
+                  name="prompt"
+                  [(ngModel)]="newReward.prompt"
+                  rows="3"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  placeholder="Enter reward description (optional)"></textarea>
+              </div>
+
+              <!-- Cooldown (Optional) -->
+              <div>
+                <label for="cooldown" class="block text-sm font-medium text-gray-700 mb-1">
+                  {{ getCooldown() }}
+                </label>
+                <input type="number" 
+                  id="cooldown"
+                  name="cooldown"
+                  [(ngModel)]="newReward.cooldown"
+                  min="0"
+                  step="1"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  [class.border-red-500]="validationErrors['cooldown']"
+                  placeholder="Enter cooldown in seconds (optional)">
+                @if (validationErrors['cooldown']) {
+                  <p class="mt-1 text-sm text-red-600">{{ validationErrors['cooldown'] }}</p>
+                }
+              </div>
+
+              <!-- Background Color (Optional) -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                  {{ getBackgroundColor() }}
+                </label>
+                <div class="flex items-center gap-2">
+                  <div class="flex-1 relative">
+                    <input type="text" 
+                      [(ngModel)]="newReward.background_color"
+                      name="background_color"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      [class.border-red-500]="validationErrors['background_color']"
+                      placeholder="#6366f1">
+                    @if (validationErrors['background_color']) {
+                      <p class="mt-1 text-sm text-red-600">{{ validationErrors['background_color'] }}</p>
+                    }
+                  </div>
+                  <div 
+                    class="w-10 h-10 border border-gray-300 rounded cursor-pointer hover:opacity-80 transition-opacity"
+                    [style.background]="newReward.background_color"
+                    (click)="toggleColorPicker()"
+                    title="Click to open color picker">
+                  </div>
+                </div>
+
+                <!-- Color Picker Popup -->
+                @if (showColorPicker) {
+                  <div class="absolute z-10 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg p-4 w-full max-w-xs">
+                    <div class="mb-3">
+                      <label class="block text-sm font-medium text-gray-700 mb-2">{{ getPresetColors() }}</label>
+                      <div class="grid grid-cols-6 gap-2">
+                        @for (color of presetColors; track color) {
+                          <div 
+                            class="w-8 h-8 rounded cursor-pointer border-2 border-gray-300 hover:border-gray-400 transition-colors"
+                            [style.background-color]="color"
+                            (click)="onPresetColorSelect(color)"
+                            [title]="color">
+                          </div>
+                        }
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label class="block text-sm font-medium text-gray-700 mb-1">{{ getCustomColor() }}</label>
+                      <input type="text" 
+                        [(ngModel)]="newReward.background_color"
+                        class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        placeholder="#6366f1">
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <!-- Message (Optional) -->
+              <div>
+                <label for="message" class="block text-sm font-medium text-gray-700 mb-1">
+                  {{ getMessage() }}
+                </label>
+                <textarea 
+                  id="message"
+                  name="message"
+                  [(ngModel)]="newReward.message"
+                  rows="2"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  placeholder="Enter custom message (optional)"></textarea>
+              </div>
+
+              <!-- Premium Features Section -->
+              @if (isPremiumUser()) {
+                <div class="border-t border-gray-200 pt-4">
+                  <div class="flex items-center gap-2 mb-3">
+                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                    </svg>
+                    <span class="text-sm font-medium text-yellow-700">{{ getPremiumFeatures() }}</span>
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Original Cost -->
+                    <div class="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+                      <label for="originalCost" class="block text-xs text-yellow-600 mb-1">
+                        {{ getOriginalCost() }}
+                      </label>
+                      <input type="number" 
+                        id="originalCost"
+                        name="originalCost"
+                        [(ngModel)]="newReward.originalCost"
+                        min="0"
+                        step="1"
+                        class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        placeholder="0">
+                    </div>
+
+                    <!-- Cost Change -->
+                    <div class="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+                      <label for="costChange" class="block text-xs text-yellow-600 mb-1">
+                        {{ getCostChange() }}
+                      </label>
+                      <input type="number" 
+                        id="costChange"
+                        name="costChange"
+                        [(ngModel)]="newReward.costChange"
+                        step="1"
+                        class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        placeholder="0">
+                    </div>
+
+                    <!-- Return to Original Cost -->
+                    <div class="bg-yellow-50 rounded-lg p-3 border border-yellow-200 sm:col-span-2">
+                      <label class="flex items-center gap-2">
+                        <input type="checkbox" 
+                          [(ngModel)]="newReward.returnToOriginalCost"
+                          name="returnToOriginalCost"
+                          class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <span class="text-sm text-yellow-700">{{ getReturnToOriginalCost() }}</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              } @else {
+                <!-- Premium Features Locked -->
+                <div class="border-t border-gray-200 pt-4">
+                  <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-center gap-2 mb-2">
+                      <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                      </svg>
+                      <span class="text-sm font-medium text-gray-600">{{ getPremiumFeatures() }}</span>
+                    </div>
+                    <p class="text-xs text-gray-500">{{ getPremiumRequired() }}</p>
+                    <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div class="bg-gray-100 rounded p-2 opacity-60">
+                        <div class="text-xs text-gray-500">{{ getOriginalCost() }}</div>
+                        <div class="text-sm text-gray-400">--</div>
+                      </div>
+                      <div class="bg-gray-100 rounded p-2 opacity-60">
+                        <div class="text-xs text-gray-500">{{ getCostChange() }}</div>
+                        <div class="text-sm text-gray-400">--</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-6 flex justify-end gap-3">
+              <button type="button" 
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                (click)="closeModal()">
+                {{ getCancel() }}
+              </button>
+              <button type="submit" 
+                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                [disabled]="isSubmitting">
+                @if (isSubmitting) {
+                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                }
+                {{ getCreate() }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+}

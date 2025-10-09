@@ -1,0 +1,93 @@
+/* Modal animations */
+.modal-enter {
+  opacity: 0;
+}
+
+.modal-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-out;
+}
+
+.modal-exit {
+  opacity: 1;
+}
+
+.modal-exit-active {
+  opacity: 0;
+  transition: opacity 300ms ease-in;
+}
+
+/* Color picker positioning */
+.relative {
+  position: relative;
+}
+
+/* Form validation styles */
+.border-red-500 {
+  border-color: #ef4444;
+}
+
+/* Premium feature styling */
+.bg-yellow-50 {
+  background-color: #fefce8;
+}
+
+.border-yellow-200 {
+  border-color: #fde047;
+}
+
+.text-yellow-600 {
+  color: #ca8a04;
+}
+
+.text-yellow-700 {
+  color: #a16207;
+}
+
+/* Disabled state styling */
+.opacity-60 {
+  opacity: 0.6;
+}
+
+/* Focus states */
+.focus\:ring-blue-500:focus {
+  --tw-ring-color: #3b82f6;
+}
+
+.focus\:ring-1:focus {
+  --tw-ring-width: 1px;
+}
+
+.focus\:ring-2:focus {
+  --tw-ring-width: 2px;
+}
+
+/* Button hover states */
+.hover\:bg-gray-200:hover {
+  background-color: #e5e7eb;
+}
+
+.hover\:bg-blue-700:hover {
+  background-color: #1d4ed8;
+}
+
+.hover\:bg-gray-600:hover {
+  background-color: #4b5563;
+}
+
+.hover\:opacity-80:hover {
+  opacity: 0.8;
+}
+
+/* Transition effects */
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-opacity {
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
