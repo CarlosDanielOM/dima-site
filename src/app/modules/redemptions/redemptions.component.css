@@ -1,2 +1,18 @@
 /* Reserved for any custom styles beyond Tailwind utility classes */
 
+/* Prevent text selection on double-click for editable fields */
+.cursor-pointer {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Ensure color bar doesn't select text */
+.color-bar {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+

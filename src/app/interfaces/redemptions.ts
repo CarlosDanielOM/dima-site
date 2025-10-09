@@ -15,5 +15,5 @@ export interface Redemptions {
     returnToOriginalCost: boolean,
     duration: number,
     cooldown: number,
-    color?: string
+    background_color?: string
 }

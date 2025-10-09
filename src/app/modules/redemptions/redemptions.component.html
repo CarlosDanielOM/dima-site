@@ -45,16 +45,238 @@
   } @else {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
       @for (r of customRedemptions; track r.rewardID || r.eventsubID) {
-        <div class="rounded-xl shadow border overflow-hidden bg-white">
+        <div class="rounded-xl shadow border overflow-hidden bg-white relative">
           <div 
-            class="h-2 w-full"
-            [style.background]="getCardColor(r)">
+            class="h-2 w-full cursor-pointer hover:opacity-80 transition-opacity color-bar"
+            [style.background]="getCardColor(r)"
+            (dblclick)="onColorDoubleClick(r)"
+            title="Double-click to change color">
           </div>
+          
+          <!-- Color Picker Popup -->
+          @if (isColorPickerOpen(r)) {
+            <div class="absolute top-2 left-2 right-2 z-50 bg-white border border-gray-300 rounded-lg shadow-lg p-4 color-picker-popup">
+              <div class="mb-3">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
+                <div class="flex items-center gap-2">
+                  <input 
+                    type="text" 
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    [(ngModel)]="colorPickerValue[r.rewardID || r.eventsubID]"
+                    placeholder="#6366f1"
+                    (blur)="onColorInputBlur(r)"
+                    #colorInput
+                    [id]="'colorInput_' + (r.rewardID || r.eventsubID)">
+                  <div 
+                    class="w-8 h-8 border border-gray-300 rounded cursor-pointer"
+                    [style.background]="colorPickerValue[r.rewardID || r.eventsubID] || '#6366f1'"
+                    title="Preview">
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Preset Colors -->
+              <div class="mb-3">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Preset Colors</label>
+                <div class="grid grid-cols-6 gap-2">
+                  <div 
+                    class="w-8 h-8 rounded cursor-pointer border-2 border-gray-300 hover:border-gray-400 transition-colors"
+                    style="background-color: #ef4444"
+                    (click)="onPresetColorSelect(r, '#ef4444')"
+                    title="Red">
+                  </div>
+                  <div 
+                    class="w-8 h-8 rounded cursor-pointer border-2 border-gray-300 hover:border-gray-400 transition-colors"
+                    style="background-color: #f97316"
+                    (click)="onPresetColorSelect(r, '#f97316')"
+                    title="Orange">
+                  </div>
+                  <div 
+                    class="w-8 h-8 rounded cursor-pointer border-2 border-gray-300 hover:border-gray-400 transition-colors"
+                    style="background-color: #eab308"
+                    (click)="onPresetColorSelect(r, '#eab308')"
+                    title="Yellow">
+                  </div>
+                  <div 
+                    class="w-8 h-8 rounded cursor-pointer border-2 border-gray-300 hover:border-gray-400 transition-colors"
+                    style="background-color: #22c55e"
+                    (click)="onPresetColorSelect(r, '#22c55e')"
+                    title="Green">
+                  </div>
+                  <div 
+                    class="w-8 h-8 rounded cursor-pointer border-2 border-gray-300 hover:border-gray-400 transition-colors"
+                    style="background-color: #06b6d4"
+                    (click)="onPresetColorSelect(r, '#06b6d4')"
+                    title="Cyan">
+                  </div>
+                  <div 
+                    class="w-8 h-8 rounded cursor-pointer border-2 border-gray-300 hover:border-gray-400 transition-colors"
+                    style="background-color: #3b82f6"
+                    (click)="onPresetColorSelect(r, '#3b82f6')"
+                    title="Blue">
+                  </div>
+                  <div 
+                    class="w-8 h-8 rounded cursor-pointer border-2 border-gray-300 hover:border-gray-400 transition-colors"
+                    style="background-color: #6366f1"
+                    (click)="onPresetColorSelect(r, '#6366f1')"
+                    title="Indigo">
+                  </div>
+                  <div 
+                    class="w-8 h-8 rounded cursor-pointer border-2 border-gray-300 hover:border-gray-400 transition-colors"
+                    style="background-color: #8b5cf6"
+                    (click)="onPresetColorSelect(r, '#8b5cf6')"
+                    title="Purple">
+                  </div>
+                  <div 
+                    class="w-8 h-8 rounded cursor-pointer border-2 border-gray-300 hover:border-gray-400 transition-colors"
+                    style="background-color: #ec4899"
+                    (click)="onPresetColorSelect(r, '#ec4899')"
+                    title="Pink">
+                  </div>
+                  <div 
+                    class="w-8 h-8 rounded cursor-pointer border-2 border-gray-300 hover:border-gray-400 transition-colors"
+                    style="background-color: #6b7280"
+                    (click)="onPresetColorSelect(r, '#6b7280')"
+                    title="Gray">
+                  </div>
+                  <div 
+                    class="w-8 h-8 rounded cursor-pointer border-2 border-gray-300 hover:border-gray-400 transition-colors"
+                    style="background-color: #000000"
+                    (click)="onPresetColorSelect(r, '#000000')"
+                    title="Black">
+                  </div>
+                  <div 
+                    class="w-8 h-8 rounded cursor-pointer border-2 border-gray-300 hover:border-gray-400 transition-colors"
+                    style="background-color: #ffffff"
+                    (click)="onPresetColorSelect(r, '#ffffff')"
+                    title="White">
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Action Buttons -->
+              <div class="flex gap-2 justify-end">
+                <button 
+                  type="button"
+                  class="px-3 py-1.5 text-sm font-medium rounded-md bg-gray-500 text-white hover:bg-gray-600"
+                  (click)="onColorPickerCancel(r)">
+                  Cancel
+                </button>
+                <button 
+                  type="button"
+                  class="px-3 py-1.5 text-sm font-medium rounded-md bg-green-500 text-white hover:bg-green-600"
+                  (click)="onColorPickerSave(r)">
+                  Save
+                </button>
+              </div>
+            </div>
+          }
           <div class="p-4" [style.filter]="getDisabledFilter(r.isEnabled)">
             <div class="flex items-start justify-between">
-              <div>
-                <h2 class="text-lg font-semibold text-gray-900">{{ r.title }}</h2>
-                <p class="text-sm text-gray-600">{{ r.prompt }}</p>
+              <div class="flex-1">
+                @if (isEditingField(r, 'title')) {
+                  <div class="mb-2">
+                    <input type="text" 
+                      class="w-full px-2 py-1 text-lg font-semibold text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      [(ngModel)]="editingValue[r.rewardID || r.eventsubID]"
+                      (keyup.enter)="saveFieldEdit(r)"
+                      (keyup.escape)="cancelFieldEdit(r)"
+                      (blur)="onFieldBlur(r, 'title')"
+                      #titleInput
+                      [id]="'titleInput_' + (r.rewardID || r.eventsubID)">
+                    <div class="flex gap-1 mt-1">
+                      <button type="button" 
+                        class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+                        (click)="saveFieldEdit(r)">{{ getSave() }}</button>
+                      <button type="button" 
+                        class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
+                        (click)="cancelFieldEdit(r)">{{ getCancel() }}</button>
+                    </div>
+                  </div>
+                } @else if (isInBulkEditMode(r)) {
+                  <div class="mb-2">
+                    <input type="text" 
+                      class="w-full px-2 py-1 text-lg font-semibold text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      [(ngModel)]="r.title"
+                      #titleInput>
+                  </div>
+                } @else {
+                  <h2 class="text-lg font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded"
+                    (dblclick)="onFieldDoubleClick(r, 'title')"
+                    title="Double-click to edit">{{ r.title }}</h2>
+                }
+                
+                @if (isEditingField(r, 'prompt')) {
+                  <div class="mb-2">
+                    <textarea 
+                      class="w-full px-2 py-1 text-sm text-gray-600 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                      [(ngModel)]="editingValue[r.rewardID || r.eventsubID]"
+                      rows="2"
+                      (keyup.escape)="cancelFieldEdit(r)"
+                      (blur)="onFieldBlur(r, 'prompt')"
+                      #promptInput
+                      [id]="'promptInput_' + (r.rewardID || r.eventsubID)"></textarea>
+                    <div class="flex gap-1 mt-1">
+                      <button type="button" 
+                        class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+                        (click)="saveFieldEdit(r)">{{ getSave() }}</button>
+                      <button type="button" 
+                        class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
+                        (click)="cancelFieldEdit(r)">{{ getCancel() }}</button>
+                    </div>
+                  </div>
+                } @else if (isInBulkEditMode(r)) {
+                  <div class="mb-2">
+                    <textarea 
+                      class="w-full px-2 py-1 text-sm text-gray-600 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                      [(ngModel)]="r.prompt"
+                      rows="2"
+                      #promptInput></textarea>
+                  </div>
+                } @else {
+                  <p class="text-sm text-gray-600 cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded"
+                    (dblclick)="onFieldDoubleClick(r, 'prompt')"
+                    title="Double-click to edit">{{ r.prompt }}</p>
+                }
+                
+                <!-- Redemption Message -->
+                <div class="mt-2">
+                  <div class="text-xs text-gray-500 mb-1">{{ getMessage() }}</div>
+                  @if (isEditingField(r, 'message')) {
+                    <div>
+                      <textarea 
+                        class="w-full px-2 py-1 text-sm text-gray-700 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                        [(ngModel)]="editingValue[r.rewardID || r.eventsubID]"
+                        rows="2"
+                        (keyup.escape)="cancelFieldEdit(r)"
+                        (blur)="onFieldBlur(r, 'message')"
+                        #messageInput
+                        [id]="'messageInput_' + (r.rewardID || r.eventsubID)"></textarea>
+                      <div class="flex gap-1 mt-1">
+                        <button type="button" 
+                          class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+                          (click)="saveFieldEdit(r)">{{ getSave() }}</button>
+                        <button type="button" 
+                          class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
+                          (click)="cancelFieldEdit(r)">{{ getCancel() }}</button>
+                      </div>
+                    </div>
+                  } @else if (isInBulkEditMode(r)) {
+                    <div>
+                      <textarea 
+                        class="w-full px-2 py-1 text-sm text-gray-700 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                        [(ngModel)]="r.message"
+                        rows="2"
+                        #messageInput></textarea>
+                    </div>
+                  } @else {
+                    <div class="text-sm text-gray-700 bg-gray-50 rounded px-2 py-1 border-l-2 border-gray-300 cursor-pointer hover:bg-gray-100"
+                      (dblclick)="onFieldDoubleClick(r, 'message')"
+                      title="Double-click to edit">
+                      {{ getRedemptionMessage(r) }}
+                    </div>
+                  }
+                </div>
               </div>
               <span class="text-xs font-medium px-2 py-1 rounded-full"
                 [class.bg-green-100]="r.isEnabled"
@@ -68,31 +290,369 @@
             <div class="mt-4 grid grid-cols-2 gap-3">
               <div class="bg-gray-50 rounded-lg p-3">
                 <div class="text-xs text-gray-500">{{ getCost() }}</div>
-                <div class="text-base font-semibold text-gray-900">{{ r.cost }}</div>
+                @if (isEditingField(r, 'cost')) {
+                  <div>
+                    <input type="number" 
+                      class="w-full px-2 py-1 text-base font-semibold text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      [(ngModel)]="editingValue[r.rewardID || r.eventsubID]"
+                      min="0"
+                      step="1"
+                      (keyup.enter)="saveFieldEdit(r)"
+                      (keyup.escape)="cancelFieldEdit(r)"
+                      (blur)="onFieldBlur(r, 'cost')"
+                      #costInput
+                      [id]="'costInput_' + (r.rewardID || r.eventsubID)">
+                    <div class="flex gap-1 mt-1">
+                      <button type="button" 
+                        class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+                        (click)="saveFieldEdit(r)">{{ getSave() }}</button>
+                      <button type="button" 
+                        class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
+                        (click)="cancelFieldEdit(r)">{{ getCancel() }}</button>
+                    </div>
+                  </div>
+                } @else if (isInBulkEditMode(r)) {
+                  <div>
+                    <input type="number" 
+                      class="w-full px-2 py-1 text-base font-semibold text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      [(ngModel)]="r.cost"
+                      min="0"
+                      step="1"
+                      #costInput>
+                  </div>
+                } @else {
+                  <div class="text-base font-semibold text-gray-900 cursor-pointer hover:bg-gray-200 px-1 py-0.5 rounded"
+                    (dblclick)="onFieldDoubleClick(r, 'cost')"
+                    title="Double-click to edit">{{ r.cost }}</div>
+                }
               </div>
               <div class="bg-gray-50 rounded-lg p-3">
                 <div class="text-xs text-gray-500">{{ getCooldown() }}</div>
-                <div class="text-base font-semibold text-gray-900">{{ r.cooldown }}s</div>
+                @if (isEditingField(r, 'cooldown')) {
+                  <div>
+                    <input type="number" 
+                      class="w-full px-2 py-1 text-base font-semibold text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      [(ngModel)]="editingValue[r.rewardID || r.eventsubID]"
+                      min="0"
+                      step="1"
+                      (keyup.enter)="saveFieldEdit(r)"
+                      (keyup.escape)="cancelFieldEdit(r)"
+                      (blur)="onFieldBlur(r, 'cooldown')"
+                      #cooldownInput
+                      [id]="'cooldownInput_' + (r.rewardID || r.eventsubID)">
+                    <div class="flex gap-1 mt-1">
+                      <button type="button" 
+                        class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+                        (click)="saveFieldEdit(r)">{{ getSave() }}</button>
+                      <button type="button" 
+                        class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
+                        (click)="cancelFieldEdit(r)">{{ getCancel() }}</button>
+                    </div>
+                  </div>
+                } @else if (isInBulkEditMode(r)) {
+                  <div>
+                    <input type="number" 
+                      class="w-full px-2 py-1 text-base font-semibold text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      [(ngModel)]="r.cooldown"
+                      min="0"
+                      step="1"
+                      #cooldownInput>
+                  </div>
+                } @else {
+                  <div class="text-base font-semibold text-gray-900 cursor-pointer hover:bg-gray-200 px-1 py-0.5 rounded"
+                    (dblclick)="onFieldDoubleClick(r, 'cooldown')"
+                    title="Double-click to edit">{{ r.cooldown }}s</div>
+                }
               </div>
             </div>
 
-            <div class="mt-4 flex items-center justify-end gap-2">
-              <button type="button"
-                class="px-3 py-1.5 text-sm font-medium rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200"
-                (click)="onEdit(r)">{{ getEdit() }}</button>
-              <button type="button"
-                class="px-3 py-1.5 text-sm font-medium rounded-md bg-red-500 text-white hover:bg-red-600"
-                (click)="onDelete(r)">{{ getDelete() }}</button>
-              <button type="button"
-                class="px-3 py-1.5 text-sm font-medium rounded-md"
-                [class.bg-green-500]="!r.isEnabled"
-                [class.hover\:bg-green-600]="!r.isEnabled"
-                [class.bg-yellow-500]="r.isEnabled"
-                [class.hover\:bg-yellow-600]="r.isEnabled"
-                [class.text-white]="true"
-                (click)="onToggleEnable(r)">
-                {{ r.isEnabled ? getDisable() : getEnable() }}
-              </button>
+            <!-- Premium Fields Section -->
+            @if (hasPremiumData(r) || isPremiumUser()) {
+              <div class="mt-4 border-t border-gray-200 pt-4">
+                <div class="flex items-center gap-2 mb-3">
+                  <lucide-icon [name]="crownIcon" class="w-3 h-3 text-yellow-500"></lucide-icon>
+                  <span class="text-sm font-medium text-yellow-700">{{ getPremiumFeature() }}</span>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <!-- Original Cost Field -->
+                  @if (r.originalCost !== undefined || isPremiumUser()) {
+                    <div class="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+                      <div class="flex items-center gap-1">
+                        <div class="text-xs text-yellow-600">{{ getOriginalCost() }}</div>
+                        @if (!isPremiumUser()) {
+                          <svg class="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                          </svg>
+                        }
+                      </div>
+                      @if (isEditingField(r, 'originalCost')) {
+                        <div>
+                          <input type="number" 
+                            class="w-full px-2 py-1 text-base font-semibold text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            [(ngModel)]="editingValue[r.rewardID || r.eventsubID]"
+                            min="0"
+                            step="1"
+                            (keyup.enter)="saveFieldEdit(r)"
+                            (keyup.escape)="cancelFieldEdit(r)"
+                            (blur)="onFieldBlur(r, 'originalCost')"
+                            #originalCostInput
+                            [id]="'originalCostInput_' + (r.rewardID || r.eventsubID)">
+                          <div class="flex gap-1 mt-1">
+                            <button type="button" 
+                              class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+                              (click)="saveFieldEdit(r)">{{ getSave() }}</button>
+                            <button type="button" 
+                              class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
+                              (click)="cancelFieldEdit(r)">{{ getCancel() }}</button>
+                          </div>
+                        </div>
+                      } @else if (isInBulkEditMode(r)) {
+                        <div>
+                          <input type="number" 
+                            class="w-full px-2 py-1 text-base font-semibold border rounded focus:outline-none focus:ring-2"
+                            [class.text-gray-900]="isPremiumUser()"
+                            [class.border-gray-300]="isPremiumUser()"
+                            [class.focus:ring-blue-500]="isPremiumUser()"
+                            [class.text-gray-500]="!isPremiumUser()"
+                            [class.border-gray-200]="!isPremiumUser()"
+                            [class.bg-gray-100]="!isPremiumUser()"
+                            [class.cursor-not-allowed]="!isPremiumUser()"
+                            [(ngModel)]="r.originalCost"
+                            min="0"
+                            step="1"
+                            [disabled]="!isPremiumUser()"
+                            [title]="isPremiumUser() ? '' : getPremiumFieldTooltip('originalCost')"
+                            #originalCostInput>
+                        </div>
+                      } @else {
+                        <div class="text-base font-semibold px-1 py-0.5 rounded"
+                          [class.text-gray-900]="isPremiumUser()"
+                          [class.cursor-pointer]="isPremiumUser()"
+                          [class.hover:bg-gray-200]="isPremiumUser()"
+                          [class.text-gray-500]="!isPremiumUser()"
+                          [class.cursor-not-allowed]="!isPremiumUser()"
+                          [class.opacity-60]="!isPremiumUser()"
+                          (dblclick)="onFieldDoubleClick(r, 'originalCost')"
+                          [title]="isPremiumUser() ? 'Double-click to edit' : getPremiumFieldTooltip('originalCost')">
+                          {{ r.originalCost || '--' }}
+                        </div>
+                      }
+                    </div>
+                  }
+
+                  <!-- Cost Change Field -->
+                  @if (r.costChange !== undefined || isPremiumUser()) {
+                    <div class="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+                      <div class="flex items-center gap-1">
+                        <div class="text-xs text-yellow-600">{{ getCostChange() }}</div>
+                        @if (!isPremiumUser()) {
+                          <svg class="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                          </svg>
+                        }
+                      </div>
+                      @if (isEditingField(r, 'costChange')) {
+                        <div>
+                          <input type="number" 
+                            class="w-full px-2 py-1 text-base font-semibold text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            [(ngModel)]="editingValue[r.rewardID || r.eventsubID]"
+                            step="1"
+                            (keyup.enter)="saveFieldEdit(r)"
+                            (keyup.escape)="cancelFieldEdit(r)"
+                            (blur)="onFieldBlur(r, 'costChange')"
+                            #costChangeInput
+                            [id]="'costChangeInput_' + (r.rewardID || r.eventsubID)">
+                          <div class="flex gap-1 mt-1">
+                            <button type="button" 
+                              class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+                              (click)="saveFieldEdit(r)">{{ getSave() }}</button>
+                            <button type="button" 
+                              class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
+                              (click)="cancelFieldEdit(r)">{{ getCancel() }}</button>
+                          </div>
+                        </div>
+                      } @else if (isInBulkEditMode(r)) {
+                        <div>
+                          <input type="number" 
+                            class="w-full px-2 py-1 text-base font-semibold border rounded focus:outline-none focus:ring-2"
+                            [class.text-gray-900]="isPremiumUser()"
+                            [class.border-gray-300]="isPremiumUser()"
+                            [class.focus:ring-blue-500]="isPremiumUser()"
+                            [class.text-gray-500]="!isPremiumUser()"
+                            [class.border-gray-200]="!isPremiumUser()"
+                            [class.bg-gray-100]="!isPremiumUser()"
+                            [class.cursor-not-allowed]="!isPremiumUser()"
+                            [(ngModel)]="r.costChange"
+                            step="1"
+                            [disabled]="!isPremiumUser()"
+                            [title]="isPremiumUser() ? '' : getPremiumFieldTooltip('costChange')"
+                            #costChangeInput>
+                        </div>
+                      } @else {
+                        <div class="text-base font-semibold px-1 py-0.5 rounded"
+                          [class.text-gray-900]="isPremiumUser()"
+                          [class.cursor-pointer]="isPremiumUser()"
+                          [class.hover:bg-gray-200]="isPremiumUser()"
+                          [class.text-gray-500]="!isPremiumUser()"
+                          [class.cursor-not-allowed]="!isPremiumUser()"
+                          [class.opacity-60]="!isPremiumUser()"
+                          (dblclick)="onFieldDoubleClick(r, 'costChange')"
+                          [title]="isPremiumUser() ? 'Double-click to edit' : getPremiumFieldTooltip('costChange')">
+                          {{ r.costChange !== undefined ? (r.costChange >= 0 ? '+' : '') + r.costChange : '--' }}
+                        </div>
+                      }
+                    </div>
+                  }
+
+                  <!-- Return to Original Cost Field -->
+                  @if (r.returnToOriginalCost !== undefined || isPremiumUser()) {
+                    <div class="bg-yellow-50 rounded-lg p-3 border border-yellow-200 sm:col-span-2">
+                      <div class="flex items-center gap-1">
+                        <div class="text-xs text-yellow-600">{{ getReturnToOriginalCost() }}</div>
+                        @if (!isPremiumUser()) {
+                          <svg class="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                          </svg>
+                        }
+                      </div>
+                      @if (isEditingField(r, 'returnToOriginalCost')) {
+                        <div>
+                          <div class="flex items-center gap-2">
+                            <input type="checkbox" 
+                              class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                              [(ngModel)]="editingValue[r.rewardID || r.eventsubID]"
+                              (blur)="onFieldBlur(r, 'returnToOriginalCost')"
+                              #returnToOriginalCostInput
+                              [id]="'returnToOriginalCostInput_' + (r.rewardID || r.eventsubID)">
+                            <span class="text-sm text-gray-700">{{ r.returnToOriginalCost ? 'Yes' : 'No' }}</span>
+                          </div>
+                          <div class="flex gap-1 mt-1">
+                            <button type="button" 
+                              class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+                              (click)="saveFieldEdit(r)">{{ getSave() }}</button>
+                            <button type="button" 
+                              class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
+                              (click)="cancelFieldEdit(r)">{{ getCancel() }}</button>
+                          </div>
+                        </div>
+                      } @else if (isInBulkEditMode(r)) {
+                        <div>
+                          <div class="flex items-center gap-2">
+                            <input type="checkbox" 
+                              class="w-4 h-4 border rounded focus:ring-2"
+                              [class.text-blue-600]="isPremiumUser()"
+                              [class.border-gray-300]="isPremiumUser()"
+                              [class.focus:ring-blue-500]="isPremiumUser()"
+                              [class.text-gray-400]="!isPremiumUser()"
+                              [class.border-gray-200]="!isPremiumUser()"
+                              [class.bg-gray-100]="!isPremiumUser()"
+                              [class.cursor-not-allowed]="!isPremiumUser()"
+                              [(ngModel)]="r.returnToOriginalCost"
+                              [disabled]="!isPremiumUser()"
+                              [title]="isPremiumUser() ? '' : getPremiumFieldTooltip('returnToOriginalCost')"
+                              #returnToOriginalCostInput>
+                            <span class="text-sm"
+                              [class.text-gray-700]="isPremiumUser()"
+                              [class.text-gray-500]="!isPremiumUser()">{{ r.returnToOriginalCost ? 'Yes' : 'No' }}</span>
+                          </div>
+                        </div>
+                      } @else {
+                        <div class="flex items-center gap-2 px-1 py-0.5 rounded"
+                          [class.cursor-pointer]="isPremiumUser()"
+                          [class.hover:bg-gray-200]="isPremiumUser()"
+                          [class.cursor-not-allowed]="!isPremiumUser()"
+                          [class.opacity-60]="!isPremiumUser()"
+                          (dblclick)="onFieldDoubleClick(r, 'returnToOriginalCost')"
+                          [title]="isPremiumUser() ? 'Double-click to edit' : getPremiumFieldTooltip('returnToOriginalCost')">
+                          <div class="w-4 h-4 border-2 rounded"
+                            [class.bg-blue-500]="r.returnToOriginalCost && isPremiumUser()"
+                            [class.border-blue-500]="r.returnToOriginalCost && isPremiumUser()"
+                            [class.bg-gray-300]="!r.returnToOriginalCost || !isPremiumUser()"
+                            [class.border-gray-300]="!r.returnToOriginalCost || !isPremiumUser()">
+                            @if (r.returnToOriginalCost && isPremiumUser()) {
+                              <svg class="w-3 h-3 text-white mt-0.5 ml-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                              </svg>
+                            }
+                          </div>
+                          <span class="text-sm font-semibold"
+                            [class.text-gray-900]="isPremiumUser()"
+                            [class.text-gray-500]="!isPremiumUser()">
+                            {{ r.returnToOriginalCost ? 'Yes' : 'No' }}
+                          </span>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Background Color Field -->
+            <!-- <div class="mt-4 border-t border-gray-200 pt-4">
+              <div class="text-xs text-gray-500 mb-2">Background Color</div>
+              @if (isInBulkEditMode(r)) {
+                <div class="flex items-center gap-2">
+                  <input 
+                    type="text" 
+                    class="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    [(ngModel)]="r.background_color"
+                    placeholder="#6366f1"
+                    #backgroundColorInput>
+                  <div 
+                    class="w-8 h-8 border border-gray-300 rounded"
+                    [style.background]="r.background_color || '#6366f1'"
+                    title="Preview">
+                  </div>
+                </div>
+              } @else {
+                <div class="flex items-center gap-2">
+                  <div 
+                    class="flex-1 h-8 border border-gray-300 rounded cursor-pointer hover:bg-gray-100 px-2 flex items-center"
+                    (dblclick)="onColorDoubleClick(r)"
+                    title="Double-click to change color">
+                    <span class="text-sm text-gray-700">{{ r.background_color || '#6366f1' }}</span>
+                  </div>
+                  <div 
+                    class="w-8 h-8 border border-gray-300 rounded cursor-pointer hover:opacity-80 transition-opacity"
+                    [style.background]="getCardColor(r)"
+                    (dblclick)="onColorDoubleClick(r)"
+                    title="Double-click to change color">
+                  </div>
+                </div>
+              }
+            </div> -->
+
+            <div class="mt-4 flex flex-wrap items-center justify-end gap-2">
+              @if (isInBulkEditMode(r)) {
+                <button type="button"
+                  class="px-3 py-1.5 text-sm font-medium rounded-md bg-green-500 text-white hover:bg-green-600 flex-shrink-0"
+                  (click)="saveBulkEdit(r)">{{ getSaveAll() }}</button>
+                <button type="button"
+                  class="px-3 py-1.5 text-sm font-medium rounded-md bg-gray-500 text-white hover:bg-gray-600 flex-shrink-0"
+                  (click)="cancelBulkEdit(r)">{{ getCancelAll() }}</button>
+                <button type="button"
+                  class="px-3 py-1.5 text-sm font-medium rounded-md bg-blue-500 text-white hover:bg-blue-600 flex-shrink-0"
+                  (click)="exitBulkEditMode(r)">{{ getExitEditMode() }}</button>
+              } @else {
+                <button type="button"
+                  class="px-3 py-1.5 text-sm font-medium rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200 flex-shrink-0"
+                  (click)="onEdit(r)">{{ getEdit() }}</button>
+                <button type="button"
+                  class="px-3 py-1.5 text-sm font-medium rounded-md bg-red-500 text-white hover:bg-red-600 flex-shrink-0"
+                  (click)="onDelete(r)">{{ getDelete() }}</button>
+                <button type="button"
+                  class="px-3 py-1.5 text-sm font-medium rounded-md flex-shrink-0"
+                  [class.bg-green-500]="!r.isEnabled"
+                  [class.hover\:bg-green-600]="!r.isEnabled"
+                  [class.bg-yellow-500]="r.isEnabled"
+                  [class.hover\:bg-yellow-600]="r.isEnabled"
+                  [class.text-white]="true"
+                  (click)="onToggleEnable(r)">
+                  {{ r.isEnabled ? getDisable() : getEnable() }}
+                </button>
+              }
             </div>
           </div>
         </div>

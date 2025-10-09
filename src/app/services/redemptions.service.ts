@@ -25,6 +25,10 @@ export class RedemptionsService {
     this.headers = new HttpHeaders().set('Authorization', `${this.userService.getToken()}`);
   }
 
+  createRedemption(redemption: Redemptions) {
+    
+  }
+
   getRedemptions(forceRefresh = false) {
     const userId = this.userService.getUserId();
     const cacheKey = `redemptions:${userId}`;
@@ -46,7 +50,8 @@ export class RedemptionsService {
     ).pipe(tap(() => this.invalidateRedemptionsCache()));
   }
 
-  updateRedemption(redemptionID: string, redemption: Redemptions) {
+  updateRedemption(redemptionID: string, redemption: Partial<Redemptions>) {
+    console.log('updateRedemption', redemptionID, redemption);
     return this.http.patch(
       `${environment.DIMA_API}/rewards/${this.userService.getUserId()}/${redemptionID}`,
       redemption,

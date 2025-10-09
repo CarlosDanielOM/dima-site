@@ -8,6 +8,7 @@ import { AuthService } from '../auth.service';
 import { LinksService } from '../links.service';
 import { SidebarService } from '../services/sidebar.service';
 import { UserStateService } from '../services/user-state.service';
+import { UserEventsService } from '../services/user-events.service';
 import { SetupModalComponent } from '../shared/setup-modal/setup-modal.component';
 import { Subscription } from 'rxjs';
 
@@ -44,6 +45,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private sidebarService: SidebarService,
     private languageService: LanguageService,
     private userStateService: UserStateService,
+    private userEventsService: UserEventsService,
     private elementRef: ElementRef
   ) {
     this.user = this.userService.getUser();
@@ -57,6 +59,18 @@ export class NavbarComponent implements OnInit, OnDestroy {
       })
     );
 
+    // Subscribe to user state changes
+    this.subscription.add(
+      this.userEventsService.userStatusChanged$.subscribe(() => {
+        this.user = this.userService.getUser();
+      })
+    );
+
+    // Initialize auth URL with user login
+    this.initializeAuthUrl();
+  }
+
+  private initializeAuthUrl() {
     let s = this.authService.getScopes();
 
     let scopeString = '';
@@ -69,7 +83,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
       }
     })
 
-    this.authUrl = `https://id.twitch.tv/oauth2/authorize?response_type=code&force_verify=false&client_id=jl9k3mi67pmrbl1bh67y07ezjdc4cf&redirect_uri=${this.linksService.getApiURL()}/auth/register&scope=${scopeString}&state=${this.userService.getLogin()}`
+    // Use empty string as fallback for user login to prevent errors
+    const userLogin = this.userService.getLogin() || '';
+    this.authUrl = `https://id.twitch.tv/oauth2/authorize?response_type=code&force_verify=false&client_id=jl9k3mi67pmrbl1bh67y07ezjdc4cf&redirect_uri=${this.linksService.getApiURL()}/auth/register&scope=${scopeString}&state=${userLogin}`;
   }
 
   ngOnDestroy() {

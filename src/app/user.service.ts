@@ -36,50 +36,77 @@ export class UserService {
   }
 
   restoreUser(): boolean {
-    this.user = JSON.parse(sessionStorage.getItem('user') ?? '{}');
-
-    if(!this.user.token) {
+    const userData = sessionStorage.getItem('user');
+    
+    if (!userData) {
       this.deleteData();
       return false;
     }
-    
-    this.user = this.user;
-    return true;
+
+    try {
+      this.user = JSON.parse(userData);
+      
+      if (!this.user || !this.user.token) {
+        this.deleteData();
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      this.deleteData();
+      return false;
+    }
   }
 
   restoreRouteUser(): boolean {
-    this.routeUser = JSON.parse(sessionStorage.getItem('routeUser') ?? '{}');
-
-    if(!this.user.token) {
-      this.deleteData();
-      return false;
-    }
+    const routeUserData = sessionStorage.getItem('routeUser');
     
-    if(!this.routeUser) {
-      this.http.get<User>(`${environment.DIMA_API}/user`, {
-        params: {
-          username: this.router.url.split('/')[1]
-        }
-      }).subscribe(res => {
-        let data = res;
-        let dataUser: User = {
-          login: data.login,
-          display_name: data.display_name,
-          actived: this.user.actived,
-          email: this.user.email,
-          id: data.id,
-          profile_image_url: data.profile_image_url,
-          premium: this.user.premium,
-          premium_until: this.user.premium_until,
-          premium_plus: this.user.premium_plus,
-          chat_enabled: this.user.chat_enabled,
-          token: this.user.token
-        };
-        this.createRouteUser(dataUser);
-        this.routeUser = dataUser;
-      })
+    if (!routeUserData) {
+      // If no route user data, try to fetch it
+      if (this.user && this.user.token) {
+        this.http.get<User>(`${environment.DIMA_API}/user`, {
+          params: {
+            username: this.router.url.split('/')[1]
+          }
+        }).subscribe(res => {
+          let data = res;
+          let dataUser: User = {
+            login: data.login,
+            display_name: data.display_name,
+            actived: this.user.actived,
+            email: this.user.email,
+            id: data.id,
+            profile_image_url: data.profile_image_url,
+            premium: this.user.premium,
+            premium_until: this.user.premium_until,
+            premium_plus: this.user.premium_plus,
+            chat_enabled: this.user.chat_enabled,
+            token: this.user.token
+          };
+          this.createRouteUser(dataUser);
+          this.routeUser = dataUser;
+        });
+      }
+      return true;
     }
-    return true;
+
+    try {
+      this.routeUser = JSON.parse(routeUserData);
+      
+      if (!this.routeUser || !this.routeUser.token) {
+        // If route user is invalid, clear it but don't fail
+        this.routeUser = null!;
+        sessionStorage.removeItem('routeUser');
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error parsing route user data:', error);
+      this.routeUser = null!;
+      sessionStorage.removeItem('routeUser');
+      return true;
+    }
   }
 
   deleteData(): void {
@@ -90,43 +117,45 @@ export class UserService {
     sessionStorage.removeItem('routeUser');
   }
 
-  getUser(): User {
+  getUser(): User | null {
     return this.user;
   }
 
   getLogin(): string {
-    return this.user.login;
+    return this.user?.login || '';
   }
 
   getDisplayName(): string {
-    return this.user.display_name;
+    return this.user?.display_name || '';
   }
 
   getEmail(): string {
-    return this.user.email;
+    return this.user?.email || '';
   }
 
   getUserId(): number {
-    return this.user.id;
+    return this.user?.id || 0;
   }
 
   getProfileImageUrl(): string {
-    return this.user.profile_image_url;
+    return this.user?.profile_image_url || '';
   }
 
   getPremium(): boolean {
-    return this.user.premium;
+    return this.user?.premium || false;
   }
 
   getPremiumUntil(): string {
-    return this.user.premium_until;
+    return this.user?.premium_until || '';
   }
 
   getPremiumPlus(): boolean {
-    return this.user.premium_plus;
+    return this.user?.premium_plus || false;
   }
 
   getPremiumStatus(): string {
+    if (!this.user) return 'none';
+    
     if (this.user.premium_plus) {
       return 'premium_plus';
     } else if (this.user.premium) {
@@ -137,18 +166,20 @@ export class UserService {
   }
 
   getToken(): string {
-    return this.user.token;
+    return this.user?.token || '';
   }
 
   getActive(): boolean {
-    return this.user.actived;
+    return this.user?.actived || false;
   }
 
   isChatEnabled(): boolean {
-    return this.user.chat_enabled;
+    return this.user?.chat_enabled || false;
   }
 
   setChatEnabled(status: boolean): void {
+    if (!this.user) return;
+    
     this.http.post(`${environment.DIMA_API}/user/chat/${this.user.id}`, {
       enabled: status
     }).subscribe(res => {
@@ -158,6 +189,8 @@ export class UserService {
   }
   
   changeActiveStatus(status: boolean): void {
+    if (!this.user) return;
+    
     this.user.actived = status;
     sessionStorage.setItem('user', JSON.stringify(this.user));
     this.userEventsService.notifyUserStatusChanged();

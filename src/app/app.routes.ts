@@ -13,6 +13,7 @@ import { CommandsComponent } from './streamer-wrapper/commands/commands.componen
 import { TriggersComponent } from './modules/triggers/triggers.component';
 import { RedemptionsComponent } from './modules/redemptions/redemptions.component';
 import { LogoutComponent } from './logout/logout.component';
+import { PermissionGuard } from './guards/permission.guard';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent, title: 'Login' },
@@ -67,17 +68,55 @@ export const routes: Routes = [
                 }
             }
         },
-        { path: 'commands', component: CommandsComponent, title: 'Commands' },
-        { path: 'modules', component: ModulesComponent, title: 'Modules', children: [
-            { path: '', component: ModuleViewComponent, title: 'Module' },
-            { path: 'clips', component: ClipsComponent, title: 'Clips' },
-            { path: 'chat-events', component: ChatEventsComponent, title: 'Chat Events' },
-            { path: 'redemptions', component: RedemptionsComponent, title: 'Redemptions' },
+        { 
+            path: 'commands', 
+            component: CommandsComponent, 
+            title: 'Commands',
+            canActivate: [PermissionGuard],
+            data: { permission: { requiredLevel: 'everyone' } }
+        },
+        { 
+            path: 'modules', 
+            component: ModulesComponent, 
+            title: 'Modules',
+            canActivate: [PermissionGuard],
+            data: { permission: { requiredLevel: 'everyone' } },
+            children: [
+                { 
+                    path: '', 
+                    component: ModuleViewComponent, 
+                    title: 'Module',
+                    canActivate: [PermissionGuard],
+                    data: { permission: { requiredLevel: 'everyone' } }
+                },
+                { 
+                    path: 'clips', 
+                    component: ClipsComponent, 
+                    title: 'Clips',
+                    canActivate: [PermissionGuard],
+                    data: { permission: { requiredLevel: 'everyone' } }
+                },
+                { 
+                    path: 'chat-events', 
+                    component: ChatEventsComponent, 
+                    title: 'Chat Events',
+                    canActivate: [PermissionGuard],
+                    data: { permission: { requiredLevel: 'everyone' } }
+                },
+                { 
+                    path: 'redemptions', 
+                    component: RedemptionsComponent, 
+                    title: 'Redemptions',
+                    canActivate: [PermissionGuard],
+                    data: { permission: { requiredLevel: 'everyone' } }
+                },
             {
                 path: 'triggers',
                 component: WipComponent,
                 title: 'Triggers',
+                canActivate: [PermissionGuard],
                 data: {
+                    permission: { requiredLevel: 'none', redirectTo: 'dashboard' },
                     wip: {
                         progress: 50,
                         accent: 'amber',
@@ -92,7 +131,9 @@ export const routes: Routes = [
                 path: ':module',
                 component: WipComponent,
                 title: 'To be implemented',
+                canActivate: [PermissionGuard],
                 data: {
+                    permission: { requiredLevel: 'everyone' },
                     wip: {
                         progress: 100,
                         accent: 'emerald',
@@ -127,7 +168,9 @@ export const routes: Routes = [
             path: 'settings',
             component: WipComponent,
             title: 'Settings',
+            canActivate: [PermissionGuard],
             data: {
+                permission: { requiredLevel: 'premium', redirectTo: 'dashboard' },
                 wip: {
                     progress: 0,
                         accent: 'rose',
@@ -172,7 +215,9 @@ export const routes: Routes = [
             path: 'profile/settings',
             component: WipComponent,
             title: 'Settings',
+            canActivate: [PermissionGuard],
             data: {
+                permission: { requiredLevel: 'premium_plus', redirectTo: 'dashboard' },
                 wip: {
                         progress: 0,
                         accent: 'rose',

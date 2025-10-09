@@ -4,7 +4,7 @@
             <button (click)="toggleSidebar()" class="md:hidden">
                 <i-lucide [name]="menuIcon" class="w-6 h-6"></i-lucide>
             </button>
-            <a routerLink="/{{user.login}}/dashboard" class="flex items-center space-x-2">
+            <a routerLink="/{{user?.login || ''}}/dashboard" class="flex items-center space-x-2">
                 <i-lucide [name]="twitchIcon" class="w-6 h-6"></i-lucide>
                 <span class="font-bold text-xl">DomDimaBot</span>
             </a>
@@ -19,13 +19,13 @@
             </div>
             <div class="relative" (focusout)="onMenuFocusOut($event)" tabindex="-1">
                 <button (click)="toggleDropdown()" class="relative h-8 w-8 overflow-hidden rounded-full bg-transparent hover:bg-purple-600" aria-haspopup="menu" [attr.aria-expanded]="isDropdownOpen">
-                    <img src="{{user.profile_image_url}}" alt="User avatar" class="rounded-full" />
+                    <img src="{{user?.profile_image_url || ''}}" alt="User avatar" class="rounded-full" />
                 </button>
                 <div *ngIf="isDropdownOpen" class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50" role="menu" tabindex="0">
                     <div class="py-1" tabindex="0">
                         <div class="px-4 py-2">
-                            <p class="text-sm font-medium text-gray-900">{{user.login}}</p>
-                            <p class="text-xs text-gray-500">{{user.email}}</p>
+                            <p class="text-sm font-medium text-gray-900">{{user?.login || ''}}</p>
+                            <p class="text-xs text-gray-500">{{user?.email || ''}}</p>
                         </div>
                         <div class="border-t border-gray-100"></div>
                         <a routerLink="dashboard" (click)="closeDropdown()" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
@@ -82,13 +82,13 @@
             </a>
             <div class="relative" (focusout)="onMenuFocusOut($event)" tabindex="-1">
                 <button (click)="toggleDropdown()" class="relative h-8 w-8 rounded-full bg-transparent hover:bg-purple-600" aria-haspopup="menu" [attr.aria-expanded]="isDropdownOpen">
-                    <img src="{{user.profile_image_url}}" alt="User avatar" class="rounded-full" />
+                    <img src="{{user?.profile_image_url || ''}}" alt="User avatar" class="rounded-full" />
                 </button>
                 <div *ngIf="isDropdownOpen" class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5" role="menu" tabindex="0">
                     <div class="py-1" tabindex="0">
                         <div class="px-4 py-2">
-                            <p class="text-sm font-medium text-gray-900">{{user.login}}</p>
-                            <p class="text-xs text-gray-500">{{user.email}}</p>
+                            <p class="text-sm font-medium text-gray-900">{{user?.login || ''}}</p>
+                            <p class="text-xs text-gray-500">{{user?.email || ''}}</p>
                         </div>
                         <div class="border-t border-gray-100"></div>
                         <div class="px-4 py-2">
@@ -115,7 +115,7 @@
 <!-- Setup Modal -->
 <app-setup-modal 
     [isOpen]="isSetupModalOpen" 
-    [userName]="user.display_name || user.login || 'User'"
+    [userName]="user?.display_name || user?.login || 'User'"
     (close)="onSetupModalClose()"
     (startSetup)="onSetupModalStart()">
 </app-setup-modal>
