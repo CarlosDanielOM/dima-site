@@ -76,7 +76,7 @@
           <input type="range" id="timeout" min="1" max="30" [(ngModel)]="timeoutSeconds" (ngModelChange)="onTimeoutChange()" class="w-48">
           <span class="font-mono text-purple-900">{{ timeoutSeconds }}s</span>
         </div>
-        <button (click)="copyUrl()" class="px-4 py-2 text-sm font-semibold text-white bg-purple-600 hover:bg-purple-700 rounded-full transition-colors">Copy URL</button>
+        <button appBlockInactiveUser actionType="click" (click)="copyUrl()" class="px-4 py-2 text-sm font-semibold text-white bg-purple-600 hover:bg-purple-700 rounded-full transition-colors">Copy URL</button>
         <button (click)="testDesign()" class="px-4 py-2 text-sm font-semibold text-white bg-green-500 hover:bg-green-600 rounded-full transition-colors">Test Design</button>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { UserService } from '../user.service';
@@ -7,17 +7,22 @@ import { LucideAngularModule, Twitch, Settings, LayoutDashboard, Terminal, User,
 import { AuthService } from '../auth.service';
 import { LinksService } from '../links.service';
 import { SidebarService } from '../services/sidebar.service';
+import { UserStateService } from '../services/user-state.service';
+import { SetupModalComponent } from '../shared/setup-modal/setup-modal.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, LucideAngularModule],
+  imports: [CommonModule, RouterModule, LucideAngularModule, SetupModalComponent],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit, OnDestroy {
   user = this.userService.getUser();
   isDropdownOpen = false;
+  isSetupModalOpen = false;
+  private subscription: Subscription = new Subscription();
 
   // Icons
   twitchIcon = Twitch;
@@ -38,12 +43,19 @@ export class NavbarComponent {
     private linksService: LinksService,
     private sidebarService: SidebarService,
     private languageService: LanguageService,
+    private userStateService: UserStateService,
     private elementRef: ElementRef
   ) {
     this.user = this.userService.getUser();
   }
 
   ngOnInit() {
+    // Subscribe to setup modal state
+    this.subscription.add(
+      this.userStateService.isSetupModalOpen$.subscribe(isOpen => {
+        this.isSetupModalOpen = isOpen;
+      })
+    );
 
     let s = this.authService.getScopes();
 
@@ -58,6 +70,10 @@ export class NavbarComponent {
     })
 
     this.authUrl = `https://id.twitch.tv/oauth2/authorize?response_type=code&force_verify=false&client_id=jl9k3mi67pmrbl1bh67y07ezjdc4cf&redirect_uri=${this.linksService.getApiURL()}/auth/register&scope=${scopeString}&state=${this.userService.getLogin()}`
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
   
   startPermissionFlow() {
@@ -118,5 +134,15 @@ export class NavbarComponent {
   toggleLanguage() {
     this.languageService.toggleLanguage();
     this.closeDropdown();
+  }
+
+  // Setup modal methods
+  onSetupModalClose() {
+    this.userStateService.hideSetupModal();
+  }
+
+  onSetupModalStart() {
+    this.startPermissionFlow();
+    this.userStateService.hideSetupModal();
   }
 }

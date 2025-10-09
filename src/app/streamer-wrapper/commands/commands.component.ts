@@ -11,11 +11,13 @@ import { Command } from '../../interfaces/command';
 import { TooltipDirective } from '../../tooltip/tooltip.component';
 import { ConfirmationService } from '../../services/confirmation.service';
 import { ThemesService } from '../../services/themes.service';
+import { BlockInactiveUserDirective } from '../../directives/block-inactive-user.directive';
+import { UserStateService } from '../../services/user-state.service';
 
 @Component({
   selector: 'app-commands',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, FormsModule, ReactiveFormsModule, TooltipDirective],
+  imports: [CommonModule, LucideAngularModule, FormsModule, ReactiveFormsModule, TooltipDirective, BlockInactiveUserDirective],
   templateUrl: './commands.component.html',
   styleUrl: './commands.component.css'
 })
@@ -92,7 +94,8 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
     private toastService: ToastService,
     private commandsService: CommandsService,
     private confirmationService: ConfirmationService,
-    private themeService: ThemesService
+    private themeService: ThemesService,
+    private userStateService: UserStateService
   ) {
   }
 
@@ -694,6 +697,12 @@ export class CommandsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Rate limiting methods
   public checkRateLimit(): boolean {
+    // Check if user is active first
+    if (!this.userStateService.isUserActive) {
+      this.userStateService.blockAction();
+      return false;
+    }
+
     const now = Date.now();
 
     // If currently rate limited, check if block period is over

@@ -19,6 +19,27 @@
   animation: pulse-dark 2s infinite ease-in-out;
 }
 
+/* Block Inactive User Directive Styles */
+.blocked-action {
+  position: relative;
+}
+
+.blocked-action::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.blocked-action:hover {
+  opacity: 0.6 !important;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* Force preserve critical spacing utilities in production */

@@ -4,6 +4,7 @@ import { environment } from '../environments/environment';
 import { Router } from '@angular/router';
 import { User } from './user';
 import { map } from 'rxjs';
+import { UserEventsService } from './services/user-events.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,11 +19,13 @@ export class UserService {
   constructor(
     private http: HttpClient,
     private router: Router,
+    private userEventsService: UserEventsService
   ) { }
 
   createUser(user: User): boolean {
     this.user = user;
     sessionStorage.setItem('user', JSON.stringify(user));
+    this.userEventsService.notifyUserStatusChanged();
     return true;
   }
 
@@ -157,6 +160,7 @@ export class UserService {
   changeActiveStatus(status: boolean): void {
     this.user.actived = status;
     sessionStorage.setItem('user', JSON.stringify(this.user));
+    this.userEventsService.notifyUserStatusChanged();
   }
 
   loginUser() {

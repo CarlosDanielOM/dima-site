@@ -1,0 +1,62 @@
+<div *ngIf="isOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" (click)="onBackdropClick($event)">
+  <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 transform transition-all">
+    <!-- Header -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <div class="flex items-center space-x-3">
+        <div class="flex-shrink-0">
+          <i-lucide [name]="alertIcon" class="w-6 h-6 text-orange-500"></i-lucide>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900">
+          Setup Required
+        </h3>
+      </div>
+      <button (click)="onClose()" class="text-gray-400 hover:text-gray-600 transition-colors">
+        <i-lucide [name]="closeIcon" class="w-5 h-5"></i-lucide>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="p-6">
+      <div class="text-center">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mb-4">
+          <i-lucide [name]="twitchIcon" class="w-6 h-6 text-orange-600"></i-lucide>
+        </div>
+        
+        <h4 class="text-lg font-medium text-gray-900 mb-2">
+          Bot Activation Required
+        </h4>
+        
+        <p class="text-gray-600 mb-6">
+          To use this feature, you need to activate DomDimaBot in your channel. This will connect your Twitch account and enable all the bot features.
+        </p>
+
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <h5 class="font-medium text-blue-900 mb-2">What happens during activation?</h5>
+          <ul class="text-sm text-blue-800 space-y-1 text-left">
+            <li>• Connect your Twitch account</li>
+            <li>• Grant necessary permissions</li>
+            <li>• Activate bot features</li>
+            <li>• Unlock all functionality</li>
+          </ul>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button 
+            (click)="onStartSetup()" 
+            class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+          >
+            <i-lucide [name]="twitchIcon" class="w-4 h-4"></i-lucide>
+            <span>Activate Bot</span>
+          </button>
+          
+          <button 
+            (click)="onClose()" 
+            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-3 px-4 rounded-lg transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

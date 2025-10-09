@@ -9,6 +9,7 @@ import { ToastService } from '../../toast.service';
 import { ReleaseStageService } from '../../services/release-stage.service';
 import { ReleaseStage } from '../../interfaces/releasestage';
 import { LanguageService } from '../../services/language.service';
+import { BlockInactiveUserDirective } from '../../directives/block-inactive-user.directive';
 
 interface Design {
   id: string;
@@ -30,7 +31,7 @@ interface Design {
 @Component({
   selector: 'app-clips',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, SafePipe],
+  imports: [CommonModule, FormsModule, LucideAngularModule, SafePipe, BlockInactiveUserDirective],
   templateUrl: './clips.component.html',
   styleUrl: './clips.component.css'
 })

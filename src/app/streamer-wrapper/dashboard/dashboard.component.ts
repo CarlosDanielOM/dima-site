@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { LinksService } from '../../links.service';
 import { AuthService } from '../../auth.service';
 import { LucideAngularModule, Activity, Calendar, BarChart2, ChevronDown, Users, TrendingUp, Clock, DollarSign, Heart, Star } from 'lucide-angular';
+import { BlockInactiveUserDirective } from '../../directives/block-inactive-user.directive';
 import posthog from 'posthog-js';
 
 type StreamStat = {
@@ -17,7 +18,7 @@ type StreamStat = {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, LucideAngularModule, BlockInactiveUserDirective],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
