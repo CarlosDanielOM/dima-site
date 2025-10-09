@@ -63,6 +63,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.userEventsService.userStatusChanged$.subscribe(() => {
         this.user = this.userService.getUser();
+        // Reinitialize auth URL when user data changes
+        this.initializeAuthUrl();
       })
     );
 
@@ -71,6 +73,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   private initializeAuthUrl() {
+    const userLogin = this.userService.getLogin();
+    
+    // Only initialize auth URL if we have a valid user login
+    if (!userLogin) {
+      this.authUrl = '';
+      return;
+    }
+
     let s = this.authService.getScopes();
 
     let scopeString = '';
@@ -83,8 +93,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
       }
     })
 
-    // Use empty string as fallback for user login to prevent errors
-    const userLogin = this.userService.getLogin() || '';
     this.authUrl = `https://id.twitch.tv/oauth2/authorize?response_type=code&force_verify=false&client_id=jl9k3mi67pmrbl1bh67y07ezjdc4cf&redirect_uri=${this.linksService.getApiURL()}/auth/register&scope=${scopeString}&state=${userLogin}`;
   }
 
@@ -93,6 +101,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
   
   startPermissionFlow() {
+    if (!this.authUrl) {
+      console.warn('Cannot start permission flow: No valid user login available');
+      return;
+    }
     window.location.href = this.authUrl;
   }
 
