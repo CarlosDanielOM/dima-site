@@ -14,9 +14,13 @@
         <div class="md:hidden flex items-center space-x-4">
             <div *ngIf="!user?.actived" class="mr-2">
                 <button class="bg-orange-500 hover:bg-orange-600 text-white text-xs px-3 py-1 rounded-full transition-colors" (click)="startPermissionFlow()">
-                    Activate Bot
+                    {{ 'navbar.activateBot' | translate }}
                 </button>
             </div>
+            <button (click)="toggleLanguage()" class="hover:text-purple-200 flex items-center space-x-1" title="Switch Language">
+                <i-lucide [name]="languageIcon" class="w-5 h-5"></i-lucide>
+                <span class="text-sm">{{ getCurrentLanguageInfo().nativeName || 'English' }}</span>
+            </button>
             <div class="relative" (focusout)="onMenuFocusOut($event)" tabindex="-1">
                 <button (click)="toggleDropdown()" class="relative h-8 w-8 overflow-hidden rounded-full bg-transparent hover:bg-purple-600" aria-haspopup="menu" [attr.aria-expanded]="isDropdownOpen">
                     <img src="{{user?.profile_image_url || ''}}" alt="User avatar" class="rounded-full" />
@@ -30,15 +34,15 @@
                         <div class="border-t border-gray-100"></div>
                         <a routerLink="dashboard" (click)="closeDropdown()" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
                             <i-lucide [name]="dashboardIcon" class="w-4 h-4"></i-lucide>
-                            <span>Dashboard</span>
+                            <span>{{ 'navbar.dashboard' | translate }}</span>
                         </a>
                         <a routerLink="modules" (click)="closeDropdown()" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
                             <i-lucide [name]="circuitBoardIcon" class="w-4 h-4"></i-lucide>
-                            <span>Modules</span>
+                            <span>{{ 'navbar.modules' | translate }}</span>
                         </a>
                         <a routerLink="settings" (click)="closeDropdown()" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
                             <i-lucide [name]="settingsIcon" class="w-4 h-4"></i-lucide>
-                            <span>Settings</span>
+                            <span>{{ 'navbar.settings' | translate }}</span>
                         </a>
                         <div class="border-t border-gray-100"></div>
                         <div class="px-4 py-2">
@@ -49,11 +53,11 @@
                         </div>
                         <a href="profile/settings" (click)="closeDropdown()" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
                             <i-lucide [name]="userIcon" class="w-4 h-4"></i-lucide>
-                            <span>Profile Settings</span>
+                            <span>{{ 'navbar.profileSettings' | translate }}</span>
                         </a>
                         <a href="logout" (click)="closeDropdown()" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
                             <i-lucide [name]="logoutIcon" class="w-4 h-4"></i-lucide>
-                            <span>Logout</span>
+                            <span>{{ 'navbar.logout' | translate }}</span>
                         </a>
                     </div>
                 </div>
@@ -65,21 +69,25 @@
             <div *ngIf="!user?.actived" class="mr-4">
                 <button class="bg-orange-500 hover:bg-orange-600 text-white text-sm px-4 py-2 rounded-lg transition-colors flex items-center space-x-2" (click)="startPermissionFlow()">
                     <i-lucide [name]="twitchIcon" class="w-4 h-4"></i-lucide>
-                    <span>Activate Bot</span>
+                    <span>{{ 'navbar.activateBot' | translate }}</span>
                 </button>
             </div>
             <a routerLink="dashboard" class="hover:text-purple-200 flex items-center space-x-1">
                 <i-lucide [name]="dashboardIcon" class="w-5 h-5"></i-lucide>
-                <span>Dashboard</span>
+                <span>{{ 'navbar.dashboard' | translate }}</span>
             </a>
             <a routerLink="modules" class="hover:text-purple-200 flex items-center space-x-1">
                 <i-lucide [name]="circuitBoardIcon" class="w-5 h-5"></i-lucide>
-                <span>Modules</span>
+                <span>{{ 'navbar.modules' | translate }}</span>
             </a>
             <a routerLink="settings" class="hover:text-purple-200 flex items-center space-x-1">
                 <i-lucide [name]="settingsIcon" class="w-5 h-5"></i-lucide>
-                <span>Settings</span>
+                <span>{{ 'navbar.settings' | translate }}</span>
             </a>
+            <button (click)="toggleLanguage()" class="hover:text-purple-200 flex items-center space-x-1" title="Switch Language">
+                <i-lucide [name]="languageIcon" class="w-5 h-5"></i-lucide>
+                <span>{{ getCurrentLanguageInfo().nativeName || 'English' }}</span>
+            </button>
             <div class="relative" (focusout)="onMenuFocusOut($event)" tabindex="-1">
                 <button (click)="toggleDropdown()" class="relative h-8 w-8 rounded-full bg-transparent hover:bg-purple-600" aria-haspopup="menu" [attr.aria-expanded]="isDropdownOpen">
                     <img src="{{user?.profile_image_url || ''}}" alt="User avatar" class="rounded-full" />
@@ -99,11 +107,11 @@
                         </div>
                         <a routerLink="profile/settings" (click)="closeDropdown()" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
                             <i-lucide [name]="userIcon" class="w-4 h-4"></i-lucide>
-                            <span>Profile Settings</span>
+                            <span>{{ 'navbar.profileSettings' | translate }}</span>
                         </a>
                         <a routerLink="/logout" (click)="closeDropdown()" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
                             <i-lucide [name]="logoutIcon" class="w-4 h-4"></i-lucide>
-                            <span>Logout</span>
+                            <span>{{ 'navbar.logout' | translate }}</span>
                         </a>
                     </div>
                 </div>

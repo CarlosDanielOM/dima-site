@@ -13,11 +13,12 @@ import { ConfirmationService } from '../../services/confirmation.service';
 import { ThemesService } from '../../services/themes.service';
 import { BlockInactiveUserDirective } from '../../directives/block-inactive-user.directive';
 import { UserStateService } from '../../services/user-state.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-commands',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, FormsModule, ReactiveFormsModule, TooltipDirective, BlockInactiveUserDirective],
+  imports: [CommonModule, LucideAngularModule, FormsModule, ReactiveFormsModule, TooltipDirective, BlockInactiveUserDirective, TranslatePipe],
   templateUrl: './commands.component.html',
   styleUrl: './commands.component.css'
 })

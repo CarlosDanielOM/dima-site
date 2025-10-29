@@ -1,0 +1,313 @@
+{
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "enable": "Habilitar",
+    "disable": "Deshabilitar",
+    "enabled": "Habilitado",
+    "disabled": "Deshabilitado",
+    "refresh": "Actualizar",
+    "error": "Error",
+    "yes": "Sí",
+    "no": "No",
+    "toBeImplementedSoon": "En desarrollo activo",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "of": "de",
+    "entries": "entradas",
+    "itemsPerPage": "Items por página",
+    "itemsPerPageOptions": "Opciones de items por página",
+    "show": "Mostrar",
+    "seconds": "segundos",
+    "statusOn": "Activo",
+    "statusOff": "Inactivo",
+    "notAvailable": "No disponible",
+    "access": "Acceder",
+    "accessModule": "Acceder al Módulo",
+    "upgrade": "Mejorar",
+    "test": "Probar",
+    "use": "Usar",
+    "update": "Actualizar",
+    "create": "Crear",
+    "close": "Cerrar",
+    "open": "Abrir",
+    "loading": "Cargando",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "clear": "Limpiar",
+    "apply": "Aplicar",
+    "reset": "Reiniciar",
+    "confirm": "Confirmar",
+    "back": "Atrás",
+    "submit": "Enviar",
+    "continue": "Continuar",
+    "finish": "Finalizar",
+    "skip": "Omitir"
+  },
+  "premium": {
+    "needs_premium": "Requiere Premium",
+    "needs_premium_plus": "Requiere Premium Plus"
+  },
+  "releaseStage": {
+    "stable": "Estable",
+    "beta": "Beta",
+    "alpha": "Alfa",
+    "maintenance": "Mantenimiento",
+    "coming_soon": "Próximamente",
+    "unavailable": "No disponible",
+    "deprecated": "Obsoleto"
+  },
+  "navbar": {
+    "activateBot": "Activar Bot",
+    "dashboard": "Panel de Control",
+    "modules": "Módulos",
+    "settings": "Configuración",
+    "profileSettings": "Configuración de Perfil",
+    "logout": "Cerrar sesión",
+    "switchLanguage": "Cambiar Idioma"
+  },
+  "sidebar": {
+    "dashboard": "Panel de Control",
+    "commands": "Comandos",
+    "analytics": "Analíticas",
+    "users": "Usuarios",
+    "settings": "Configuración"
+  },
+  "commands": {
+    "heading": "Comandos de {{userDisplayName}}",
+    "addCommand": "Agregar Comando",
+    "placeholder": {
+      "name": "Nombre",
+      "command": "Comando",
+      "function": "Función (mensaje)",
+      "description": "Descripción",
+      "cooldown": "Enfriamiento",
+      "userLevel": "Nivel de Usuario",
+      "status": "Estado",
+      "actions": "Acciones",
+      "reserveredCommand": "Comando Reservado",
+      "reservedCommand": "Este es un comando reservado",
+      "noDescription": "No hay descripción",
+      "noCommandsFound": "No se encontraron comandos",
+      "public": "Público"
+    },
+    "command": {
+      "name": "Nombre",
+      "command": "Comando",
+      "function": "Función (mensaje)",
+      "description": "Descripción",
+      "cooldown": "Enfriamiento",
+      "userLevel": "Nivel de Usuario",
+      "status": "Estado",
+      "actions": "Acciones",
+      "reserveredCommand": "Comando Reservado",
+      "noDescription": "No hay descripción",
+      "noCommandsFound": "No se encontraron comandos"
+    },
+    "userLevels": {
+      "1": "Todos",
+      "2": "Nivel 1",
+      "3": "Nivel 2",
+      "4": "Nivel 3",
+      "5": "Fundadores",
+      "6": "VIPs",
+      "7": "Moderadores",
+      "8": "Editores",
+      "9": "Administradores",
+      "10": "Streamers",
+      "everyone": "Todos",
+      "tier1": "Nivel 1",
+      "tier2": "Nivel 2",
+      "tier3": "Nivel 3",
+      "founders": "Fundadores",
+      "vip": "VIPs",
+      "mod": "Moderadores",
+      "editor": "Editores",
+      "admin": "Administradores",
+      "streamer": "Streamers"
+    }
+  },
+  "moduleView": {
+    "heading": "Módulos Disponibles",
+    "loading": "Cargando módulos...",
+    "noModulesFound": "No se encontraron módulos"
+  },
+  "redemptions": {
+    "heading": "Recompensas",
+    "cost": "Costo",
+    "cooldown": "Enfriamiento",
+    "title": "Título",
+    "prompt": "Descripción",
+    "duration": "Duración",
+    "message": "Mensaje",
+    "refreshTooltip": "Actualizar datos del servidor",
+    "cooldownActive": "Enfriamiento activo para actualizar",
+    "cooldownSeconds": "segundos restantes",
+    "refreshTitle": "Actualizando...",
+    "refreshSuccess": "Datos actualizados correctamente",
+    "editMode": "Modo Edición",
+    "exitEditMode": "Salir del Modo Edición",
+    "saveAll": "Guardar Todo",
+    "cancelAll": "Cancelar Todo",
+    "createReward": "Crear Recompensa",
+    "createRewardTooltip": "Crear una nueva recompensa personalizada",
+    "confirmDeleteTitle": "Confirmar Eliminación",
+    "confirmDeleteMsg": "¿Estás seguro de eliminar esta redención?",
+    "deletedTitle": "Eliminado",
+    "deletedMsg": "Redención eliminada correctamente.",
+    "cancelTitle": "Cancelado",
+    "cancelMsg": "La acción fue cancelada.",
+    "enabledTitle": "Habilitado",
+    "enabledMsg": "La redención ha sido habilitada.",
+    "disabledTitle": "Deshabilitado",
+    "disabledMsg": "La redención ha sido deshabilitada.",
+    "errorTitle": "Error",
+    "errorMsg": "El ID de la redención es requerido.",
+    "uniqueTwitchTitle": "Redenciones Únicas de Twitch",
+    "uniqueTwitchInfo": "Muestra solo las redenciones de Twitch que no están en tus redenciones personalizadas",
+    "noUniqueFound": "No se encontraron redenciones únicas de Twitch",
+    "allTwitchAvailable": "Todas las redenciones de Twitch ya están disponibles como redenciones personalizadas",
+    "noTwitchFound": "No se encontraron redenciones de Twitch",
+    "noMessageAvailable": "Sin Mensaje Disponible",
+    "originalCost": "Costo Original",
+    "costChange": "Cambio de Costo",
+    "returnToOriginalCost": "Volver al Costo Original",
+    "premiumFeature": "Función Premium",
+    "premiumRequired": "Suscripción premium requerida",
+    "premiumPlusRequired": "Suscripción Premium Plus requerida",
+    "twitchReadOnlyTitle": "Recompensa de Twitch (Solo Lectura)",
+    "twitchReadOnlyInfo": "Esta recompensa fue creada directamente en Twitch y no puede ser modificada aquí. Para personalizarla, elimínala de Twitch y recréala usando esta aplicación. Futuras actualizaciones podran permitir agregar habilidades limitadas pero no personalizar la recompensa.",
+    "twitchReadOnlyTooltip": "Las recompensas de Twitch son de solo lectura. Elimina de Twitch y recrea aquí para personalizar.",
+    "deleteFromTwitch": "Eliminar de Twitch",
+    "deleteFromTwitchTooltip": "Elimina esta recompensa de Twitch para recrearla como una recompensa personalizada"
+  },
+  "createReward": {
+    "createReward": "Crear Recompensa",
+    "title": "Título",
+    "titleRequired": "El título es requerido",
+    "cost": "Costo",
+    "costRequired": "El costo es requerido y debe ser mayor que 0",
+    "prompt": "Descripción (Opcional)",
+    "cooldown": "Enfriamiento (Opcional)",
+    "backgroundColor": "Color de Fondo (Opcional)",
+    "message": "Mensaje (Opcional)",
+    "premiumFeatures": "Características Premium",
+    "originalCost": "Costo Original",
+    "costChange": "Cambio de Costo",
+    "returnToOriginalCost": "Volver al Costo Original",
+    "premiumRequired": "Suscripción premium requerida",
+    "premiumPlusRequired": "Suscripción Premium Plus requerida",
+    "create": "Crear",
+    "cancel": "Cancelar",
+    "presetColors": "Colores Predefinidos",
+    "customColor": "Color Personalizado"
+  },
+  "modals": {
+    "confirm": {
+      "title": "Confirmar",
+      "message": "¿Estás seguro?",
+      "confirmText": "Confirmar",
+      "cancelText": "Cancelar"
+    },
+    "delete": {
+      "title": "Eliminar",
+      "message": "¿Estás seguro de eliminar este elemento?",
+      "confirmText": "Eliminar",
+      "cancelText": "Cancelar"
+    }
+  },
+  "wip": {
+    "statusChip": "En desarrollo activo",
+    "headline": "Estamos creando algo extraordinario",
+    "description": "Nuestro equipo está puliendo la próxima gran experiencia para el ecosistema DIMA. Queremos que cada interacción sea fluida, receptiva y encantadora.",
+    "progressTitle": "Estado actual",
+    "progressDescription": "Las funciones principales ya están implementadas. Nos enfocamos en refinar el rendimiento en tiempo real, la accesibilidad y la internacionalización.",
+    "progressStatusTemplate": "%PROGRESS%% completado · Ventana de lanzamiento: Q4 2025",
+    "whatToExpectTitle": "Qué esperar",
+    "whatToExpectIntro": "Aquí tienes un vistazo rápido de lo que llegará con el primer lanzamiento.",
+    "backHome": "Volver al inicio",
+    "stayTunedLabel": "Mantente al tanto de las novedades",
+    "footerNote": "¿Necesitas acceso anticipado o tienes comentarios? Comunícate con el equipo y te integraremos lo antes posible.",
+    "highlights": {
+      "0": "Paneles de gestión optimizados con analíticas en tiempo real.",
+      "1": "Automatizaciones inteligentes que reaccionan al instante a los eventos de tu comunidad.",
+      "2": "Temas impulsados por Tailwind diseñados para reflejar la personalidad de tu marca."
+    }
+  },
+  "landing": {
+    "nav": {
+      "features": "Características",
+      "pricing": "Precios",
+      "contact": "Contacto"
+    },
+    "hero": {
+      "title": "Conoce DomDimaBot: Tu Compañero de Chat Definitivo para tu canal!",
+      "description": "Mejora tu experiencia de streaming en Twitch con DomDimaBot. Engaja a tu audiencia, modera chats y aumenta la interacción de tu canal.",
+      "loginWith": "Iniciar sesión con Twitch",
+      "learnMore": "Aprender Más",
+      "join": "Unirse a Discord"
+    },
+    "analytics": {
+      "title": "Analíticas",
+      "activeChannels": "Canales Activos",
+      "liveChannels": "Canales en Vivo",
+      "registeredChannels": "Canales Registrados"
+    },
+    "features": {
+      "title": "Características",
+      "smartChatModeration": "Moderación de Chat Inteligente",
+      "smartChatModerationDescription": "Filtra spam y contenido inapropiado para mantener tu chat limpio",
+      "customCommands": "Comandos Personalizados",
+      "customCommandsDescription": "Crea comandos personalizados para interactuar con tu audiencia de forma sencilla",
+      "easyIntegration": "Integración senzilla",
+      "easyIntegrationDescription": "Integra DomDimaBot con tu canal de Twitch en solo unos clicks"
+    },
+    "pricing": {
+      "title": "Precios",
+      "description": "Elige tu plan y comienza a engajar a tu audiencia hoy.",
+      "monthly": "Mensual",
+      "annually": "Anual",
+      "choosePlan": "Elegir Plan",
+      "basic": {
+        "title": "Básico",
+        "description": "Gratis para siempre, con características limitadas.",
+        "features": {
+          "smartChatModeration": "Moderación de Chat Inteligente",
+          "unlimitedSimpleCustomCommands": "Comandos Personalizados Ilimitados",
+          "basicAnalytics": "Analíticas Básicas"
+        }
+      },
+      "premium": {
+        "title": "Premium",
+        "description": "Plan Premium con todas las características, y más limitaciones.",
+        "features": {
+          "advancedChatModeration": "Moderación de Chat Avanzada",
+          "prioritySupport": "Soporte Prioritario",
+          "detailedAnalytics": "Analíticas Detalladas"
+        }
+      },
+      "ai": {
+        "title": "AI",
+        "description": "Más moderación de chat automatizada y integración con IA.",
+        "features": {
+          "aiChatModeration": "Moderación de Chat con IA",
+          "prioritySupport": "Soporte Prioritario",
+          "detailedAnalytics": "Analíticas Detalladas"
+        }
+      }
+    },
+    "callToAction": {
+      "title": "¿Listo para Elevar tu Stream en Twitch?",
+      "description": "Únete a miles de streamers que han transformado sus canales con DomDimaBot.",
+      "button": "Iniciar sesión con Twitch",
+      "terms": "Al iniciar sesión, aceptas nuestros Términos y Condiciones."
+    },
+    "footer": {
+      "copyright": "© 2024 DomDimaBot. Todos los derechos reservados.",
+      "terms": "Términos de Servicio",
+      "privacy": "Privacidad"
+    }
+  }
+}

@@ -7,16 +7,20 @@
         <svg class="w-6 h-6 mr-2" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitch</title><path fill="#9146FF" d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
         <span class="ml-2 text-2xl font-bold text-purple-900">DomDimaBot</span>
       </a>
-      <nav class="ml-auto flex gap-4 sm:gap-6">
+      <nav class="ml-auto flex gap-4 sm:gap-6 items-center">
         <a class="nav-pill text-sm font-medium text-purple-900" href="#features">
-          Features
+          {{ 'landing.nav.features' | translate }}
         </a>
         <a class="nav-pill text-sm font-medium text-purple-900" href="#pricing">
-          Pricing
+          {{ 'landing.nav.pricing' | translate }}
         </a>
         <a class="nav-pill text-sm font-medium text-purple-900" href="#contact">
-          Contact
+          {{ 'landing.nav.contact' | translate }}
         </a>
+        <button (click)="toggleLanguage()" class="nav-pill text-sm font-medium text-purple-900 flex items-center gap-1" title="Switch Language">
+          <lucide-icon [name]="languageIcon" class="w-4 h-4"></lucide-icon>
+          <span>{{ getCurrentLanguageInfo().nativeName || 'English' }}</span>
+        </button>
       </nav>
     </header>
     <main class="flex-1">
@@ -25,23 +29,23 @@
           <div class="flex flex-col items-center space-y-4 text-center">
             <div class="space-y-2">
               <h1 class="gradient-text text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
-                Meet DomDimaBot: Your Ultimate Twitch Chat Companion
+                {{ 'landing.hero.title' | translate }}
               </h1>
               <p class="mx-auto max-w-[700px] text-purple-800 md:text-xl">
-                Enhance your Twitch streaming experience with DomDimaBot. Engage your audience, moderate chats, and boost your channel's interactivity.
+                {{ 'landing.hero.description' | translate }}
               </p>
             </div>
             <div class="space-x-4">
               <a class="btn-gradient hover:cursor-pointer inline-flex items-center gap-2" (click)="loginWithTwitch()">
                 <svg class="w-6 h-6" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitch</title><path fill="#9146FF" d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
-                <span>Login with Twitch</span>
+                <span>{{ 'landing.hero.loginWith' | translate }}</span>
               </a>
               <button class="btn-outline-gradient hover:cursor-pointer">
-                Learn More
+                {{ 'landing.hero.learnMore' | translate }}
               </button>
               <button class="btn-outline-gradient hover:cursor-pointer" (click)="openDiscord()">
                 <p class="inline">
-                  Join Discord
+                  {{ 'landing.hero.join' | translate }}
                 </p>
               </button>
             </div>
@@ -53,17 +57,17 @@
           <div class="grid gap-8 sm:grid-cols-3">
             <div class="glass-card card-hover flex flex-col items-center space-y-2 border-purple-300 p-4 rounded-lg">
               <lucide-icon [name]="activityIcon" class="h-8 w-8 text-purple-600 glow-icon"></lucide-icon>
-              <h3 class="text-xl font-bold text-purple-900">Active Channels</h3>
+              <h3 class="text-xl font-bold text-purple-900">{{ 'landing.analytics.activeChannels' | translate }}</h3>
               <p class="text-3xl font-bold text-purple-600" [countUp]="siteStats.activeChannels"></p>
             </div>
             <div class="glass-card card-hover flex flex-col items-center space-y-2 border-purple-300 p-4 rounded-lg">
               <lucide-icon [name]="tvIcon" class="h-8 w-8 text-purple-600 glow-icon"></lucide-icon>
-              <h3 class="text-xl font-bold text-purple-900">Live Channels</h3>
+              <h3 class="text-xl font-bold text-purple-900">{{ 'landing.analytics.liveChannels' | translate }}</h3>
               <p class="text-3xl font-bold text-purple-600" [countUp]="siteStats.liveChannels"></p>
             </div>
             <div class="glass-card card-hover flex flex-col items-center space-y-2 border-purple-300 p-4 rounded-lg">
               <lucide-icon [name]="usersIcon" class="h-8 w-8 text-purple-600 glow-icon"></lucide-icon>
-              <h3 class="text-xl font-bold text-purple-900">Registered Channels</h3>
+              <h3 class="text-xl font-bold text-purple-900">{{ 'landing.analytics.registeredChannels' | translate }}</h3>
               <p class="text-3xl font-bold text-purple-600" [countUp]="siteStats.registeredChannels"></p>
             </div>
           </div>
@@ -72,23 +76,23 @@
       <section id="features" class="w-full py-12 md:py-24 lg:py-32 reveal-init">
         <div class="container mx-auto px-4 md:px-6">
           <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-12 text-purple-900">
-            Features
+            {{ 'landing.features.title' | translate }}
           </h2>
           <div class="grid gap-10 sm:grid-cols-2 md:grid-cols-3">
             <div class="glass-card card-hover flex flex-col items-center space-y-3 text-center p-6 rounded-lg">
               <lucide-icon [name]="messageCircleIcon" class="h-12 w-12 text-purple-600 glow-icon"></lucide-icon>
-              <h3 class="text-xl font-bold text-purple-900">Smart Chat Moderation</h3>
-              <p class="text-purple-800">Automatically filter spam and inappropriate content to keep your chat clean.</p>
+              <h3 class="text-xl font-bold text-purple-900">{{ 'landing.features.smartChatModeration' | translate }}</h3>
+              <p class="text-purple-800">{{ 'landing.features.smartChatModerationDescription' | translate }}</p>
             </div>
             <div class="glass-card card-hover flex flex-col items-center space-y-3 text-center p-6 rounded-lg">
               <lucide-icon [name]="zapIcon" class="h-12 w-12 text-purple-600 glow-icon"></lucide-icon>
-              <h3 class="text-xl font-bold text-purple-900">Custom Commands</h3>
-              <p class="text-purple-800">Create personalized commands to interact with your audience effortlessly.</p>
+              <h3 class="text-xl font-bold text-purple-900">{{ 'landing.features.customCommands' | translate }}</h3>
+              <p class="text-purple-800">{{ 'landing.features.customCommandsDescription' | translate }}</p>
             </div>
             <div class="glass-card card-hover flex flex-col items-center space-y-3 text-center p-6 rounded-lg">
               <lucide-icon [name]="settingsIcon" class="h-12 w-12 text-purple-600 glow-icon"></lucide-icon>
-              <h3 class="text-xl font-bold text-purple-900">Easy Integration</h3>
-              <p class="text-purple-800">Seamlessly integrate DomDimaBot with your Twitch channel in just a few clicks.</p>
+              <h3 class="text-xl font-bold text-purple-900">{{ 'landing.features.easyIntegration' | translate }}</h3>
+              <p class="text-purple-800">{{ 'landing.features.easyIntegrationDescription' | translate }}</p>
             </div>
           </div>
         </div>
@@ -96,9 +100,9 @@
       <section id="pricing" class="w-full py-12 md:py-24 lg:py-32 bg-purple-200/60 backdrop-blur reveal-init">
         <div class="container mx-auto px-4 md:px-6">
           <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-12 text-purple-900">
-            Choose Your Plan
+            {{ 'landing.pricing.title' | translate }}
           </h2>
-          <h3 class="text-2xl font-bold tracking-tighter sm:text-3xl md:text-4xl text-center mb-2 text-purple-900">Monthly</h3>
+          <h3 class="text-2xl font-bold tracking-tighter sm:text-3xl md:text-4xl text-center mb-2 text-purple-900">{{ 'landing.pricing.monthly' | translate }}</h3>
           <!-- <div class="toggle-subscription-length w-full">
             <div class="flex items-center mx-auto">
               <input type="radio" name="subscription-length" id="subscription-length-1" value="1" checked>
@@ -109,29 +113,29 @@
           </div> -->
           <div class="grid gap-6 lg:grid-cols-3">
             <div key="basic" class="glass-card card-hover flex flex-col p-6 rounded-lg">
-                <h3 class="text-2xl font-bold text-purple-900">BASIC</h3> 
+                <h3 class="text-2xl font-bold text-purple-900">{{ 'landing.pricing.basic.title' | translate }}</h3> 
                 <div class="mt-4 text-purple-900 text-4xl font-bold">$0.00 USD</div>
-                <p class="mt-2 text-purple-700">This is the free plan for new users.</p>
+                <p class="mt-2 text-purple-700">{{ 'landing.pricing.basic.description' | translate }}</p>
                 <ul class="mt-4 space-y-2">
                     <li class="flex items-center">
                         <lucide-icon [name]="checkIcon" class="mr-2 h-5 w-5"></lucide-icon>
-                        <span class="text-purple-800">Smart Chat Moderation</span>
+                        <span class="text-purple-800">{{ 'landing.pricing.basic.features.smartChatModeration' | translate }}</span>
                     </li>
                     <li class="flex items-center">
                         <lucide-icon [name]="checkIcon" class="mr-2 h-5 w-5"></lucide-icon>
-                        <span class="text-purple-800">Unlimited Simple Custom Commands</span>
+                        <span class="text-purple-800">{{ 'landing.pricing.basic.features.unlimitedSimpleCustomCommands' | translate }}</span>
                     </li>
                     <li class="flex items-center">
                         <lucide-icon [name]="checkIcon" class="mr-2 h-5 w-5"></lucide-icon>
-                        <span class="text-purple-800">Basic Analytics</span>
+                        <span class="text-purple-800">{{ 'landing.pricing.basic.features.basicAnalytics' | translate }}</span>
                     </li>
                 </ul>
-                <button class="mt-6 btn-gradient hover:cursor-pointer" (click)="loginWithTwitch()">Choose Plan</button>
+                <button class="mt-6 btn-gradient hover:cursor-pointer" (click)="loginWithTwitch()">{{ 'landing.pricing.choosePlan' | translate }}</button>
             </div>
             <div key="premium" class="glass-card card-hover flex flex-col p-6 rounded-lg">
-                <h3 class="text-2xl font-bold text-purple-900">PREMIUM</h3> 
+                <h3 class="text-2xl font-bold text-purple-900">{{ 'landing.pricing.premium.title' | translate }}</h3> 
                 <div class="mt-4 text-purple-900 text-4xl font-bold">$ 5 USD</div>
-                <p class="mt-2 text-purple-700">Coming soon.</p>
+                <p class="mt-2 text-purple-700">{{ 'landing.pricing.premium.description' | translate }}</p>
                 <!-- <ul class="mt-4 space-y-2">
                     <li class="flex items-center">
                         <span class="icon icon-check mr-2 h-5 w-5"></span>
@@ -150,12 +154,12 @@
                         <span class="text-purple-800">Everything in Basic</span>
                     </li>
                 </ul> -->
-                <button class="mt-6 btn-gradient disabled:bg-slate-700 disabled:cursor-not-allowed hover:cursor-pointer" (click)="loginWithTwitch()" disabled>Choose Plan</button>
+                <button class="mt-6 btn-gradient disabled:bg-slate-700 disabled:cursor-not-allowed hover:cursor-pointer" (click)="loginWithTwitch()" disabled>{{ 'landing.pricing.choosePlan' | translate }}</button>
             </div>
             <div key="ai" class="glass-card card-hover flex flex-col p-6 rounded-lg">
                 <h3 class="text-2xl font-bold text-purple-900">AI</h3> 
                 <div class="mt-4 text-purple-900 text-4xl font-bold">$ N/A</div>
-                <p class="mt-2 text-purple-700">To be implemented soon.</p>
+                <p class="mt-2 text-purple-700">{{ 'common.toBeImplementedSoon' | translate }}</p>
                 <!-- <ul class="mt-4 space-y-2">
                     <li class="flex items-center">
                         <span class="icon icon-check mr-2 h-5 w-5"></span>
@@ -174,7 +178,7 @@
                         <span class="text-purple-800">Everything in Premium</span>
                     </li>
                 </ul> -->
-                <button class="mt-6 btn-gradient hover:cursor-pointer disabled:bg-slate-700 disabled:cursor-not-allowed" (click)="loginWithTwitch()" disabled>Choose Plan</button>
+                <button class="mt-6 btn-gradient hover:cursor-pointer disabled:bg-slate-700 disabled:cursor-not-allowed" (click)="loginWithTwitch()" disabled>{{ 'landing.pricing.choosePlan' | translate }}</button>
             </div>
           </div>
         </div>
@@ -184,19 +188,19 @@
           <div class="flex flex-col items-center space-y-4 text-center">
             <div class="space-y-2">
               <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-purple-900">
-                Ready to Elevate Your Twitch Stream?
+                {{ 'landing.callToAction.title' | translate }}
               </h2>
               <p class="mx-auto max-w-[600px] text-purple-800 md:text-xl">
-                Join thousands of streamers who have transformed their channels with DomDimaBot.
+                {{ 'landing.callToAction.description' | translate }}
               </p>
             </div>
             <div class="w-full max-w-sm space-y-2">
               <button class="w-full btn-gradient text-white font-semibold py-2 px-4 rounded-md flex items-center justify-center space-x-2" (click)="loginWithTwitch()">
                 <svg class="w-6 h-6" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitch</title><path fill="#9146FF" d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
-                <span>Sign Up with Twitch</span>
+                <span>{{ 'landing.callToAction.button' | translate }}</span>
               </button>
               <p class="text-xs text-purple-700">
-                By signing up, you agree to our Terms & Conditions.
+                {{ 'landing.callToAction.terms' | translate }}
               </p>
             </div>
           </div>
@@ -204,14 +208,18 @@
       </section>
     </main>
     <footer class="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t border-purple-200">
-      <p class="text-xs text-purple-700">© 2024 DomDimaBot. All rights reserved.</p>
-      <nav class="sm:ml-auto flex gap-4 sm:gap-6">
+      <p class="text-xs text-purple-700">{{ 'landing.footer.copyright' | translate }}</p>
+      <nav class="sm:ml-auto flex gap-4 sm:gap-6 items-center">
         <a class="text-xs hover:underline underline-offset-4 text-purple-700" href="#">
-          Terms of Service
+          {{ 'landing.footer.terms' | translate }}
         </a>
         <a class="text-xs hover:underline underline-offset-4 text-purple-700" href="#">
-          Privacy
+          {{ 'landing.footer.privacy' | translate }}
         </a>
+        <button (click)="toggleLanguage()" class="text-xs hover:underline underline-offset-4 text-purple-700 flex items-center gap-1" title="Switch Language">
+          <lucide-icon [name]="languageIcon" class="w-3 h-3"></lucide-icon>
+          <span>{{ getCurrentLanguageInfo().nativeName || 'English' }}</span>
+        </button>
       </nav>
     </footer>
   </div>

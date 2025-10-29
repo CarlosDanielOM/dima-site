@@ -2,13 +2,13 @@
   <div class="flex justify-between items-center mb-12">
     <div class="text-left">
       <h1 class="text-4xl font-bold text-purple-900 tracking-tight">
-        {{ user?.display_name }}'s Commands
+        {{ 'commands.heading' | translate: { userDisplayName: user?.display_name } }}
       </h1>
       <div class="w-24 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full mt-2"></div>
     </div>
     @if(viewMode === 'table' || viewMode === 'card') {
       <button appBlockInactiveUser actionType="click" class="bg-purple-600 text-white px-4 py-2 cursor-pointer rounded-full transition-colors duration-300 focus:outline-none"
-              (click)="checkRateLimit() && (addingCommand = true)">Add Command</button>
+              (click)="checkRateLimit() && (addingCommand = true)">{{ 'commands.addCommand' | translate }}</button>
     }
     <div class="flex items-center space-x-2 bg-purple-100 rounded-full p-1">
       <button (click)="setView('table')"
@@ -44,20 +44,20 @@
         </colgroup>
         <thead class="bg-purple-50">
           <tr>
-            <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">Name</th>
-            <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">Command</th>
-            <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">Function (message)</th>
-            <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">Description</th>
-            <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">Cooldown</th>
-            <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">User Level</th>
-            <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">Status</th>
-            <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3 text-right text-xs font-medium text-purple-800 uppercase tracking-wider">Actions</th>
+            <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">{{ 'commands.placeholder.name' | translate }}</th>
+            <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">{{ 'commands.placeholder.command' | translate }}</th>
+            <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">{{ 'commands.placeholder.function' | translate }}</th>
+            <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">{{ 'commands.placeholder.description' | translate }}</th>
+            <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">{{ 'commands.placeholder.cooldown' | translate }}</th>
+            <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">{{ 'commands.placeholder.userLevel' | translate }}</th>
+            <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider">{{ 'commands.placeholder.status' | translate }}</th>
+            <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3 text-right text-xs font-medium text-purple-800 uppercase tracking-wider">{{ 'commands.placeholder.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-purple-100">
           @if (paginatedCommands.length === 0) {
           <tr>
-            <td colspan="8" class="px-6 py-4 text-center text-sm text-purple-700">No commands found</td>
+            <td colspan="8" class="px-6 py-4 text-center text-sm text-purple-700">{{ 'commands.placeholder.noCommandsFound' | translate }}</td>
           </tr>
           }
           @if (addingCommand) {
@@ -69,35 +69,35 @@
               [formGroup]="newCommand"
             >
                 <td class="px-7 py-4 whitespace-nowrap text-sm font-medium text-purple-900">
-                  <input type="text" class="w-full" placeholder="Name" formControlName="name">
+                  <input type="text" class="w-full" placeholder="{{ 'commands.placeholder.name' | translate }}" formControlName="name">
                 </td>
-                <td class="px-7 py-4 whitespace-nowrap text-sm text-purple-700 font-mono">!<input type="text" class="w-full" placeholder="Command" formControlName="cmd"></td>
-                <td class="px-7 py-4 whitespace-nowrap text-sm text-purple-700 font-mono"><input type="text" class="w-full" placeholder="Function (message)" formControlName="message"></td>
-                <td class="px-7 py-4 whitespace-normal text-sm text-purple-600 max-w-xs truncate"><input type="text" class="w-full" placeholder="Description" formControlName="description"></td>
-                <td class="px-7 py-4 whitespace-nowrap text-sm text-purple-700"><input type="number" class="w-full" placeholder="Cooldown" value="10" min="5" max="60" formControlName="cooldown"></td>
+                <td class="px-7 py-4 whitespace-nowrap text-sm text-purple-700 font-mono">!<input type="text" class="w-full" placeholder="{{ 'commands.placeholder.command' | translate }}" formControlName="cmd"></td>
+                <td class="px-7 py-4 whitespace-nowrap text-sm text-purple-700 font-mono"><input type="text" class="w-full" placeholder="{{ 'commands.placeholder.function' | translate }}" formControlName="message"></td>
+                <td class="px-7 py-4 whitespace-normal text-sm text-purple-600 max-w-xs truncate"><input type="text" class="w-full" placeholder="{{ 'commands.placeholder.description' | translate }}" formControlName="description"></td>
+                <td class="px-7 py-4 whitespace-nowrap text-sm text-purple-700"><input type="number" class="w-full" placeholder="{{ 'commands.placeholder.cooldown' | translate }}" formControlName="cooldown"></td>
                 <td class="px-7 py-4 whitespace-nowrap text-sm text-purple-700"><select name="userLevel" id="userLevel" class="w-full" formControlName="userLevel">
-                  <option value="1">1 - Everyone</option>
-                  <option value="2">2 - Tier 1</option>
-                  <option value="3">3 - Tier 2</option>
-                  <option value="4">4 - Tier 3</option>
-                  <option value="5">5 - Founders</option>
-                  <option value="6">6 - VIPs</option>
-                  <option value="7">7 - Moderators</option>
-                  <option value="8">8 - Editors</option>
-                  <option value="9">9 - Admins</option>
-                  <option value="10">10 - Streamers</option>
+                  <option value="1">1 - {{ 'commands.userLevels.1' | translate }}</option>
+                  <option value="2">2 - {{ 'commands.userLevels.2' | translate }}</option>
+                  <option value="3">3 - {{ 'commands.userLevels.3' | translate }}</option>
+                  <option value="4">4 - {{ 'commands.userLevels.4' | translate }}</option>
+                  <option value="5">5 - {{ 'commands.userLevels.5' | translate }}</option>
+                  <option value="6">6 - {{ 'commands.userLevels.6' | translate }}</option>
+                  <option value="7">7 - {{ 'commands.userLevels.7' | translate }}</option>
+                  <option value="8">8 - {{ 'commands.userLevels.8' | translate }}</option>
+                  <option value="9">9 - {{ 'commands.userLevels.9' | translate }}</option>
+                  <option value="10">10 - {{ 'commands.userLevels.10' | translate }}</option>
                 </select></td>
                 <td class="px-7 py-4 whitespace-nowrap text-sm text-purple-700">
                   <div class="flex items-center space-x-2">
                     <label class="inline-flex items-center">
                       <input type="checkbox" class="form-checkbox h-4 w-4 text-green-600 rounded border-purple-300 focus:ring-purple-400" formControlName="enabled">
-                      <span class="ml-2 text-sm">Enabled</span>
+                      <span class="ml-2 text-sm">{{ 'common.enabled' | translate }}</span>
                     </label>
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                  <button appBlockInactiveUser actionType="click" class="text-green-600 hover:text-green-800 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed" (click)="saveCommand(newCommand)">Save</button>
-                  <button class="text-red-600 hover:text-red-800 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed" (click)="resetForm()">Cancel</button>
+                  <button appBlockInactiveUser actionType="click" class="text-green-600 hover:text-green-800 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed" (click)="saveCommand(newCommand)">{{ 'common.save' | translate }}</button>
+                  <button class="text-red-600 hover:text-red-800 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed" (click)="resetForm()">{{ 'common.cancel' | translate }}</button>
                 </td>
             </tr>
           }
@@ -153,21 +153,21 @@
                 <select class="editing-cell w-full border border-purple-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
                         [value]="getRowEditingValue('userLevel')"
                         (change)="editingRowValues['userLevel'] = +$any($event.target).value">
-                  <option value="1">1 - Everyone</option>
-                  <option value="2">2 - Tier 1</option>
-                  <option value="3">3 - Tier 2</option>
-                  <option value="4">4 - Tier 3</option>
-                  <option value="5">5 - Founders</option>
-                  <option value="6">6 - VIPs</option>
-                  <option value="7">7 - Moderators</option>
-                  <option value="8">8 - Editors</option>
-                  <option value="9">9 - Admins</option>
-                  <option value="10">10 - Streamers</option>
+                  <option value="1">1 - {{ 'commands.userLevels.everyone' | translate }}</option>
+                  <option value="2">2 - {{ 'commands.userLevels.tier1' | translate }}</option>
+                  <option value="3">3 - {{ 'commands.userLevels.tier2' | translate }}</option>
+                  <option value="4">4 - {{ 'commands.userLevels.tier3' | translate }}</option>
+                  <option value="5">5 - {{ 'commands.userLevels.founders' | translate }}</option>
+                  <option value="6">6 - {{ 'commands.userLevels.vip' | translate }}</option>
+                  <option value="7">7 - {{ 'commands.userLevels.mod' | translate }}</option>
+                  <option value="8">8 - {{ 'commands.userLevels.editor' | translate }}</option>
+                  <option value="9">9 - {{ 'commands.userLevels.admin' | translate }}</option>
+                  <option value="10">10 - {{ 'commands.userLevels.streamer' | translate }}</option>
                 </select>
               </td>
               <td class="px-3 py-3 sm:px-7 sm:py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                <button appBlockInactiveUser actionType="click" class="text-green-600 hover:text-green-800 transition-colors" (click)="saveRowEdit()">Save</button>
-                <button class="text-red-600 hover:text-red-800 transition-colors" (click)="cancelRowEdit()">Cancel</button>
+                <button appBlockInactiveUser actionType="click" class="text-green-600 hover:text-green-800 transition-colors" (click)="saveRowEdit()">{{ 'common.save' | translate }}</button>
+                <button class="text-red-600 hover:text-red-800 transition-colors" (click)="cancelRowEdit()">{{ 'common.cancel' | translate }}</button>
               </td>
             } @else {
               <!-- Display Mode -->
@@ -217,8 +217,8 @@
                          #editingInput>
                 } @else {
                   <div class="truncate"
-                       [appTooltip]="command.message || (command.reserved ? 'This is a reserved command' : 'Public')">
-                    {{ command.message || (command.reserved ? 'This is a reserved command' : 'Public') }}
+                       [appTooltip]="command.message || (command.reserved ? ('commands.placeholder.reservedCommand' | translate) : ('commands.placeholder.public' | translate))">
+                    {{ command.message || (command.reserved ? ('commands.placeholder.reservedCommand' | translate) : ('commands.placeholder.public' | translate)) }}
                   </div>
                 }
               </td>
@@ -234,8 +234,8 @@
                          #editingInput>
                 } @else {
                   <div class="truncate"
-                       [appTooltip]="command.description || 'N/A'">
-                    {{ command.description || 'N/A' }}
+                       [appTooltip]="command.description || ('common.notAvailable' | translate)">
+                    {{ command.description || ('common.notAvailable' | translate) }}
                   </div>
                 }
               </td>
@@ -266,19 +266,19 @@
                           (keydown.escape)="$event.stopPropagation(); cancelEdit()"
                           (click)="$event.stopPropagation()"
                           #editingInput>
-                    <option value="1">1 - Everyone</option>
-                    <option value="2">2 - Tier 1</option>
-                    <option value="3">3 - Tier 2</option>
-                    <option value="4">4 - Tier 3</option>
-                    <option value="5">5 - Founders</option>
-                    <option value="6">6 - VIPs</option>
-                    <option value="7">7 - Moderators</option>
-                    <option value="8">8 - Editors</option>
-                    <option value="9">9 - Admins</option>
-                    <option value="10">10 - Streamers</option>
+                    <option value="1">1 - {{ 'commands.userLevels.everyone' | translate }}</option>
+                    <option value="2">2 - {{ 'commands.userLevels.tier1' | translate }}</option>
+                    <option value="3">3 - {{ 'commands.userLevels.tier2' | translate }}</option>
+                    <option value="4">4 - {{ 'commands.userLevels.tier3' | translate }}</option>
+                    <option value="5">5 - {{ 'commands.userLevels.founders' | translate }}</option>
+                    <option value="6">6 - {{ 'commands.userLevels.vip' | translate }}</option>
+                    <option value="7">7 - {{ 'commands.userLevels.mod' | translate }}</option>
+                    <option value="8">8 - {{ 'commands.userLevels.editor' | translate }}</option>
+                    <option value="9">9 - {{ 'commands.userLevels.admin' | translate }}</option>
+                    <option value="10">10 - {{ 'commands.userLevels.streamer' | translate }}</option>
                   </select>
                 } @else {
-                  {{ command.userLevel }} - {{ command.userLevelName }}
+                  {{ command.userLevel }} - {{ 'commands.userLevels.' + command.userLevelName | translate }}
                 }
               </td>
               <td class="px-2 py-3 sm:px-4 sm:py-4 whitespace-nowrap text-sm text-purple-700">
@@ -287,17 +287,17 @@
                       [class.text-green-800]="command.enabled !== false"
                       [class.bg-red-100]="command.enabled === false"
                       [class.text-red-800]="command.enabled === false">
-                  {{ command.enabled === false ? 'Off' : 'On' }}
+                  {{ command.enabled === false ? ('common.statusOff' | translate) : ('common.statusOn' | translate) }}
                 </span>
               </td>
               <td class="px-3 py-3 sm:px-7 sm:py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                <button appBlockInactiveUser actionType="click" class="text-blue-600 hover:text-blue-800 transition-colors" (click)="startRowEdit(command._id)">Edit</button>
+                <button appBlockInactiveUser actionType="click" class="text-blue-600 hover:text-blue-800 transition-colors" (click)="startRowEdit(command._id)">{{ 'common.edit' | translate }}</button>
                 @if (command.enabled === false) {
-                  <button appBlockInactiveUser actionType="click" class="text-green-600 hover:text-green-800 transition-colors opacity-100 font-semibold" (click)="enableCommand(command._id)">Enable</button>
+                  <button appBlockInactiveUser actionType="click" class="text-green-600 hover:text-green-800 transition-colors opacity-100 font-semibold" (click)="enableCommand(command._id)">{{ 'common.enable' | translate }}</button>
                 } @else {
-                  <button appBlockInactiveUser actionType="click" class="text-yellow-600 hover:text-yellow-800 transition-colors" (click)="disableCommand(command._id)">Disable</button>
+                  <button appBlockInactiveUser actionType="click" class="text-yellow-600 hover:text-yellow-800 transition-colors" (click)="disableCommand(command._id)">{{ 'common.disable' | translate }}</button>
                 }
-                <button appBlockInactiveUser actionType="click" class="text-red-600 hover:text-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" [disabled]="command.reserved" (click)="deleteCommand(command.reserved ? null : command._id)">Delete</button>
+                <button appBlockInactiveUser actionType="click" class="text-red-600 hover:text-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" [disabled]="command.reserved" (click)="deleteCommand(command.reserved ? null : command._id)">{{ 'common.delete' | translate }}</button>
               </td>
             }
           </tr>
@@ -307,18 +307,18 @@
     </div>
     <div class="flex items-center justify-between pt-4 px-6 pb-6">
         <div class="flex items-center space-x-2 text-sm text-purple-700">
-            <span>Show</span>
+            <span>{{ 'common.show' | translate }}</span>
             <select (change)="onItemsPerPageChange($event)" [(ngModel)]="itemsPerPage" name="itemsPerPage" class="px-2 py-1 border border-purple-200 rounded-md focus:ring-2 focus:ring-purple-400 focus:border-purple-400 outline-none transition">
                 @for(option of itemsPerPageOptions; track option) {
                     <option [value]="option">{{ option }}</option>
                 }
             </select>
-            <span>entries</span>
+            <span>{{ 'common.entries' | translate }}</span>
         </div>
       <nav class="flex items-center space-x-2" aria-label="Pagination">
         <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1"
           class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-purple-200 bg-white text-sm font-medium text-purple-500 hover:bg-gray-50 disabled:opacity-50">
-          Previous
+          {{ 'common.previous' | translate }}
         </button>
         @for(page of getPages(); track page) {
           <button (click)="changePage(page)"
@@ -332,7 +332,7 @@
         }
         <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages"
           class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-purple-200 bg-white text-sm font-medium text-purple-500 hover:bg-gray-50 disabled:opacity-50">
-          Next
+          {{ 'common.next' | translate }}
         </button>
       </nav>
     </div>
@@ -344,42 +344,42 @@
         <div class="p-6 relative flex-grow">
           <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-600">
           </div>
-          <h2 class="text-lg font-bold text-purple-900 mb-3">+ Add Command</h2>
+          <h2 class="text-lg font-bold text-purple-900 mb-3">+ {{ 'commands.addCommand' | translate }}</h2>
           <div class="space-y-3" [formGroup]="newCommand">
             <div>
-              <h3 class="font-semibold text-xs text-purple-800 mb-1">Name</h3>
+              <h3 class="font-semibold text-xs text-purple-800 mb-1">{{ 'commands.placeholder.name' | translate }}</h3>
               <input type="text"
                      class="w-full border border-purple-300 rounded px-2 py-1 text-sm focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
-                     placeholder="Command name"
+                     placeholder="{{ 'commands.placeholder.name' | translate }}"
                      formControlName="name">
             </div>
             <div>
-              <h3 class="font-semibold text-xs text-purple-800 mb-1">Command</h3>
+              <h3 class="font-semibold text-xs text-purple-800 mb-1">{{ 'commands.placeholder.command' | translate }}</h3>
               <div class="flex items-center">
                 <span class="text-purple-700 font-mono text-sm mr-1">!</span>
                 <input type="text"
                        class="flex-1 border border-purple-300 rounded px-2 py-1 text-sm focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
-                       placeholder="command"
+                       placeholder="{{ 'commands.placeholder.command' | translate }}"
                        formControlName="cmd">
               </div>
             </div>
             <div>
-              <h3 class="font-semibold text-xs text-purple-800 mb-1">Message</h3>
+              <h3 class="font-semibold text-xs text-purple-800 mb-1">{{ 'commands.placeholder.function' | translate }}</h3>
               <input type="text"
                      class="w-full border border-purple-300 rounded px-2 py-1 text-sm focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
-                     placeholder="Response message"
+                     placeholder="{{ 'commands.placeholder.function' | translate }}"
                      formControlName="message">
             </div>
             <div>
-              <h3 class="font-semibold text-xs text-purple-800 mb-1">Description</h3>
+              <h3 class="font-semibold text-xs text-purple-800 mb-1">{{ 'commands.placeholder.description' | translate }}</h3>
               <input type="text"
                      class="w-full border border-purple-300 rounded px-2 py-1 text-sm focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
-                     placeholder="Description"
+                     placeholder="{{ 'commands.placeholder.description' | translate }}"
                      formControlName="description">
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <h3 class="font-semibold text-xs text-purple-800 mb-1">Cooldown</h3>
+                <h3 class="font-semibold text-xs text-purple-800 mb-1">{{ 'commands.placeholder.cooldown' | translate }}</h3>
                 <div class="flex items-center">
                   <input type="number"
                          min="5"
@@ -392,26 +392,26 @@
                 </div>
               </div>
               <div>
-                <h3 class="font-semibold text-xs text-purple-800 mb-1">User Level</h3>
+                <h3 class="font-semibold text-xs text-purple-800 mb-1">{{ 'commands.placeholder.userLevel' | translate }}</h3>
                 <select class="w-full border border-purple-300 rounded px-2 py-1 text-sm focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
                         formControlName="userLevel">
-                  <option value="1">1 - Everyone</option>
-                  <option value="2">2 - Tier 1</option>
-                  <option value="3">3 - Tier 2</option>
-                  <option value="4">4 - Tier 3</option>
-                  <option value="5">5 - Founders</option>
-                  <option value="6">6 - VIPs</option>
-                  <option value="7">7 - Moderators</option>
-                  <option value="8">8 - Editors</option>
-                  <option value="9">9 - Admins</option>
-                  <option value="10">10 - Streamers</option>
+                  <option value="1">1 - {{ 'commands.userLevels.everyone' | translate }}</option>
+                  <option value="2">2 - {{ 'commands.userLevels.tier1' | translate }}</option>
+                  <option value="3">3 - {{ 'commands.userLevels.tier2' | translate }}</option>
+                  <option value="4">4 - {{ 'commands.userLevels.tier3' | translate }}</option>
+                  <option value="5">5 - {{ 'commands.userLevels.founders' | translate }}</option>
+                  <option value="6">6 - {{ 'commands.userLevels.vip' | translate }}</option>
+                  <option value="7">7 - {{ 'commands.userLevels.mod' | translate }}</option>
+                  <option value="8">8 - {{ 'commands.userLevels.editor' | translate }}</option>
+                  <option value="9">9 - {{ 'commands.userLevels.admin' | translate }}</option>
+                  <option value="10">10 - {{ 'commands.userLevels.streamer' | translate }}</option>
                 </select>
               </div>
             </div>
             <div>
               <label class="inline-flex items-center">
                 <input type="checkbox" class="form-checkbox h-4 w-4 text-green-600 rounded border-purple-300 focus:ring-purple-400 mr-2" formControlName="enabled">
-                <span class="text-sm text-purple-800">Enabled</span>
+                <span class="text-sm text-purple-800">{{ 'common.enabled' | translate }}</span>
               </label>
             </div>
           </div>
@@ -419,9 +419,9 @@
         <div class="bg-purple-50/50 px-4 py-3 border-t border-purple-100">
           <div class="flex items-center justify-end space-x-2">
             <button class="px-3 py-1.5 text-xs font-semibold text-green-600 hover:text-green-800 rounded-full transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75"
-                    (click)="saveCommand(newCommand)">Save</button>
+                    (click)="saveCommand(newCommand)">{{ 'common.save' | translate }}</button>
             <button class="px-3 py-1.5 text-xs font-semibold text-red-600 hover:text-red-800 rounded-full transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75"
-                    (click)="resetForm()">Cancel</button>
+                    (click)="resetForm()">{{ 'common.cancel' | translate }}</button>
           </div>
         </div>
       </div>
@@ -440,7 +440,7 @@
           <!-- Card Edit Mode -->
           <div class="space-y-4">
             <div>
-              <h3 class="font-semibold text-sm text-purple-800 mb-2">Name</h3>
+              <h3 class="font-semibold text-sm text-purple-800 mb-2">{{ 'commands.placeholder.name' | translate }}</h3>
               <input type="text"
                      class="editing-cell w-full border border-purple-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
                      [value]="getCardEditingValue('name')"
@@ -448,7 +448,7 @@
                      #editingInput>
             </div>
             <div>
-              <h3 class="font-semibold text-sm text-purple-800 mb-2">Command</h3>
+              <h3 class="font-semibold text-sm text-purple-800 mb-2">{{ 'commands.placeholder.command' | translate }}</h3>
               <div class="flex items-center">
                 <span class="text-purple-700 font-mono mr-1">!</span>
                 <input type="text"
@@ -458,7 +458,7 @@
               </div>
             </div>
             <div>
-              <h3 class="font-semibold text-sm text-purple-800 mb-2">Function (message)</h3>
+              <h3 class="font-semibold text-sm text-purple-800 mb-2">{{ 'commands.placeholder.function' | translate }}</h3>
               <input type="text"
                      class="editing-cell w-full border border-purple-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
                      [class.cursor-not-allowed]="!canEditField(command._id, 'message')"
@@ -468,14 +468,14 @@
                      [disabled]="!canEditField(command._id, 'message')">
             </div>
             <div>
-              <h3 class="font-semibold text-sm text-purple-800 mb-2">Description</h3>
+              <h3 class="font-semibold text-sm text-purple-800 mb-2">{{ 'commands.placeholder.description' | translate }}</h3>
               <input type="text"
                      class="editing-cell w-full border border-purple-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
                      [value]="getCardEditingValue('description')"
                      (input)="editingCardValues['description'] = $any($event.target).value">
             </div>
             <div>
-              <h3 class="font-semibold text-sm text-purple-800 mb-2">Cooldown</h3>
+              <h3 class="font-semibold text-sm text-purple-800 mb-2">{{ 'commands.placeholder.cooldown' | translate }}</h3>
               <div class="flex items-center">
                 <input type="number"
                        min="5"
@@ -487,20 +487,20 @@
               </div>
             </div>
             <div>
-              <h3 class="font-semibold text-sm text-purple-800 mb-2">User Level</h3>
+              <h3 class="font-semibold text-sm text-purple-800 mb-2">{{ 'commands.placeholder.userLevel' | translate }}</h3>
               <select class="editing-cell w-full border border-purple-300 rounded px-2 py-1 focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
                       [value]="getCardEditingValue('userLevel')"
                       (change)="editingCardValues['userLevel'] = +$any($event.target).value">
-                <option value="1">1 - Everyone</option>
-                <option value="2">2 - Tier 1</option>
-                <option value="3">3 - Tier 2</option>
-                <option value="4">4 - Tier 3</option>
-                <option value="5">5 - Founders</option>
-                <option value="6">6 - VIPs</option>
-                <option value="7">7 - Moderators</option>
-                <option value="8">8 - Editors</option>
-                <option value="9">9 - Admins</option>
-                <option value="10">10 - Streamers</option>
+                <option value="1">1 - {{ 'commands.userLevels.everyone' | translate }}</option>
+                <option value="2">2 - {{ 'commands.userLevels.tier1' | translate }}</option>
+                <option value="3">3 - {{ 'commands.userLevels.tier2' | translate }}</option>
+                <option value="4">4 - {{ 'commands.userLevels.tier3' | translate }}</option>
+                <option value="5">5 - {{ 'commands.userLevels.founders' | translate }}</option>
+                <option value="6">6 - {{ 'commands.userLevels.vip' | translate }}</option>
+                <option value="7">7 - {{ 'commands.userLevels.mod' | translate }}</option>
+                <option value="8">8 - {{ 'commands.userLevels.editor' | translate }}</option>
+                <option value="9">9 - {{ 'commands.userLevels.admin' | translate }}</option>
+                <option value="10">10 - {{ 'commands.userLevels.streamer' | translate }}</option>
               </select>
             </div>
           </div>
@@ -526,13 +526,13 @@
                   [class.text-green-800]="command.enabled !== false"
                   [class.bg-red-100]="command.enabled === false"
                   [class.text-red-800]="command.enabled === false">
-              {{ command.enabled === false ? 'Off' : 'On' }}
+              {{ command.enabled === false ? ('common.statusOff' | translate) : ('common.statusOn' | translate) }}
             </span>
           </div>
 
           <div class="space-y-4 text-purple-700">
             <div>
-              <h3 class="font-semibold text-sm text-purple-800">Command</h3>
+              <h3 class="font-semibold text-sm text-purple-800">{{ 'commands.placeholder.command' | translate }}</h3>
               <p class="text-purple-600 bg-purple-100 rounded px-2 py-1 font-mono inline-block hover:border-2 hover:border-purple-200"
                  (dblclick)="makeEditable(command._id, 'cmd', command.cmd)">
                 @if (isEditing(command._id, 'cmd')) {
@@ -553,7 +553,7 @@
               </p>
             </div>
             <div>
-              <h3 class="font-semibold text-sm text-purple-800">Function (message)</h3>
+              <h3 class="font-semibold text-sm text-purple-800">{{ 'commands.placeholder.function' | translate }}</h3>
               <p class="text-purple-600 hover:border-2 hover:border-purple-200"
                  [class.cursor-not-allowed]="!canEditField(command._id, 'message')"
                  [class.opacity-50]="!canEditField(command._id, 'message')"
@@ -568,12 +568,16 @@
                          (click)="$event.stopPropagation()"
                          #editingInput>
                 } @else {
-                  {{ command.message || (command.reserved ? 'This is a reserved command' : 'Public') }}
+                  @if (command.reserved) {
+                    {{ 'commands.placeholder.reservedCommand' | translate }}
+                  } @else {
+                    {{ command.message }}
+                  }
                 }
               </p>
             </div>
             <div>
-              <h3 class="font-semibold text-sm text-purple-800">Description</h3>
+              <h3 class="font-semibold text-sm text-purple-800">{{ 'commands.placeholder.description' | translate }}</h3>
               <p class="text-purple-600 hover:border-2 hover:border-purple-200"
                  (dblclick)="makeEditable(command._id, 'description', command.description || '')">
                 @if (isEditing(command._id, 'description')) {
@@ -586,12 +590,12 @@
                          (click)="$event.stopPropagation()"
                          #editingInput>
                 } @else {
-                  {{ command.description || 'N/A' }}
+                  {{ command.description || ('common.notAvailable' | translate) }}
                 }
               </p>
             </div>
             <div>
-              <h3 class="font-semibold text-sm text-purple-800">Cooldown</h3>
+              <h3 class="font-semibold text-sm text-purple-800">{{ 'commands.placeholder.cooldown' | translate }}</h3>
               <p class="text-purple-600 hover:border-2 hover:border-purple-200"
                  (dblclick)="makeEditable(command._id, 'cooldown', command.cooldown)">
                 @if (isEditing(command._id, 'cooldown')) {
@@ -609,12 +613,12 @@
                     <span class="ml-1 text-purple-700">s</span>
                   </div>
                 } @else {
-                  {{ command.cooldown }} seconds
+                  {{ command.cooldown }} {{ 'common.seconds' | translate }}
                 }
               </p>
             </div>
             <div>
-              <h3 class="font-semibold text-sm text-purple-800">User Level</h3>
+              <h3 class="font-semibold text-sm text-purple-800">{{ 'commands.placeholder.userLevel' | translate }}</h3>
               <p class="text-purple-600 hover:border-2 hover:border-purple-200"
                  (dblclick)="makeEditable(command._id, 'userLevel', command.userLevel)">
                 @if (isEditing(command._id, 'userLevel')) {
@@ -624,19 +628,19 @@
                           (keydown.escape)="$event.stopPropagation(); cancelEdit()"
                           (click)="$event.stopPropagation()"
                           #editingInput>
-                    <option value="1">1 - Everyone</option>
-                    <option value="2">2 - Tier 1</option>
-                    <option value="3">3 - Tier 2</option>
-                    <option value="4">4 - Tier 3</option>
-                    <option value="5">5 - Founders</option>
-                    <option value="6">6 - VIPs</option>
-                    <option value="7">7 - Moderators</option>
-                    <option value="8">8 - Editors</option>
-                    <option value="9">9 - Admins</option>
-                    <option value="10">10 - Streamers</option>
+                    <option value="1">1 - {{ 'commands.userLevels.everyone' | translate }}</option>
+                    <option value="2">2 - {{ 'commands.userLevels.tier1' | translate }}</option>
+                    <option value="3">3 - {{ 'commands.userLevels.tier2' | translate }}</option>
+                    <option value="4">4 - {{ 'commands.userLevels.tier3' | translate }}</option>
+                    <option value="5">5 - {{ 'commands.userLevels.founders' | translate }}</option>
+                    <option value="6">6 - {{ 'commands.userLevels.vip' | translate }}</option>
+                    <option value="7">7 - {{ 'commands.userLevels.mod' | translate }}</option>
+                    <option value="8">8 - {{ 'commands.userLevels.editor' | translate }}</option>
+                    <option value="9">9 - {{ 'commands.userLevels.admin' | translate }}</option>
+                    <option value="10">10 - {{ 'commands.userLevels.streamer' | translate }}</option>
                   </select>
                 } @else {
-                  {{ command.userLevel }} - {{ command.userLevelName }}
+                  {{ command.userLevel }} - {{ 'commands.userLevels.' + command.userLevelName | translate }}
                 }
               </p>
             </div>
@@ -650,28 +654,28 @@
             <!-- Edit Mode Buttons -->
             <button
               class="px-4 py-2 text-sm font-semibold text-white bg-green-500 hover:bg-green-600 rounded-full transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75"
-              (click)="saveCardEdit()">Save</button>
+              (click)="saveCardEdit()">{{ 'common.save' | translate }}</button>
             <button
               class="px-4 py-2 text-sm font-semibold text-white bg-red-500 hover:bg-red-600 rounded-full transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75"
-              (click)="cancelCardEdit()">Cancel</button>
+              (click)="cancelCardEdit()">{{ 'common.cancel' | translate }}</button>
           } @else {
             <!-- Display Mode Buttons -->
             <button
               class="px-4 py-2 text-sm font-semibold text-white bg-blue-500 hover:bg-blue-600 rounded-full transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
-              (click)="startCardEdit(command._id)">Edit</button>
+              (click)="startCardEdit(command._id)">{{ 'common.edit' | translate }}</button>
             @if (command.enabled === false) {
               <button
                 class="px-4 py-2 text-sm font-semibold text-white bg-green-500 hover:bg-green-600 rounded-full transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 opacity-100"
-                (click)="enableCommand(command._id)">Enable</button>
+                (click)="enableCommand(command._id)">{{ 'common.enable' | translate }}</button>
             } @else {
               <button
                 class="px-4 py-2 text-sm font-semibold text-white bg-yellow-500 hover:bg-yellow-600 rounded-full transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-75"
-                (click)="disableCommand(command._id)">Disable</button>
+                (click)="disableCommand(command._id)">{{ 'common.disable' | translate }}</button>
             }
             <button
               class="px-4 py-2 text-sm font-semibold text-white bg-red-500 hover:bg-red-600 rounded-full transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 disabled:opacity-50 disabled:cursor-not-allowed"
               [disabled]="command.reserved"
-              (click)="deleteCommand(command.reserved ? null : command._id)">Delete</button>
+              (click)="deleteCommand(command.reserved ? null : command._id)">{{ 'common.delete' | translate }}</button>
           }
         </div>
       </div>

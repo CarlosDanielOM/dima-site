@@ -11,15 +11,15 @@
     <header class="flex flex-col gap-6 text-center md:gap-8">
       <span class="fade-in-down mx-auto inline-flex items-center gap-2 rounded-full border border-accent-soft bg-accent-subtle px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent-text">
         <span class="h-2 w-2 animate-ping rounded-full bg-accent"></span>
-        {{ getTranslation('statusChip') }}
+        {{ 'wip.statusChip' | translate }}
       </span>
 
       <h1 class="fade-in-up text-balance text-3xl font-semibold sm:text-4xl md:text-5xl">
-        {{ getTranslation('headline') }}
+        {{ 'wip.headline' | translate }}
       </h1>
 
       <p class="fade-in-up mx-auto max-w-2xl text-balance text-base text-slate-200/80 sm:text-lg" style="animation-delay: 80ms">
-        {{ getTranslation('description') }}
+        {{ 'wip.description' | translate }}
       </p>
 
       <div class="fade-in-up mx-auto flex flex-wrap items-center justify-center gap-4 text-sm text-slate-300/80" style="animation-delay: 120ms">
@@ -36,8 +36,8 @@
 
     <div class="grid grid-cols-1 gap-8 md:grid-cols-[2fr,3fr]">
       <article class="stagger-item rounded-3xl border border-accent-soft bg-white/5 p-8 backdrop-blur" style="animation-delay: 180ms">
-        <h2 class="text-lg font-semibold text-accent-text">{{ getTranslation('progressTitle') }}</h2>
-        <p class="mt-3 text-sm text-slate-200/80">{{ getTranslation('progressDescription') }}</p>
+        <h2 class="text-lg font-semibold text-accent-text">{{ 'wip.progressTitle' | translate }}</h2>
+        <p class="mt-3 text-sm text-slate-200/80">{{ 'wip.progressDescription' | translate }}</p>
         <div class="mt-6 flex items-center gap-4">
           <div class="progress-meter relative h-20 w-20 rounded-full border border-accent-strong bg-slate-900/60">
             <svg class="absolute inset-0 h-full w-full" viewBox="0 0 36 36" aria-hidden="true">
@@ -47,15 +47,15 @@
             <div class="flex h-full w-full items-center justify-center text-lg font-semibold text-accent-text">{{ progressDisplay }}</div>
           </div>
           <div class="text-xs uppercase tracking-[0.3em] text-slate-300/80">
-            <div class="floating-icon">{{ getTranslation('stayTunedLabel') }}</div>
+            <div class="floating-icon">{{ 'wip.stayTunedLabel' | translate }}</div>
           </div>
         </div>
       </article>
 
       <section class="stagger-item flex flex-col gap-6" style="animation-delay: 260ms">
         <div class="fade-in-up" style="animation-delay: 320ms">
-          <h2 class="text-lg font-semibold text-accent-text">{{ getTranslation('whatToExpectTitle') }}</h2>
-          <p class="mt-2 text-sm text-slate-200/80">{{ getTranslation('whatToExpectIntro') }}</p>
+          <h2 class="text-lg font-semibold text-accent-text">{{ 'wip.whatToExpectTitle' | translate }}</h2>
+          <p class="mt-2 text-sm text-slate-200/80">{{ 'wip.whatToExpectIntro' | translate }}</p>
         </div>
 
         <ul class="space-y-4">
@@ -66,7 +66,7 @@
           >
             <div class="flex items-start gap-4">
               <div class="text-2xl transition group-hover:scale-110">{{ highlight.icon }}</div>
-              <p class="text-sm text-slate-200/80">{{ getHighlightTranslation(highlight) }}</p>
+              <p class="text-sm text-slate-200/80">{{ highlight.translationKey | translate }}</p>
             </div>
           </li>
         </ul>
@@ -74,7 +74,7 @@
     </div>
 
     <footer class="stagger-item rounded-3xl border border-accent-soft bg-accent-tint p-6 text-center text-sm text-accent-text-soft backdrop-blur" style="animation-delay: 300ms">
-      {{ getTranslation('footerNote') }}
+      {{ 'wip.footerNote' | translate }}
     </footer>
   </div>
 </section>

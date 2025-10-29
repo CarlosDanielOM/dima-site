@@ -1,15 +1,15 @@
 <div class="w-full mx-auto px-4 py-6">
   <div class="mb-6 flex items-center justify-between">
     <h1 class="text-2xl font-bold text-gray-900">
-      {{ getHeading() }}
+      {{ 'redemptions.heading' | translate }}
     </h1>
     <div class="flex gap-2">
       <button type="button"
         class="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 bg-green-500 hover:bg-green-600 text-white"
         (click)="openCreateRewardModal()"
-        [title]="getCreateRewardTooltip()">
+        [title]="'redemptions.createRewardTooltip' | translate">
         <lucide-icon [name]="plusIcon" class="w-4 h-4 mr-2 inline"></lucide-icon>
-        {{ getCreateReward() }}
+        {{ 'redemptions.createReward' | translate }}
       </button>
       <button type="button"
         class="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200"
@@ -21,19 +21,19 @@
         [class.disabled:cursor-not-allowed]="true"
         (click)="refreshData()"
         [disabled]="isLoading || isLoadingTwitch || refreshCooldown > 0"
-        [title]="refreshCooldown > 0 ? (getCooldownActive() + ': ' + refreshCooldown + ' ' + getCooldownSeconds()) : getRefreshTooltip()">
+        [title]="refreshCooldown > 0 ? (('redemptions.cooldownActive' | translate) + ': ' + refreshCooldown + ' ' + ('redemptions.cooldownSeconds' | translate)) : ('redemptions.refreshTooltip' | translate)">
         <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
         </svg>
         @if (refreshCooldown > 0) {
           Cooldown ({{ refreshCooldown }}s)
         } @else {
-          {{ getRefreshText() }}
+          {{ 'common.refresh' | translate }}
         }
       </button>
       @if (refreshCooldown > 0) {
         <div class="text-xs text-gray-500 mt-1">
-          {{ refreshCooldown }} {{ getCooldownSeconds() }}
+          {{ refreshCooldown }} {{ 'redemptions.cooldownSeconds' | translate }}
         </div>
       }
     </div>
@@ -61,7 +61,7 @@
             [class.opacity-60]="isTwitchReward(r)"
             [style.background]="getCardColor(r)"
             (dblclick)="!isTwitchReward(r) && onColorDoubleClick(r)"
-            [title]="isTwitchReward(r) ? getTwitchReadOnlyTooltip() : 'Double-click to change color'">
+            [title]="isTwitchReward(r) ? ('redemptions.twitchReadOnlyTooltip' | translate) : 'Double-click to change color'">
           </div>
           
           <!-- Color Picker Popup -->
@@ -198,10 +198,10 @@
                     <div class="flex gap-1 mt-1">
                       <button type="button" 
                         class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
-                        (click)="saveFieldEdit(r)">{{ getSave() }}</button>
+                        (click)="saveFieldEdit(r)">{{ 'common.save' | translate }}</button>
                       <button type="button" 
                         class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
-                        (click)="cancelFieldEdit(r)">{{ getCancel() }}</button>
+                        (click)="cancelFieldEdit(r)">{{ 'common.cancel' | translate }}</button>
                     </div>
                   </div>
                 } @else if (isInBulkEditMode(r)) {
@@ -218,7 +218,7 @@
                     [class.cursor-not-allowed]="isTwitchReward(r)"
                     [class.opacity-60]="isTwitchReward(r)"
                     (dblclick)="!isTwitchReward(r) && onFieldDoubleClick(r, 'title')"
-                    [title]="isTwitchReward(r) ? getTwitchReadOnlyTooltip() : 'Double-click to edit'">{{ r.title }}</h2>
+                    [title]="isTwitchReward(r) ? ('redemptions.twitchReadOnlyTooltip' | translate) : 'Double-click to edit'">{{ r.title }}</h2>
                 }
                 
                 @if (isEditingField(r, 'prompt')) {
@@ -234,10 +234,10 @@
                     <div class="flex gap-1 mt-1">
                       <button type="button" 
                         class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
-                        (click)="saveFieldEdit(r)">{{ getSave() }}</button>
+                        (click)="saveFieldEdit(r)">{{ 'common.save' | translate }}</button>
                       <button type="button" 
                         class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
-                        (click)="cancelFieldEdit(r)">{{ getCancel() }}</button>
+                        (click)="cancelFieldEdit(r)">{{ 'common.cancel' | translate }}</button>
                     </div>
                   </div>
                 } @else if (isInBulkEditMode(r)) {
@@ -258,12 +258,12 @@
                     [class.py-0.5]="!isTwitchReward(r)"
                     [class.rounded]="!isTwitchReward(r)"
                     (dblclick)="!isTwitchReward(r) && onFieldDoubleClick(r, 'prompt')"
-                    [title]="isTwitchReward(r) ? getTwitchReadOnlyTooltip() : 'Double-click to edit'">{{ r.prompt }}</p>
+                    [title]="isTwitchReward(r) ? ('redemptions.twitchReadOnlyTooltip' | translate) : 'Double-click to edit'">{{ r.prompt }}</p>
                 }
                 
                 <!-- Redemption Message -->
                 <div class="mt-2">
-                  <div class="text-xs text-gray-500 mb-1">{{ getMessage() }}</div>
+                  <div class="text-xs text-gray-500 mb-1">{{ 'redemptions.message' | translate }}</div>
                   @if (isEditingField(r, 'message')) {
                     <div>
                       <textarea 
@@ -277,10 +277,10 @@
                       <div class="flex gap-1 mt-1">
                         <button type="button" 
                           class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
-                          (click)="saveFieldEdit(r)">{{ getSave() }}</button>
+                          (click)="saveFieldEdit(r)">{{ 'common.save' | translate }}</button>
                         <button type="button" 
                           class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
-                          (click)="cancelFieldEdit(r)">{{ getCancel() }}</button>
+                          (click)="cancelFieldEdit(r)">{{ 'common.cancel' | translate }}</button>
                       </div>
                     </div>
                   } @else if (isInBulkEditMode(r)) {
@@ -298,7 +298,7 @@
                       [class.cursor-not-allowed]="isTwitchReward(r)"
                       [class.opacity-60]="isTwitchReward(r)"
                       (dblclick)="!isTwitchReward(r) && onFieldDoubleClick(r, 'message')"
-                      [title]="isTwitchReward(r) ? getTwitchReadOnlyTooltip() : 'Double-click to edit'">
+                      [title]="isTwitchReward(r) ? ('redemptions.twitchReadOnlyTooltip' | translate) : 'Double-click to edit'">
                       {{ getRedemptionMessage(r) }}
                     </div>
                   }
@@ -309,13 +309,13 @@
                 [class.text-green-700]="r.isEnabled"
                 [class.bg-gray-100]="!r.isEnabled"
                 [class.text-gray-700]="!r.isEnabled">
-                {{ r.isEnabled ? getEnabled() : getDisabled() }}
+                {{ r.isEnabled ? ('common.enabled' | translate) : ('common.disabled' | translate) }}
               </span>
             </div>
 
             <div class="mt-4 grid grid-cols-2 gap-3">
               <div class="bg-gray-50 rounded-lg p-3">
-                <div class="text-xs text-gray-500">{{ getCost() }}</div>
+                <div class="text-xs text-gray-500">{{ 'redemptions.cost' | translate }}</div>
                 @if (isEditingField(r, 'cost')) {
                   <div>
                     <input type="number" 
@@ -331,10 +331,10 @@
                     <div class="flex gap-1 mt-1">
                       <button type="button" 
                         class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
-                        (click)="saveFieldEdit(r)">{{ getSave() }}</button>
+                        (click)="saveFieldEdit(r)">{{ 'common.save' | translate }}</button>
                       <button type="button" 
                         class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
-                        (click)="cancelFieldEdit(r)">{{ getCancel() }}</button>
+                        (click)="cancelFieldEdit(r)">{{ 'common.cancel' | translate }}</button>
                     </div>
                   </div>
                 } @else if (isInBulkEditMode(r)) {
@@ -356,11 +356,11 @@
                     [class.py-0.5]="!isTwitchReward(r)"
                     [class.rounded]="!isTwitchReward(r)"
                     (dblclick)="!isTwitchReward(r) && onFieldDoubleClick(r, 'cost')"
-                    [title]="isTwitchReward(r) ? getTwitchReadOnlyTooltip() : 'Double-click to edit'">{{ r.cost }}</div>
+                    [title]="isTwitchReward(r) ? ('redemptions.twitchReadOnlyTooltip' | translate) : 'Double-click to edit'">{{ r.cost }}</div>
                 }
               </div>
               <div class="bg-gray-50 rounded-lg p-3">
-                <div class="text-xs text-gray-500">{{ getCooldown() }}</div>
+                <div class="text-xs text-gray-500">{{ 'redemptions.cooldown' | translate }}</div>
                 @if (isEditingField(r, 'cooldown')) {
                   <div>
                     <input type="number" 
@@ -376,10 +376,10 @@
                     <div class="flex gap-1 mt-1">
                       <button type="button" 
                         class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
-                        (click)="saveFieldEdit(r)">{{ getSave() }}</button>
+                        (click)="saveFieldEdit(r)">{{ 'common.save' | translate }}</button>
                       <button type="button" 
                         class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
-                        (click)="cancelFieldEdit(r)">{{ getCancel() }}</button>
+                        (click)="cancelFieldEdit(r)">{{ 'common.cancel' | translate }}</button>
                     </div>
                   </div>
                 } @else if (isInBulkEditMode(r)) {
@@ -401,7 +401,7 @@
                     [class.py-0.5]="!isTwitchReward(r)"
                     [class.rounded]="!isTwitchReward(r)"
                     (dblclick)="!isTwitchReward(r) && onFieldDoubleClick(r, 'cooldown')"
-                    [title]="isTwitchReward(r) ? getTwitchReadOnlyTooltip() : 'Double-click to edit'">{{ r.cooldown }}s</div>
+                    [title]="isTwitchReward(r) ? ('redemptions.twitchReadOnlyTooltip' | translate) : 'Double-click to edit'">{{ r.cooldown }}s</div>
                 }
               </div>
             </div>
@@ -411,7 +411,7 @@
               <div class="mt-4 border-t border-gray-200 pt-4">
                 <div class="flex items-center gap-2 mb-3">
                   <lucide-icon [name]="crownIcon" class="w-3 h-3 text-yellow-500"></lucide-icon>
-                  <span class="text-sm font-medium text-yellow-700">{{ getPremiumFeature() }}</span>
+                  <span class="text-sm font-medium text-yellow-700">{{ 'redemptions.premiumFeature' | translate }}</span>
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -419,7 +419,7 @@
                   @if (r.originalCost !== undefined || isPremiumUser()) {
                     <div class="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
                       <div class="flex items-center gap-1">
-                        <div class="text-xs text-yellow-600">{{ getOriginalCost() }}</div>
+                        <div class="text-xs text-yellow-600">{{ 'redemptions.originalCost' | translate }}</div>
                         @if (!isPremiumUser()) {
                           <svg class="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
@@ -441,10 +441,10 @@
                           <div class="flex gap-1 mt-1">
                             <button type="button" 
                               class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
-                              (click)="saveFieldEdit(r)">{{ getSave() }}</button>
+                              (click)="saveFieldEdit(r)">{{ 'common.save' | translate }}</button>
                             <button type="button" 
                               class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
-                              (click)="cancelFieldEdit(r)">{{ getCancel() }}</button>
+                              (click)="cancelFieldEdit(r)">{{ 'common.cancel' | translate }}</button>
                           </div>
                         </div>
                       } @else if (isInBulkEditMode(r)) {
@@ -485,7 +485,7 @@
                   @if (r.costChange !== undefined || isPremiumUser()) {
                     <div class="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
                       <div class="flex items-center gap-1">
-                        <div class="text-xs text-yellow-600">{{ getCostChange() }}</div>
+                        <div class="text-xs text-yellow-600">{{ 'redemptions.costChange' | translate }}</div>
                         @if (!isPremiumUser()) {
                           <svg class="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
@@ -506,10 +506,10 @@
                           <div class="flex gap-1 mt-1">
                             <button type="button" 
                               class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
-                              (click)="saveFieldEdit(r)">{{ getSave() }}</button>
+                              (click)="saveFieldEdit(r)">{{ 'common.save' | translate }}</button>
                             <button type="button" 
                               class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
-                              (click)="cancelFieldEdit(r)">{{ getCancel() }}</button>
+                              (click)="cancelFieldEdit(r)">{{ 'common.cancel' | translate }}</button>
                           </div>
                         </div>
                       } @else if (isInBulkEditMode(r)) {
@@ -549,7 +549,7 @@
                   @if (r.returnToOriginalCost !== undefined || isPremiumUser()) {
                     <div class="bg-yellow-50 rounded-lg p-3 border border-yellow-200 sm:col-span-2">
                       <div class="flex items-center gap-1">
-                        <div class="text-xs text-yellow-600">{{ getReturnToOriginalCost() }}</div>
+                        <div class="text-xs text-yellow-600">{{ 'redemptions.returnToOriginalCost' | translate }}</div>
                         @if (!isPremiumUser()) {
                           <svg class="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
@@ -570,10 +570,10 @@
                           <div class="flex gap-1 mt-1">
                             <button type="button" 
                               class="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
-                              (click)="saveFieldEdit(r)">{{ getSave() }}</button>
+                              (click)="saveFieldEdit(r)">{{ 'common.save' | translate }}</button>
                             <button type="button" 
                               class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
-                              (click)="cancelFieldEdit(r)">{{ getCancel() }}</button>
+                              (click)="cancelFieldEdit(r)">{{ 'common.cancel' | translate }}</button>
                           </div>
                         </div>
                       } @else if (isInBulkEditMode(r)) {
@@ -671,27 +671,27 @@
                   <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
                   </svg>
-                  <span>{{ getTwitchReadOnlyTitle() }}</span>
+                  <span>{{ 'redemptions.twitchReadOnlyTitle' | translate }}</span>
                 </div>
               } @else {
                 <!-- Custom Reward Actions -->
                 @if (isInBulkEditMode(r)) {
                   <button type="button"
                     class="px-3 py-1.5 text-sm font-medium rounded-md bg-green-500 text-white hover:bg-green-600 flex-shrink-0"
-                    (click)="saveBulkEdit(r)">{{ getSaveAll() }}</button>
+                    (click)="saveBulkEdit(r)">{{ 'redemptions.saveAll' | translate }}</button>
                   <button type="button"
                     class="px-3 py-1.5 text-sm font-medium rounded-md bg-gray-500 text-white hover:bg-gray-600 flex-shrink-0"
-                    (click)="cancelBulkEdit(r)">{{ getCancelAll() }}</button>
+                    (click)="cancelBulkEdit(r)">{{ 'redemptions.cancelAll' | translate }}</button>
                   <button type="button"
                     class="px-3 py-1.5 text-sm font-medium rounded-md bg-blue-500 text-white hover:bg-blue-600 flex-shrink-0"
-                    (click)="exitBulkEditMode(r)">{{ getExitEditMode() }}</button>
+                    (click)="exitBulkEditMode(r)">{{ 'redemptions.exitEditMode' | translate }}</button>
                 } @else {
                   <button type="button"
                     class="px-3 py-1.5 text-sm font-medium rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200 flex-shrink-0"
-                    (click)="onEdit(r)">{{ getEdit() }}</button>
+                    (click)="onEdit(r)">{{ 'common.edit' | translate }}</button>
                   <button type="button"
                     class="px-3 py-1.5 text-sm font-medium rounded-md bg-red-500 text-white hover:bg-red-600 flex-shrink-0"
-                    (click)="onDelete(r)">{{ getDelete() }}</button>
+                    (click)="onDelete(r)">{{ 'common.delete' | translate }}</button>
                   <button type="button"
                     class="px-3 py-1.5 text-sm font-medium rounded-md flex-shrink-0"
                     [class.bg-green-500]="!r.isEnabled"
@@ -700,7 +700,7 @@
                     [class.hover\:bg-yellow-600]="r.isEnabled"
                     [class.text-white]="true"
                     (click)="onToggleEnable(r)">
-                    {{ r.isEnabled ? getDisable() : getEnable() }}
+                    {{ r.isEnabled ? ('common.disable' | translate) : ('common.enable' | translate) }}
                   </button>
                 }
               }
@@ -714,7 +714,7 @@
     <div class="mt-12">
       <div class="mb-6 flex items-center justify-between">
         <h2 class="text-xl font-semibold text-gray-900">
-          {{ getLabel('uniqueTwitchTitle') }}
+          {{ 'redemptions.uniqueTwitchTitle' | translate }}
           <span class="text-sm font-normal text-gray-500 ml-2">
             ({{ uniqueTwitchRedemptions.length }} of {{ twitchRedemptions.length }})
           </span>
@@ -724,7 +724,7 @@
             <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
             </svg>
-            {{ getLabel('uniqueTwitchInfo') }}
+            {{ 'redemptions.uniqueTwitchInfo' | translate }}
           </div>
           <button type="button"
             class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors duration-200"
@@ -736,7 +736,7 @@
             [class.disabled:cursor-not-allowed]="true"
             (click)="refreshTwitchRedemptions()"
             [disabled]="isLoadingTwitch || twitchRefreshCooldown > 0"
-            [title]="twitchRefreshCooldown > 0 ? (getCooldownActive() + ': ' + twitchRefreshCooldown + ' ' + getCooldownSeconds()) : 'Refresh unique Twitch redemptions'">
+            [title]="twitchRefreshCooldown > 0 ? (('redemptions.cooldownActive' | translate) + ': ' + twitchRefreshCooldown + ' ' + ('redemptions.cooldownSeconds' | translate)) : 'Refresh unique Twitch redemptions'">
             <svg class="w-3 h-3 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
             </svg>
@@ -748,7 +748,7 @@
           </button>
           @if (twitchRefreshCooldown > 0) {
             <div class="text-xs text-gray-500 mt-1">
-              {{ twitchRefreshCooldown }} {{ getCooldownSeconds() }}
+              {{ twitchRefreshCooldown }} {{ 'redemptions.cooldownSeconds' | translate }}
             </div>
           }
         </div>
@@ -766,12 +766,12 @@
         </div>
       } @else if (uniqueTwitchRedemptions.length === 0) {
         <div class="text-center py-8 text-gray-500">
-          <div class="mb-2">{{ getLabel('noUniqueFound') }}</div>
+          <div class="mb-2">{{ 'redemptions.noUniqueFound' | translate }}</div>
           <div class="text-sm text-gray-400">
             @if (twitchRedemptions.length > 0) {
-              {{ getLabel('allTwitchAvailable') }}
+              {{ 'redemptions.allTwitchAvailable' | translate }}
             } @else {
-              {{ getLabel('noTwitchFound') }}
+              {{ 'redemptions.noTwitchFound' | translate }}
             }
           </div>
         </div>
@@ -782,7 +782,7 @@
               <!-- Read-Only Indicator -->
               <div class="absolute top-2 right-2 z-10">
                 <div class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full border border-orange-200"
-                  [title]="getTwitchReadOnlyTooltip()">
+                  [title]="'redemptions.twitchReadOnlyTooltip' | translate">
                   <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
                   </svg>
@@ -799,8 +799,8 @@
                       <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                     </svg>
                     <div class="text-xs text-orange-700">
-                      <div class="font-medium mb-1">{{ getTwitchReadOnlyTitle() }}</div>
-                      <div>{{ getTwitchReadOnlyInfo() }}</div>
+                      <div class="font-medium mb-1">{{ 'redemptions.twitchReadOnlyTitle' | translate }}</div>
+                      <div>{{ 'redemptions.twitchReadOnlyInfo' | translate }}</div>
                     </div>
                   </div>
                 </div>
@@ -815,17 +815,17 @@
                     [class.text-green-700]="r.isEnabled"
                     [class.bg-gray-100]="!r.isEnabled"
                     [class.text-gray-700]="!r.isEnabled">
-                    {{ r.isEnabled ? getEnabled() : getDisabled() }}
+                    {{ r.isEnabled ? ('common.enabled' | translate) : ('common.disabled' | translate) }}
                   </span>
                 </div>
 
                 <div class="mt-4 grid grid-cols-2 gap-3">
                   <div class="bg-purple-100 rounded-lg p-3">
-                    <div class="text-xs text-purple-600">{{ getCost() }}</div>
+                    <div class="text-xs text-purple-600">{{ 'redemptions.cost' | translate }}</div>
                     <div class="text-base font-semibold text-gray-900">{{ r.cost }}</div>
                   </div>
                   <div class="bg-purple-100 rounded-lg p-3">
-                    <div class="text-xs text-purple-600">{{ getCooldown() }}</div>
+                    <div class="text-xs text-purple-600">{{ 'redemptions.cooldown' | translate }}</div>
                     <div class="text-base font-semibold text-gray-900">{{ r.cooldown }}s</div>
                   </div>
                 </div>
@@ -833,12 +833,12 @@
                 <div class="mt-4 flex items-center justify-end gap-2">
                   <button type="button"
                     class="px-3 py-1.5 text-sm font-medium rounded-md bg-orange-500 text-white hover:bg-orange-600"
-                    [title]="getDeleteFromTwitchTooltip()">
+                    [title]="'redemptions.deleteFromTwitchTooltip' | translate">
                     <svg class="w-3 h-3 mr-1 inline" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd"></path>
                       <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                     </svg>
-                    {{ getDeleteFromTwitch() }}
+                    {{ 'redemptions.deleteFromTwitch' | translate }}
                   </button>
                 </div>
               </div>

@@ -10,11 +10,12 @@ import { LanguageService } from '../../services/language.service';
 import { UserService } from '../../user.service';
 import { Crown, LucideAngularModule, Plus } from 'lucide-angular';
 import { CreateRewardModalComponent } from '../../shared/create-reward-modal/create-reward-modal.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-redemptions',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, CreateRewardModalComponent],
+  imports: [CommonModule, FormsModule, LucideAngularModule, CreateRewardModalComponent, TranslateModule],
   templateUrl: './redemptions.component.html',
   styleUrl: './redemptions.component.css'
 })
@@ -29,7 +30,6 @@ export class RedemptionsComponent implements OnInit {
   isLoadingTwitch = true;
   refreshCooldown = 0;
   twitchRefreshCooldown = 0;
-  lang: 'en' | 'es' = 'en';
   
   // Create reward modal state
   showCreateRewardModal = false;
@@ -48,64 +48,6 @@ export class RedemptionsComponent implements OnInit {
   // Color picker state management
   showColorPicker: { [key: string]: boolean } = {}; // redemptionID -> boolean
   colorPickerValue: { [key: string]: string } = {}; // redemptionID -> color value
-  labels = {
-    heading: { en: 'Redemptions', es: 'Recompensas' },
-    cost: { en: 'Cost', es: 'Costo' },
-    cooldown: { en: 'Cooldown', es: 'Enfriamiento' },
-    enabled: { en: 'Enabled', es: 'Habilitado' },
-    disabled: { en: 'Disabled', es: 'Deshabilitado' },
-    edit: { en: 'Edit', es: 'Editar' },
-    delete: { en: 'Delete', es: 'Eliminar' },
-    enable: { en: 'Enable', es: 'Habilitar' },
-    disable: { en: 'Disable', es: 'Deshabilitar' },
-    confirmDeleteTitle: { en: 'Confirm Delete', es: 'Confirmar Eliminación' },
-    confirmDeleteMsg: { en: 'Are you sure you want to delete this redemption?', es: '¿Estás seguro de eliminar esta redención?' },
-    deletedTitle: { en: 'Deleted', es: 'Eliminado' },
-    deletedMsg: { en: 'Redemption deleted successfully.', es: 'Redención eliminada correctamente.' },
-    cancelTitle: { en: 'Cancelled', es: 'Cancelado' },
-    cancelMsg: { en: 'Action was cancelled.', es: 'La acción fue cancelada.' },
-    enabledTitle: { en: 'Enabled', es: 'Habilitado' },
-    enabledMsg: { en: 'Redemption has been enabled.', es: 'La redención ha sido habilitada.' },
-    disabledTitle: { en: 'Disabled', es: 'Deshabilitado' },
-    disabledMsg: { en: 'Redemption has been disabled.', es: 'La redención ha sido deshabilitada.' },
-    errorTitle: { en: 'Error', es: 'Error' },
-    errorMsg: { en: 'Redemption ID is required.', es: 'El ID de la redención es requerido.' },
-    refresh: { en: 'Refresh', es: 'Actualizar' },
-    refreshTooltip: { en: 'Refresh data from server', es: 'Actualizar datos del servidor' },
-    refreshTitle: { en: 'Refreshing...', es: 'Actualizando...' },
-    refreshSuccess: { en: 'Data refreshed successfully', es: 'Datos actualizados correctamente' },
-    uniqueTwitchTitle: { en: 'Unique Twitch Redemptions', es: 'Redenciones Únicas de Twitch' },
-    uniqueTwitchInfo: { en: 'Shows only Twitch redemptions not already in your custom redemptions', es: 'Muestra solo las redenciones de Twitch que no están en tus redenciones personalizadas' },
-    noUniqueFound: { en: 'No unique Twitch redemptions found', es: 'No se encontraron redenciones únicas de Twitch' },
-    allTwitchAvailable: { en: 'All Twitch redemptions are already available as custom redemptions', es: 'Todas las redenciones de Twitch ya están disponibles como redenciones personalizadas' },
-    noTwitchFound: { en: 'No Twitch redemptions found', es: 'No se encontraron redenciones de Twitch' },
-    cooldownActive: { en: 'Refresh cooldown active', es: 'Enfriamiento activo para actualizar' },
-    cooldownSeconds: { en: 'seconds remaining', es: 'segundos restantes' },
-    save: { en: 'Save', es: 'Guardar' },
-    cancel: { en: 'Cancel', es: 'Cancelar' },
-    title: { en: 'Title', es: 'Título' },
-    prompt: { en: 'Prompt', es: 'Descripción' },
-    duration: { en: 'Duration', es: 'Duración' },
-    editMode: { en: 'Edit Mode', es: 'Modo Edición' },
-    exitEditMode: { en: 'Exit Edit Mode', es: 'Salir del Modo Edición' },
-    saveAll: { en: 'Save All', es: 'Guardar Todo' },
-    cancelAll: { en: 'Cancel All', es: 'Cancelar Todo' },
-    originalCost: { en: 'Original Cost', es: 'Costo Original' },
-    costChange: { en: 'Cost Change', es: 'Cambio de Costo' },
-    returnToOriginalCost: { en: 'Return to Original Cost', es: 'Volver al Costo Original' },
-    premiumFeature: { en: 'Premium Feature', es: 'Función Premium' },
-    premiumRequired: { en: 'Premium subscription required', es: 'Suscripción premium requerida' },
-    premiumPlusRequired: { en: 'Premium Plus subscription required', es: 'Suscripción Premium Plus requerida' },
-    message: { en: 'Message', es: 'Mensaje' },
-    noMessageAvailable: { en: 'No Message Available', es: 'Sin Mensaje Disponible' },
-    createReward: { en: 'Create Reward', es: 'Crear Recompensa' },
-    createRewardTooltip: { en: 'Create a new custom reward', es: 'Crear una nueva recompensa personalizada' },
-    twitchReadOnlyTitle: { en: 'Twitch Reward (Read-Only)', es: 'Recompensa de Twitch (Solo Lectura)' },
-    twitchReadOnlyInfo: { en: 'This reward was created directly in Twitch and cannot be modified here. To customize it, delete it from Twitch and recreate it using this app. Future update may allowed adding limited abilities but no customization', es: 'Esta recompensa fue creada directamente en Twitch y no puede ser modificada aquí. Para personalizarla, elimínala de Twitch y recréala usando esta aplicación. Futuras actualizaciones podran permitir agregar habilidades limitadas pero no personalizar la recompensa.' },
-    twitchReadOnlyTooltip: { en: 'Twitch rewards are read-only. Delete from Twitch and recreate here to customize.', es: 'Las recompensas de Twitch son de solo lectura. Elimina de Twitch y recrea aquí para personalizar.' },
-    deleteFromTwitch: { en: 'Delete from Twitch', es: 'Eliminar de Twitch' },
-    deleteFromTwitchTooltip: { en: 'Delete this reward from Twitch to recreate it as a custom reward', es: 'Elimina esta recompensa de Twitch para recrearla como una recompensa personalizada' }
-  };
   
   constructor(
     private redemptionsService: RedemptionsService,
@@ -113,11 +55,18 @@ export class RedemptionsComponent implements OnInit {
     private confirmationService: ConfirmationService,
     private releaseStageService: ReleaseStageService,
     public languageService: LanguageService,
-    private userService: UserService
+    private userService: UserService,
+    public translate: TranslateService
   ) {}
 
   ngOnInit() {
-    this.lang = this.languageService.getCurrentLanguage();
+    // Debug: Check if translate service is working
+    const currentLang = this.languageService.getCurrentLanguage();
+    // Ensure language is set
+    if (!this.translate.currentLang) {
+      this.translate.use(currentLang);
+    }
+    
     this.loadRedemptions();
     this.loadTwitchRedemptions();
     this.startCooldownTimers();
@@ -138,158 +87,6 @@ export class RedemptionsComponent implements OnInit {
     }
   }
 
-  // Helper methods for translations
-  getLabel(key: keyof typeof this.labels): string {
-    return this.languageService.getTranslation(this.labels[key]) || 'Missing translation';
-  }
-
-  getHeading(): string {
-    return this.languageService.getTranslation(this.labels.heading) || 'Redemptions';
-  }
-
-  getRefreshText(): string {
-    return this.languageService.getTranslation(this.labels.refresh) || 'Refresh';
-  }
-
-  getCooldownActive(): string {
-    return this.languageService.getTranslation(this.labels.cooldownActive) || 'Refresh cooldown active';
-  }
-
-  getCooldownSeconds(): string {
-    return this.languageService.getTranslation(this.labels.cooldownSeconds) || 'seconds remaining';
-  }
-
-  getRefreshTooltip(): string {
-    return this.languageService.getTranslation(this.labels.refreshTooltip) || 'Refresh data from server';
-  }
-
-  getEnabled(): string {
-    return this.languageService.getTranslation(this.labels.enabled) || 'Enabled';
-  }
-
-  getDisabled(): string {
-    return this.languageService.getTranslation(this.labels.disabled) || 'Disabled';
-  }
-
-  getCost(): string {
-    return this.languageService.getTranslation(this.labels.cost) || 'Cost';
-  }
-
-  getCooldown(): string {
-    return this.languageService.getTranslation(this.labels.cooldown) || 'Cooldown';
-  }
-
-  getEdit(): string {
-    return this.languageService.getTranslation(this.labels.edit) || 'Edit';
-  }
-
-  getDelete(): string {
-    return this.languageService.getTranslation(this.labels.delete) || 'Delete';
-  }
-
-  getEnable(): string {
-    return this.languageService.getTranslation(this.labels.enable) || 'Enable';
-  }
-
-  getDisable(): string {
-    return this.languageService.getTranslation(this.labels.disable) || 'Disable';
-  }
-
-  getSave(): string {
-    return this.languageService.getTranslation(this.labels.save) || 'Save';
-  }
-
-  getCancel(): string {
-    return this.languageService.getTranslation(this.labels.cancel) || 'Cancel';
-  }
-
-  getTitle(): string {
-    return this.languageService.getTranslation(this.labels.title) || 'Title';
-  }
-
-  getPrompt(): string {
-    return this.languageService.getTranslation(this.labels.prompt) || 'Prompt';
-  }
-
-  getDuration(): string {
-    return this.languageService.getTranslation(this.labels.duration) || 'Duration';
-  }
-
-  getEditMode(): string {
-    return this.languageService.getTranslation(this.labels.editMode) || 'Edit Mode';
-  }
-
-  getExitEditMode(): string {
-    return this.languageService.getTranslation(this.labels.exitEditMode) || 'Exit Edit Mode';
-  }
-
-  getSaveAll(): string {
-    return this.languageService.getTranslation(this.labels.saveAll) || 'Save All';
-  }
-
-  getCancelAll(): string {
-    return this.languageService.getTranslation(this.labels.cancelAll) || 'Cancel All';
-  }
-
-  getOriginalCost(): string {
-    return this.languageService.getTranslation(this.labels.originalCost) || 'Original Cost';
-  }
-
-  getCostChange(): string {
-    return this.languageService.getTranslation(this.labels.costChange) || 'Cost Change';
-  }
-
-  getReturnToOriginalCost(): string {
-    return this.languageService.getTranslation(this.labels.returnToOriginalCost) || 'Return to Original Cost';
-  }
-
-  getPremiumFeature(): string {
-    return this.languageService.getTranslation(this.labels.premiumFeature) || 'Premium Feature';
-  }
-
-  getPremiumRequired(): string {
-    return this.languageService.getTranslation(this.labels.premiumRequired) || 'Premium subscription required';
-  }
-
-  getPremiumPlusRequired(): string {
-    return this.languageService.getTranslation(this.labels.premiumPlusRequired) || 'Premium Plus subscription required';
-  }
-
-  getMessage(): string {
-    return this.languageService.getTranslation(this.labels.message) || 'Message';
-  }
-
-  getNoMessageAvailable(): string {
-    return this.languageService.getTranslation(this.labels.noMessageAvailable) || 'No Message Available';
-  }
-
-  getCreateReward(): string {
-    return this.languageService.getTranslation(this.labels.createReward) || 'Create Reward';
-  }
-
-  getCreateRewardTooltip(): string {
-    return this.languageService.getTranslation(this.labels.createRewardTooltip) || 'Create a new custom reward';
-  }
-
-  getTwitchReadOnlyTitle(): string {
-    return this.languageService.getTranslation(this.labels.twitchReadOnlyTitle) || 'Twitch Reward (Read-Only)';
-  }
-
-  getTwitchReadOnlyInfo(): string {
-    return this.languageService.getTranslation(this.labels.twitchReadOnlyInfo) || 'This reward was created directly in Twitch and cannot be modified here. To customize it, delete it from Twitch and recreate it using this app.';
-  }
-
-  getTwitchReadOnlyTooltip(): string {
-    return this.languageService.getTranslation(this.labels.twitchReadOnlyTooltip) || 'Twitch rewards are read-only. Delete from Twitch and recreate here to customize.';
-  }
-
-  getDeleteFromTwitch(): string {
-    return this.languageService.getTranslation(this.labels.deleteFromTwitch) || 'Delete from Twitch';
-  }
-
-  getDeleteFromTwitchTooltip(): string {
-    return this.languageService.getTranslation(this.labels.deleteFromTwitchTooltip) || 'Delete this reward from Twitch to recreate it as a custom reward';
-  }
 
   // Helper method to check if a redemption is a Twitch reward
   isTwitchReward(redemption: Redemptions): boolean {
@@ -424,14 +221,14 @@ export class RedemptionsComponent implements OnInit {
       case 'originalCost':
       case 'costChange':
       case 'returnToOriginalCost':
-        return this.isPremiumUser() ? '' : this.getPremiumRequired();
+        return this.isPremiumUser() ? '' : this.translate.instant('redemptions.premiumRequired');
       default:
         return '';
     }
   }
 
   getRedemptionMessage(redemption: Redemptions): string {
-    return redemption.message && redemption.message.trim() ? redemption.message : this.getNoMessageAvailable();
+    return redemption.message && redemption.message.trim() ? redemption.message : this.translate.instant('redemptions.noMessageAvailable');
   }
 
   private startCooldownTimers() {
@@ -469,7 +266,7 @@ export class RedemptionsComponent implements OnInit {
       error: (error) => {
         console.error('Error loading redemptions:', error);
         this.isLoading = false;
-        this.toastService.error(this.labels.errorTitle[this.lang], this.labels.errorMsg[this.lang]);
+        this.toastService.error(this.translate.instant('redemptions.errorTitle'), this.translate.instant('redemptions.errorMsg'));
       }
     });
   }
@@ -507,7 +304,7 @@ export class RedemptionsComponent implements OnInit {
       error: (error) => {
         console.error('❌ Error loading Twitch redemptions:', error);
         this.isLoadingTwitch = false;
-        this.toastService.error(this.labels.errorTitle[this.lang], 'Failed to load Twitch redemptions');
+        this.toastService.error(this.translate.instant('redemptions.errorTitle'), 'Failed to load Twitch redemptions');
       }
     });
   }
@@ -606,7 +403,7 @@ export class RedemptionsComponent implements OnInit {
     
     // Check if user can edit premium fields
     if (!this.canEditPremiumField(field)) {
-      this.toastService.warn(this.getPremiumFeature(), this.getPremiumFieldTooltip(field));
+      this.toastService.warn(this.translate.instant('redemptions.premiumFeature'), this.getPremiumFieldTooltip(field));
       return;
     }
     
@@ -631,7 +428,7 @@ export class RedemptionsComponent implements OnInit {
     
     // Check if user can edit premium fields
     if (!this.canEditPremiumField(field)) {
-      this.toastService.warn(this.getPremiumFeature(), this.getPremiumFieldTooltip(field));
+      this.toastService.warn(this.translate.instant('redemptions.premiumFeature'), this.getPremiumFieldTooltip(field));
       return;
     }
     
@@ -811,26 +608,46 @@ export class RedemptionsComponent implements OnInit {
 
   async onDelete(redemption: Redemptions) {
     if (!redemption.rewardID) {
-      this.toastService.error(this.labels.errorTitle[this.lang], this.labels.errorMsg[this.lang]);
+      this.toastService.error(this.translate.instant('redemptions.errorTitle'), this.translate.instant('redemptions.errorMsg'));
       return;
     }
 
+    // Get translations for both languages
+    const currentLang = this.languageService.getCurrentLanguage();
+    const otherLang = currentLang === 'en' ? 'es' : 'en';
+    
+    // Get current language translations
+    const currentTitle = this.translate.instant('redemptions.confirmDeleteTitle');
+    const currentMsg = this.translate.instant('redemptions.confirmDeleteMsg');
+    const currentDelete = this.translate.instant('common.delete');
+    const currentCancel = this.translate.instant('common.cancel');
+    
+    // Get other language translations
+    this.translate.use(otherLang);
+    const otherTitle = this.translate.instant('redemptions.confirmDeleteTitle');
+    const otherMsg = this.translate.instant('redemptions.confirmDeleteMsg');
+    const otherDelete = this.translate.instant('common.delete');
+    const otherCancel = this.translate.instant('common.cancel');
+    
+    // Switch back to current language
+    this.translate.use(currentLang);
+    
     let deleteConfirmed = await this.confirmationService.confirm({
-      title: this.labels.confirmDeleteTitle,
-      message: this.labels.confirmDeleteMsg,
-      confirmText: { en: 'Delete', es: 'Eliminar' },
-      cancelText: { en: 'Cancel', es: 'Cancelar' },
+      title: { en: currentLang === 'en' ? currentTitle : otherTitle, es: currentLang === 'es' ? currentTitle : otherTitle },
+      message: { en: currentLang === 'en' ? currentMsg : otherMsg, es: currentLang === 'es' ? currentMsg : otherMsg },
+      confirmText: { en: currentLang === 'en' ? currentDelete : otherDelete, es: currentLang === 'es' ? currentDelete : otherDelete },
+      cancelText: { en: currentLang === 'en' ? currentCancel : otherCancel, es: currentLang === 'es' ? currentCancel : otherCancel },
       variant: 'danger'
     });
 
     if (!deleteConfirmed) {
-      this.toastService.info(this.labels.cancelTitle[this.lang], this.labels.cancelMsg[this.lang]);
+      this.toastService.info(this.translate.instant('redemptions.cancelTitle'), this.translate.instant('redemptions.cancelMsg'));
       return;
     }
 
     this.redemptionsService.deleteRedemption(redemption.rewardID as string).subscribe({
       next: () => {
-        this.toastService.success(this.labels.deletedTitle[this.lang], this.labels.deletedMsg[this.lang]);
+        this.toastService.success(this.translate.instant('redemptions.deletedTitle'), this.translate.instant('redemptions.deletedMsg'));
         this.loadRedemptions(true); // Refresh redemptions after deletion (force refresh)
       },
       error: (error) => {
@@ -849,26 +666,26 @@ export class RedemptionsComponent implements OnInit {
     const field = 'isEnabled';
     this.redemptionsService.updateRedemptionField(redemption.rewardID!, field, redemption.isEnabled).subscribe({
       next: () => {
-        const successTitle = redemption.isEnabled ? this.labels.enabledTitle[this.lang] : this.labels.disabledTitle[this.lang];
-        const successMsg = redemption.isEnabled ? this.labels.enabledMsg[this.lang] : this.labels.disabledMsg[this.lang];
+        const successTitle = redemption.isEnabled ? this.translate.instant('redemptions.enabledTitle') : this.translate.instant('redemptions.disabledTitle');
+        const successMsg = redemption.isEnabled ? this.translate.instant('redemptions.enabledMsg') : this.translate.instant('redemptions.disabledMsg');
         this.toastService.success(successTitle, successMsg);
       },
       error: (error) => {
         console.error('Error updating redemption:', error);
         // Revert the UI change since update failed
         redemption.isEnabled = wasEnabled;
-        this.toastService.error(this.labels.errorTitle[this.lang], 'Failed to update redemption status');
+        this.toastService.error(this.translate.instant('redemptions.errorTitle'), 'Failed to update redemption status');
       }
     });
   }
 
   refreshData() {
     if (this.refreshCooldown > 0) {
-      this.toastService.warn(this.labels.cooldownActive[this.lang], `${this.refreshCooldown} ${this.labels.cooldownSeconds[this.lang]}`);
+      this.toastService.warn(this.translate.instant('redemptions.cooldownActive'), `${this.refreshCooldown} ${this.translate.instant('redemptions.cooldownSeconds')}`);
       return;
     }
 
-    this.toastService.info(this.labels.refreshTitle[this.lang], '');
+    this.toastService.info(this.translate.instant('redemptions.refreshTitle'), '');
     // Load Twitch redemptions first, then custom redemptions to ensure proper merging
     this.loadTwitchRedemptions(true); // Force refresh from server
     this.loadRedemptions(true); // Force refresh from server
@@ -876,39 +693,39 @@ export class RedemptionsComponent implements OnInit {
 
     // Show success message after a brief delay
     setTimeout(() => {
-      this.toastService.success(this.labels.refreshSuccess[this.lang], '');
+      this.toastService.success(this.translate.instant('redemptions.refreshSuccess'), '');
     }, 500);
   }
 
   refreshRedemptions() {
     if (this.refreshCooldown > 0) {
-      this.toastService.warn(this.labels.cooldownActive[this.lang], `${this.refreshCooldown} ${this.labels.cooldownSeconds[this.lang]}`);
+      this.toastService.warn(this.translate.instant('redemptions.cooldownActive'), `${this.refreshCooldown} ${this.translate.instant('redemptions.cooldownSeconds')}`);
       return;
     }
 
-    this.toastService.info(this.labels.refreshTitle[this.lang], '');
+    this.toastService.info(this.translate.instant('redemptions.refreshTitle'), '');
     this.loadRedemptions(true); // Force refresh from server
     this.startRefreshCooldown();
 
     // Show success message after a brief delay
     setTimeout(() => {
-      this.toastService.success(this.labels.refreshSuccess[this.lang], '');
+      this.toastService.success(this.translate.instant('redemptions.refreshSuccess'), '');
     }, 500);
   }
 
   refreshTwitchRedemptions() {
     if (this.twitchRefreshCooldown > 0) {
-      this.toastService.warn(this.labels.cooldownActive[this.lang], `${this.twitchRefreshCooldown} ${this.labels.cooldownSeconds[this.lang]}`);
+      this.toastService.warn(this.translate.instant('redemptions.cooldownActive'), `${this.twitchRefreshCooldown} ${this.translate.instant('redemptions.cooldownSeconds')}`);
       return;
     }
 
-    this.toastService.info(this.labels.refreshTitle[this.lang], '');
+    this.toastService.info(this.translate.instant('redemptions.refreshTitle'), '');
     this.loadTwitchRedemptions(true); // Force refresh from server
     this.startTwitchRefreshCooldown();
 
     // Show success message after a brief delay
     setTimeout(() => {
-      this.toastService.success(this.labels.refreshSuccess[this.lang], '');
+      this.toastService.success(this.translate.instant('redemptions.refreshSuccess'), '');
     }, 500);
   }
 

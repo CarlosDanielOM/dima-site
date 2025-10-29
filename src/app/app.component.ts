@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Event, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import posthog from 'posthog-js';
 import { filter, Observable } from 'rxjs';
@@ -6,15 +6,22 @@ import { ToastComponent } from './toast/toast.component';
 import { ConfirmationModalComponent } from './shared/confirmation-modal/confirmation-modal.component';
 import { ThemesService } from './services/themes.service';
 import { CommonModule } from '@angular/common';
+import {
+  TranslateService,
+  TranslateDirective,
+  TranslatePipe
+} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, ToastComponent, CommonModule, ConfirmationModalComponent],
-  templateUrl: './app.component.html',
+templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
+  private translateService = inject(TranslateService);
+
   title = 'dima-site';
 
   navigationEnd: Observable<NavigationEnd>;
@@ -26,6 +33,8 @@ export class AppComponent {
     this.navigationEnd = router.events.pipe(
       filter((event: Event) => event instanceof NavigationEnd)
     ) as Observable<NavigationEnd>;
+
+    this.translateService.use(localStorage.getItem('userLanguage') || 'en');
   }
 
   ngOnInit() {

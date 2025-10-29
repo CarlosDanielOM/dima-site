@@ -51,6 +51,9 @@ export class UserService {
         return false;
       }
       
+      // Notify other services that user was restored
+      this.userEventsService.notifyUserStatusChanged();
+      
       return true;
     } catch (error) {
       console.error('Error parsing user data:', error);

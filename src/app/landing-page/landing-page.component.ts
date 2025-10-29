@@ -1,8 +1,8 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, OnDestroy } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, OnDestroy, LOCALE_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { LinksService } from '../links.service';
 import { UserService } from '../user.service';
-import { LanguageService } from '../services/language.service';
+import { LanguageService, SupportedLanguage } from '../services/language.service';
 import { LucideAngularModule } from 'lucide-angular';
 import { CountUpDirective } from '../directives/count-up.directive';
 import {
@@ -13,17 +13,19 @@ import {
   Zap,
   Settings,
   Check,
+  Languages,
 } from 'lucide-angular';
 import { environment } from '../../environments/environment';
 import { WebsocketService } from '../services/websocket.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-landing-page',
   standalone: true,
-  imports: [LucideAngularModule, CountUpDirective],
+  imports: [LucideAngularModule, CountUpDirective, TranslatePipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './landing-page.component.html',
-  styleUrl: './landing-page.component.css'
+  styleUrl: './landing-page.component.css',
 })
 
 export class LandingPageComponent implements OnInit, OnDestroy {
@@ -37,6 +39,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   zapIcon = Zap;
   settingsIcon = Settings;
   checkIcon = Check;
+  languageIcon = Languages;
 
   siteStats = {
     activeChannels: 0,
@@ -167,5 +170,27 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
   openDiscord() {
     window.open(environment.DISCORD_URL, '_blank');
+  }
+
+  // Language switching methods
+  getCurrentLanguage(): SupportedLanguage {
+    return this.languageService.getCurrentLanguage();
+  }
+
+  getCurrentLanguageInfo() {
+    const currentLang = this.getCurrentLanguage();
+    return this.languageService.getLanguageInfo(currentLang);
+  }
+
+  getAvailableLanguages() {
+    return this.languageService.getAvailableLanguages();
+  }
+
+  toggleLanguage() {
+    this.languageService.toggleLanguage();
+  }
+
+  switchLanguage(language: SupportedLanguage) {
+    this.languageService.setLanguage(language);
   }
 }

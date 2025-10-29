@@ -1,7 +1,7 @@
 <div class="container mx-auto px-4 py-8">
   <div class="text-center mb-12">
-    <h1 class="text-4xl font-bold mb-4 text-purple-900 tracking-tight">
-      Available Modules
+      <h1 class="text-4xl font-bold mb-4 text-purple-900 tracking-tight">
+      {{ 'moduleView.heading' | translate }}
     </h1>
     <div
       class="w-24 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 mx-auto rounded-full"
@@ -10,7 +10,7 @@
 
   @if (isLoading) {
   <div class="text-center p-12">
-    <p class="text-purple-600">Loading modules...</p>
+    <p class="text-purple-600">{{ 'moduleView.loading' | translate }}</p>
   </div>
   } @else {
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -85,7 +85,7 @@
               [routerLink]="module.path"
               class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg group-hover:shadow-purple-500/25 text-sm"
             >
-              <span>Access Module</span>
+              <span>{{ 'common.accessModule' | translate }}</span>
               <svg
                 class="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1"
                 fill="none"
@@ -105,13 +105,13 @@
               class="px-4 py-2 text-sm font-semibold text-gray-500 bg-gray-200 rounded-xl cursor-not-allowed"
               disabled
             >
-              Access
+              {{ 'common.access' | translate }}
             </button>
             } } @else {
             <button
               class="px-4 py-2 text-sm font-semibold text-white bg-purple-600 hover:bg-purple-700 rounded-xl transition-colors"
             >
-              Upgrade
+              {{ 'common.upgrade' | translate }}
             </button>
             }
           </div>

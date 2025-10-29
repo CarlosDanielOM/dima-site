@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Plus, X } from 'lucide-angular';
 import { LanguageService } from '../../services/language.service';
 import { UserService } from '../../user.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-create-reward-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule, TranslateModule],
   templateUrl: './create-reward-modal.component.html',
   styleUrl: './create-reward-modal.component.css'
 })
@@ -45,31 +46,10 @@ export class CreateRewardModalComponent implements OnInit, OnChanges {
     '#6366f1', '#8b5cf6', '#ec4899', '#6b7280', '#000000', '#ffffff'
   ];
 
-  labels = {
-    createReward: { en: 'Create Reward', es: 'Crear Recompensa' },
-    title: { en: 'Title', es: 'Título' },
-    titleRequired: { en: 'Title is required', es: 'El título es requerido' },
-    cost: { en: 'Cost', es: 'Costo' },
-    costRequired: { en: 'Cost is required and must be greater than 0', es: 'El costo es requerido y debe ser mayor que 0' },
-    prompt: { en: 'Prompt (Optional)', es: 'Descripción (Opcional)' },
-    cooldown: { en: 'Cooldown (Optional)', es: 'Enfriamiento (Opcional)' },
-    backgroundColor: { en: 'Background Color (Optional)', es: 'Color de Fondo (Opcional)' },
-    message: { en: 'Message (Optional)', es: 'Mensaje (Opcional)' },
-    premiumFeatures: { en: 'Premium Features', es: 'Características Premium' },
-    originalCost: { en: 'Original Cost', es: 'Costo Original' },
-    costChange: { en: 'Cost Change', es: 'Cambio de Costo' },
-    returnToOriginalCost: { en: 'Return to Original Cost', es: 'Volver al Costo Original' },
-    premiumRequired: { en: 'Premium subscription required', es: 'Suscripción premium requerida' },
-    premiumPlusRequired: { en: 'Premium Plus subscription required', es: 'Suscripción Premium Plus requerida' },
-    create: { en: 'Create', es: 'Crear' },
-    cancel: { en: 'Cancel', es: 'Cancelar' },
-    presetColors: { en: 'Preset Colors', es: 'Colores Predefinidos' },
-    customColor: { en: 'Custom Color', es: 'Color Personalizado' }
-  };
-
   constructor(
     public languageService: LanguageService,
-    private userService: UserService
+    private userService: UserService,
+    public translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -137,11 +117,11 @@ export class CreateRewardModalComponent implements OnInit, OnChanges {
 
     // Required fields
     if (!this.newReward.title.trim()) {
-      this.validationErrors['title'] = this.getLabel('titleRequired');
+      this.validationErrors['title'] = this.translate.instant('createReward.titleRequired');
     }
 
     if (!this.newReward.cost || this.newReward.cost <= 0) {
-      this.validationErrors['cost'] = this.getLabel('costRequired');
+      this.validationErrors['cost'] = this.translate.instant('createReward.costRequired');
     }
 
     // Optional field validations
@@ -210,78 +190,9 @@ export class CreateRewardModalComponent implements OnInit, OnChanges {
       case 'originalCost':
       case 'costChange':
       case 'returnToOriginalCost':
-        return this.isPremiumUser() ? '' : this.getLabel('premiumRequired');
+        return this.isPremiumUser() ? '' : this.translate.instant('createReward.premiumRequired');
       default:
         return '';
     }
-  }
-
-  // Translation helpers
-  getLabel(key: keyof typeof this.labels): string {
-    return this.languageService.getTranslation(this.labels[key]) || 'Missing translation';
-  }
-
-  getCreateReward(): string {
-    return this.getLabel('createReward');
-  }
-
-  getTitle(): string {
-    return this.getLabel('title');
-  }
-
-  getCost(): string {
-    return this.getLabel('cost');
-  }
-
-  getPrompt(): string {
-    return this.getLabel('prompt');
-  }
-
-  getCooldown(): string {
-    return this.getLabel('cooldown');
-  }
-
-  getBackgroundColor(): string {
-    return this.getLabel('backgroundColor');
-  }
-
-  getMessage(): string {
-    return this.getLabel('message');
-  }
-
-  getPremiumFeatures(): string {
-    return this.getLabel('premiumFeatures');
-  }
-
-  getOriginalCost(): string {
-    return this.getLabel('originalCost');
-  }
-
-  getCostChange(): string {
-    return this.getLabel('costChange');
-  }
-
-  getReturnToOriginalCost(): string {
-    return this.getLabel('returnToOriginalCost');
-  }
-
-  getPremiumRequired(): string {
-    return this.getLabel('premiumRequired');
-  }
-
-  getCreate(): string {
-    return this.getLabel('create');
-  }
-
-  getCancel(): string {
-    return this.getLabel('cancel');
-  }
-
-  getPresetColors(): string {
-    return this.getLabel('presetColors');
-  }
-
-  getCustomColor(): string {
-    return this.getLabel('customColor');
   }
 }

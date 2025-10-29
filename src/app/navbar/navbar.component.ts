@@ -11,11 +11,12 @@ import { UserStateService } from '../services/user-state.service';
 import { UserEventsService } from '../services/user-events.service';
 import { SetupModalComponent } from '../shared/setup-modal/setup-modal.component';
 import { Subscription } from 'rxjs';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, LucideAngularModule, SetupModalComponent],
+  imports: [CommonModule, RouterModule, LucideAngularModule, SetupModalComponent, TranslatePipe],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })

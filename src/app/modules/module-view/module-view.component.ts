@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Crown, Lock } from 'lucide-angular';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Module } from '../../interfaces/module';
 import { ModuleService } from '../../services/module.service';
 import { UserService } from '../../user.service';
@@ -11,7 +12,7 @@ import { ReleaseStageService, DisplayStatus } from '../../services/release-stage
 @Component({
   selector: 'app-module-view',
   standalone: true,
-  imports: [RouterModule, CommonModule, LucideAngularModule],
+  imports: [RouterModule, CommonModule, LucideAngularModule, TranslatePipe],
   templateUrl: './module-view.component.html',
   styleUrl: './module-view.component.css',
 })

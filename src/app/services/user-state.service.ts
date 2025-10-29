@@ -14,12 +14,19 @@ export class UserStateService {
     private userService: UserService,
     private userEventsService: UserEventsService
   ) {
-    this.checkUserStatus();
-    
-    // Listen for user status changes
+    // Set up subscription first to catch all notifications
     this.userEventsService.userStatusChanged$.subscribe(() => {
       this.checkUserStatus();
     });
+    
+    // Try to restore user from sessionStorage if not already restored
+    // This ensures user state is available even if guard hasn't run yet
+    if (!this.userService.getUser()) {
+      this.userService.restoreUser();
+    }
+    
+    // Initial status check
+    this.checkUserStatus();
   }
 
   private checkUserStatus() {

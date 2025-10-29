@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 export type SupportedLanguage = 'en' | 'es';
 
@@ -8,6 +9,7 @@ export type SupportedLanguage = 'en' | 'es';
 export class LanguageService {
   private readonly STORAGE_KEY = 'userLanguage';
   private readonly DEFAULT_LANGUAGE: SupportedLanguage = 'en';
+  private translateService = inject(TranslateService);
 
   // Available languages with their display names
   readonly availableLanguages = {
@@ -31,10 +33,12 @@ export class LanguageService {
 
     if (storedLanguage && this.isValidLanguage(storedLanguage)) {
       this.currentLanguage.set(storedLanguage);
+      this.translateService.use(storedLanguage);
       console.log('Language set from localStorage:', storedLanguage);
     } else {
       const browserLanguage = this.detectBrowserLanguage();
       this.currentLanguage.set(browserLanguage);
+      this.translateService.use(browserLanguage);
       this.saveLanguageToStorage(browserLanguage);
       console.log('Language set from browser preference:', browserLanguage);
     }
@@ -114,6 +118,7 @@ export class LanguageService {
     }
 
     this.currentLanguage.set(language);
+    this.translateService.use(language);
     this.saveLanguageToStorage(language);
     console.log('Language changed to:', language);
   }
@@ -139,13 +144,6 @@ export class LanguageService {
    */
   getAvailableLanguages() {
     return Object.values(this.availableLanguages);
-  }
-
-  /**
-   * Check if current language is a specific language
-   */
-  isCurrentLanguage(language: SupportedLanguage): boolean {
-    return this.getCurrentLanguage() === language;
   }
 
   /**

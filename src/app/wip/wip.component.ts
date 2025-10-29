@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 
 import { LanguageService } from '../services/language.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 
 type TranslationEntry = { en: string; es: string };
@@ -37,111 +38,26 @@ const ACCENT_PRESETS = {
 type AccentKey = keyof typeof ACCENT_PRESETS;
 type ColorValue = typeof ACCENT_PRESETS[AccentKey][keyof typeof ACCENT_PRESETS[AccentKey]];
 
-const BASE_TRANSLATIONS = {
-  statusChip: {
-    en: 'In active development',
-    es: 'En desarrollo activo'
-  },
-  headline: {
-    en: 'We are crafting something extraordinary',
-    es: 'Estamos creando algo extraordinario'
-  },
-  description: {
-    en: 'Our team is polishing the next big experience for the DIMA ecosystem. We are ensuring every interaction feels smooth, responsive, and delightful.',
-    es: 'Nuestro equipo está puliendo la próxima gran experiencia para el ecosistema DIMA. Queremos que cada interacción sea fluida, receptiva y encantadora.'
-  },
-  progressTitle: {
-    en: 'Current status',
-    es: 'Estado actual'
-  },
-  progressDescription: {
-    en: 'The core features are implemented. We are focusing on refining real-time performance, accessibility, and internationalization.',
-    es: 'Las funciones principales ya están implementadas. Nos enfocamos en refinar el rendimiento en tiempo real, la accesibilidad y la internacionalización.'
-  },
-  progressStatusTemplate: {
-    en: '%PROGRESS%% complete · Launch window: Q4 2025',
-    es: '%PROGRESS%% completado · Ventana de lanzamiento: Q4 2025'
-  },
-  whatToExpectTitle: {
-    en: 'What to expect',
-    es: 'Qué esperar'
-  },
-  whatToExpectIntro: {
-    en: 'Here is a quick glimpse at what is landing with the first release.',
-    es: 'Aquí tienes un vistazo rápido de lo que llegará con el primer lanzamiento.'
-  },
-  backHome: {
-    en: 'Go back home',
-    es: 'Volver al inicio'
-  },
-  stayTunedLabel: {
-    en: 'Stay tuned for updates',
-    es: 'Mantente al tanto de las novedades'
-  },
-  footerNote: {
-    en: 'Need early access or have feedback? Reach out to the team and we will get you onboarded as soon as possible.',
-    es: '¿Necesitas acceso anticipado o tienes comentarios? Comunícate con el equipo y te integraremos lo antes posible.'
-  }
-} satisfies Record<string, TranslationEntry>;
-
-type BaseTranslationKey = keyof typeof BASE_TRANSLATIONS;
-type BaseTranslationMap = Record<BaseTranslationKey, TranslationEntry>;
-
-interface WipHighlight {
-  icon: string;
-  translations: TranslationEntry;
-}
-
-const BASE_HIGHLIGHTS = [
-  {
-    icon: '🚀',
-    translations: {
-      en: 'Streamlined management dashboards with real-time analytics.',
-      es: 'Paneles de gestión optimizados con analíticas en tiempo real.'
-    }
-  },
-  {
-    icon: '🤖',
-    translations: {
-      en: 'Smart automations that react instantly to your community events.',
-      es: 'Automatizaciones inteligentes que reaccionan al instante a los eventos de tu comunidad.'
-    }
-  },
-  {
-    icon: '🎨',
-    translations: {
-      en: 'Tailwind-powered themes designed to match your brand personality.',
-      es: 'Temas impulsados por Tailwind diseñados para reflejar la personalidad de tu marca.'
-    }
-  }
-] satisfies readonly WipHighlight[];
-
-const HIGHLIGHT_FALLBACK: WipHighlight = {
-  icon: '✨',
-  translations: {
-    en: 'More enhancements are on the way. Stay tuned!',
-    es: 'Más mejoras están en camino. ¡Mantente atento!'
-  }
-};
 
 interface WipRouteConfig {
   progress?: number;
   accent?: AccentKey;
   status?: Partial<TranslationEntry>;
-  copy?: Partial<Record<BaseTranslationKey, Partial<TranslationEntry>>>;
-  highlights?: Array<Partial<WipHighlight>>;
 }
 
 @Component({
   selector: 'app-wip',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule],
   templateUrl: './wip.component.html',
   styleUrls: ['./wip.component.css']
 })
 export class WipComponent implements OnInit, OnDestroy {
-  private translations: BaseTranslationMap = { ...BASE_TRANSLATIONS };
-  highlights: WipHighlight[] = [...BASE_HIGHLIGHTS];
+  highlights: Array<{ icon: string; translationKey: string }> = [
+    { icon: '🚀', translationKey: 'wip.highlights.0' },
+    { icon: '🤖', translationKey: 'wip.highlights.1' },
+    { icon: '🎨', translationKey: 'wip.highlights.2' }
+  ];
 
   @HostBinding('style.--accent')
   accentVariable: ColorValue = ACCENT_PRESETS.emerald.accent;
@@ -166,10 +82,17 @@ export class WipComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly languageService: LanguageService,
-    private readonly activatedRoute: ActivatedRoute
+    private readonly activatedRoute: ActivatedRoute,
+    public translate: TranslateService
   ) {}
 
   ngOnInit(): void {
+    // Ensure language is properly initialized
+    const currentLang = this.languageService.getCurrentLanguage();
+    if (!this.translate.currentLang) {
+      this.translate.use(currentLang);
+    }
+    
     this.activatedRoute.data.pipe(takeUntil(this.destroy$)).subscribe(data => {
       this.applyRouteConfig(data['wip'] as WipRouteConfig | undefined);
     });
@@ -180,15 +103,6 @@ export class WipComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  getTranslation(key: BaseTranslationKey): string {
-    return this.languageService.getTranslation(this.translations[key]);
-  }
-
-  getHighlightTranslation(
-    highlight: WipHighlight
-  ): string {
-    return this.languageService.getTranslation(highlight.translations);
-  }
 
   get progressStrokeDasharray(): string {
     return `${this.progressValue} 100`;
@@ -203,8 +117,11 @@ export class WipComponent implements OnInit, OnDestroy {
   }
 
   getProgressStatusText(): string {
-    const translations = this.customStatus ?? this.translations.progressStatusTemplate;
-    const template = this.languageService.getTranslation(translations);
+    if (this.customStatus) {
+      const template = this.languageService.getTranslation(this.customStatus);
+      return template.replace('%PROGRESS%', `${Math.round(this.progressValue)}`);
+    }
+    const template = this.translate.instant('wip.progressStatusTemplate');
     return template.replace('%PROGRESS%', `${Math.round(this.progressValue)}`);
   }
 
@@ -213,8 +130,8 @@ export class WipComponent implements OnInit, OnDestroy {
     this.setAccentVariables(accentKey);
     this.progressValue = this.normalizeProgress(config?.progress);
     this.customStatus = this.resolvePartialTranslation(config?.status) ?? undefined;
-    this.translations = this.buildTranslationMap(config?.copy);
-    this.highlights = this.buildHighlights(config?.highlights);
+    // Note: copy and highlights overrides are not fully supported with ngx-translate
+    // They would need to be handled differently if needed
   }
 
   private resolveAccent(accent?: AccentKey): AccentKey {
@@ -246,72 +163,21 @@ export class WipComponent implements OnInit, OnDestroy {
       return null;
     }
 
-    const fallback = BASE_TRANSLATIONS.progressStatusTemplate;
+    // Fallback uses translation file - get both languages
+    // Use LanguageService to get the current language, not translate.currentLang
+    // which might not be initialized yet on refresh
+    const currentLang = this.languageService.getCurrentLanguage();
+    
+    this.translate.use('en');
+    const fallbackEn = this.translate.instant('wip.progressStatusTemplate');
+    this.translate.use('es');
+    const fallbackEs = this.translate.instant('wip.progressStatusTemplate');
+    // Restore to the actual current language from LanguageService
+    this.translate.use(currentLang);
 
     return {
-      en: partial.en ?? fallback.en,
-      es: partial.es ?? fallback.es
-    } satisfies TranslationEntry;
-  }
-
-  private buildTranslationMap(overrides?: WipRouteConfig['copy']): BaseTranslationMap {
-    if (!overrides) {
-      return { ...BASE_TRANSLATIONS };
-    }
-
-    const merged: Partial<BaseTranslationMap> = {};
-
-    (Object.keys(BASE_TRANSLATIONS) as BaseTranslationKey[]).forEach(key => {
-      const baseEntry = BASE_TRANSLATIONS[key];
-      const override = overrides[key];
-
-      if (!override) {
-        merged[key] = baseEntry;
-        return;
-      }
-
-      merged[key] = {
-        en: override.en ?? baseEntry.en,
-        es: override.es ?? baseEntry.es
-      } satisfies TranslationEntry;
-    });
-
-    return merged as BaseTranslationMap;
-  }
-
-  private buildHighlights(overrides?: Array<Partial<WipHighlight>>): WipHighlight[] {
-    if (!overrides || overrides.length === 0) {
-      return [...BASE_HIGHLIGHTS];
-    }
-
-    return overrides.map(override => {
-      const base = override.icon
-        ? BASE_HIGHLIGHTS.find(h => h.icon === override.icon) ?? HIGHLIGHT_FALLBACK
-        : HIGHLIGHT_FALLBACK;
-
-      const translations = this.mergeTranslationEntry(
-        override.translations,
-        base.translations
-      );
-
-      return {
-        icon: override.icon ?? base.icon,
-        translations
-      } satisfies WipHighlight;
-    });
-  }
-
-  private mergeTranslationEntry(
-    override: Partial<TranslationEntry> | undefined,
-    fallback: TranslationEntry
-  ): TranslationEntry {
-    if (!override) {
-      return fallback;
-    }
-
-    return {
-      en: override.en ?? fallback.en,
-      es: override.es ?? fallback.es
+      en: partial.en ?? fallbackEn,
+      es: partial.es ?? fallbackEs
     } satisfies TranslationEntry;
   }
 }
