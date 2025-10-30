@@ -17,13 +17,13 @@
         <a class="nav-pill text-sm font-medium text-purple-900" href="#contact">
           {{ 'landing.nav.contact' | translate }}
         </a> -->
-        <button (click)="toggleLanguage()" class="nav-pill text-sm font-medium text-purple-900 flex items-center gap-1" title="Switch Language">
+        <!-- <button (click)="toggleLanguage()" class="nav-pill text-sm font-medium text-purple-900 flex items-center gap-1" title="Switch Language">
           <lucide-icon [name]="languageIcon" class="w-4 h-4"></lucide-icon>
           <span>{{ getCurrentLanguageInfo().nativeName || 'English' }}</span>
-        </button>
+        </button> -->
       </nav>
       <!-- Mobile language switcher (always visible) -->
-      <button (click)="toggleLanguage()" class="sm:hidden nav-pill text-sm font-medium text-purple-900 flex items-center gap-1" title="Switch Language">
+      <button (click)="toggleLanguage()" class="nav-pill text-sm font-medium text-purple-900 flex items-center gap-1" title="Switch Language">
         <lucide-icon [name]="languageIcon" class="w-4 h-4"></lucide-icon>
         <span class="text-sm">{{ getCurrentLanguageInfo().nativeName || 'English' }}</span>
       </button>
