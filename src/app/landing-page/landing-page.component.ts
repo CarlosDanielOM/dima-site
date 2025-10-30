@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, OnDestroy, LOCALE_ID } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, OnDestroy, LOCALE_ID, ElementRef, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { LinksService } from '../links.service';
 import { UserService } from '../user.service';
@@ -14,6 +14,7 @@ import {
   Settings,
   Check,
   Languages,
+  Menu,
 } from 'lucide-angular';
 import { environment } from '../../environments/environment';
 import { WebsocketService } from '../services/websocket.service';
@@ -40,6 +41,8 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   settingsIcon = Settings;
   checkIcon = Check;
   languageIcon = Languages;
+  menuIcon = Menu;
+  isMobileMenuOpen = false;
 
   siteStats = {
     activeChannels: 0,
@@ -58,7 +61,8 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     private linksService: LinksService,
     private userService: UserService,
     private websocketService: WebsocketService,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    private elementRef: ElementRef
   ) {
     let scope = encodeURIComponent('user:read:email');
     this.twitchAuthUrl = `${this.linksService.getTwitchAuthUrl()}&scope=${scope}`;
@@ -89,6 +93,17 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       const parallaxContainers = document.querySelectorAll<HTMLElement>('.parallax-layer');
       const onScroll = () => {
         const scrollY = window.scrollY || window.pageYOffset;
+        
+        // Toggle scrolled class on navbar
+        const navbar = document.querySelector('.sticky-navbar');
+        if (navbar) {
+          if (scrollY > 10) {
+            navbar.classList.add('scrolled');
+          } else {
+            navbar.classList.remove('scrolled');
+          }
+        }
+        
         parallaxContainers.forEach(layer => {
           const depthAttr = layer.getAttribute('data-depth');
           const depth = depthAttr ? parseFloat(depthAttr) : 0.05;
@@ -192,5 +207,34 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
   switchLanguage(language: SupportedLanguage) {
     this.languageService.setLanguage(language);
+  }
+
+  // Mobile menu methods
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
+  closeMobileMenu() {
+    this.isMobileMenuOpen = false;
+  }
+
+  onMenuFocusOut(event: FocusEvent) {
+    const currentTarget = event.currentTarget as HTMLElement | null;
+    const related = event.relatedTarget as HTMLElement | null;
+    if (!currentTarget || !related || !currentTarget.contains(related)) {
+      this.closeMobileMenu();
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement | null;
+    if (!target) {
+      return;
+    }
+    const clickInside = this.elementRef.nativeElement.contains(target);
+    if (!clickInside) {
+      this.closeMobileMenu();
+    }
   }
 }
