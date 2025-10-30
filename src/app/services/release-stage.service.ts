@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Crown, Lock, FlaskConical, Wrench, Clock, Check } from 'lucide-angular';
 import { LanguageService } from './language.service';
+import { TranslateService } from '@ngx-translate/core';
 import { ReleaseStage } from '../interfaces/releasestage';
 import { StageInfo } from '../interfaces/stageinfo';
 
@@ -74,6 +75,8 @@ export class ReleaseStageService {
       icon: this.icons.lock,
     },
   };
+
+  private translateService = inject(TranslateService);
 
   constructor(private languageService: LanguageService) {}
 
@@ -149,35 +152,35 @@ export class ReleaseStageService {
   ): DisplayStatus {
     if (stage === 'maintenance') {
       return {
-        text: 'Maintenance',
+        text: this.translateService.instant('releaseStage.maintenance'),
         icon: this.icons.wrench,
         color: 'text-orange-500'
       };
     }
     if (stage === 'coming_soon') {
       return {
-        text: 'Coming Soon',
+        text: this.translateService.instant('releaseStage.coming_soon'),
         icon: this.icons.clock,
         color: 'text-blue-500'
       };
     }
     if (isLocked) {
       return {
-        text: 'Premium Required',
+        text: this.translateService.instant('common.premiumRequired'),
         icon: this.icons.lock,
         color: 'text-red-500'
       };
     }
     if (isSelected) {
       return {
-        text: 'Selected',
+        text: this.translateService.instant('common.selected'),
         icon: null, // Could add a check icon if needed
         color: 'text-purple-500'
       };
     }
     if (isAvailable) {
       return {
-        text: 'Available',
+        text: this.translateService.instant('common.available'),
         icon: null, // Could add a check icon if needed
         color: 'text-green-500'
       };
@@ -207,11 +210,11 @@ export class ReleaseStageService {
    */
   getStageBadgeInfo(stage: ReleaseStage): { text: string; color: string } | null {
     const badgeMap: { [key in ReleaseStage]?: { text: string; color: string } } = {
-      stable: { text: 'Stable', color: 'bg-purple-500 text-white' },
-      beta: { text: 'Beta', color: 'bg-yellow-500 text-white' },
-      alpha: { text: 'Alpha', color: 'bg-red-500 text-white' },
-      maintenance: { text: 'Maintenance', color: 'bg-gray-500 text-white' },
-      coming_soon: { text: 'Coming Soon', color: 'bg-blue-500 text-white' },
+      stable: { text: this.translateService.instant('releaseStage.stable'), color: 'bg-purple-500 text-white' },
+      beta: { text: this.translateService.instant('releaseStage.beta'), color: 'bg-yellow-500 text-white' },
+      alpha: { text: this.translateService.instant('releaseStage.alpha'), color: 'bg-red-500 text-white' },
+      maintenance: { text: this.translateService.instant('releaseStage.maintenance'), color: 'bg-gray-500 text-white' },
+      coming_soon: { text: this.translateService.instant('releaseStage.coming_soon'), color: 'bg-blue-500 text-white' },
     };
     return badgeMap[stage] || null;
   }

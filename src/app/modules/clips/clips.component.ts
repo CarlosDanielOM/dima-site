@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Crown, LucideAngularModule, Palette, Sparkles, Zap, CheckCircle, XCircle, AlertTriangle, Lock, Wrench, FlaskConical, Boxes } from 'lucide-angular';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SafePipe } from '../../safe.pipe';
 import { UserService } from '../../user.service';
 import { HttpClient } from '@angular/common/http';
@@ -31,7 +32,7 @@ interface Design {
 @Component({
   selector: 'app-clips',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, SafePipe, BlockInactiveUserDirective],
+  imports: [CommonModule, FormsModule, LucideAngularModule, SafePipe, BlockInactiveUserDirective, TranslateModule],
   templateUrl: './clips.component.html',
   styleUrl: './clips.component.css'
 })
@@ -45,7 +46,7 @@ export class ClipsComponent {
   alertTriangleIcon = AlertTriangle;
   userId = 0;
   login = '';
-  isPremium = false;
+  userPremiumStatus: 'none' | 'premium' | 'premium_plus' = 'none';
   selectedDesign: Design | null = null;
   timeoutSeconds: number = 30;
 
@@ -54,12 +55,13 @@ export class ClipsComponent {
     private http: HttpClient,
     private toastService: ToastService,
     private releaseStageService: ReleaseStageService,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
     this.userId = this.userService.getUserId();
-    this.isPremium = this.userService.getPremium();
+    this.userPremiumStatus = this.userService.getPremiumStatus() as 'none' | 'premium' | 'premium_plus';
     this.login = this.userService.getLogin();
   }
 
@@ -126,14 +128,15 @@ export class ClipsComponent {
   }
 
   getDesignStatus(design: Design): { text: string; icon: any; color: string } {
-    const isLocked = (design.premium && !this.isPremium) || (design.premium_plus && !this.isPremium);
+    const access = this.releaseStageService.getUserAccess(design, this.userPremiumStatus);
+    const isLocked = !access.canAccess;
     const isSelected = this.selectedDesign?.id === design.id;
 
     return this.releaseStageService.getSimpleStatus(
       design.releaseStage,
       isLocked,
       isSelected,
-      !isLocked && !['maintenance', 'coming_soon'].includes(design.releaseStage)
+      access.canAccess && !['maintenance', 'coming_soon'].includes(design.releaseStage)
     );
   }
 
@@ -153,10 +156,18 @@ export class ClipsComponent {
 
   selectDesign(design: Design) {
     if (!this.canSelectDesign(design)) {
+      const access = this.releaseStageService.getUserAccess(design, this.userPremiumStatus);
+      
       if (['maintenance', 'coming_soon'].includes(design.releaseStage)) {
-          this.toastService.error('Not Available', 'This design is not available yet.');
-      } else if ((design.premium && !this.isPremium) || (design.premium_plus && !this.isPremium)) {
-          this.toastService.error('Premium Required', 'This is a premium feature. Please upgrade to use it.');
+        this.toastService.error(
+          this.translate.instant('clips.toasts.notAvailableTitle'),
+          this.translate.instant('clips.toasts.notAvailableMsg')
+        );
+      } else if (!access.canAccess && access.reason) {
+        this.toastService.error(
+          this.translate.instant('clips.toasts.premiumRequiredTitle'),
+          this.translate.instant('clips.toasts.premiumRequiredMsg')
+        );
       }
       return;
     }
@@ -164,26 +175,37 @@ export class ClipsComponent {
   }
 
   canSelectDesign(design: Design): boolean {
-    const userPremiumStatus = this.isPremium ? 'premium' : 'none';
-    return this.releaseStageService.canSelectItem(design, userPremiumStatus);
+    return this.releaseStageService.canSelectItem(design, this.userPremiumStatus);
   }
 
   copyUrl() {
     if (!this.selectedDesign) {
-      this.toastService.error('Selection Required', 'Please select a design first');
+      this.toastService.error(
+        this.translate.instant('clips.toasts.selectionRequiredTitle'),
+        this.translate.instant('clips.toasts.selectionRequiredMsg')
+      );
       return;
     }
     const url = this.getSelectedDesignUrl();
     navigator.clipboard.writeText(url).then(() => {
-      this.toastService.success('Copied!', 'URL copied to clipboard!');
+      this.toastService.success(
+        this.translate.instant('clips.toasts.copiedTitle'),
+        this.translate.instant('clips.toasts.copiedMsg')
+      );
     }).catch(() => {
-      this.toastService.error('Copy Failed', 'Failed to copy URL to clipboard');
+      this.toastService.error(
+        this.translate.instant('clips.toasts.copyFailedTitle'),
+        this.translate.instant('clips.toasts.copyFailedMsg')
+      );
     });
   }
 
   testDesign() {
     if (!this.selectedDesign) {
-      this.toastService.error('Selection Required', 'Please select a design first');
+      this.toastService.error(
+        this.translate.instant('clips.toasts.selectionRequiredTitle'),
+        this.translate.instant('clips.toasts.selectionRequiredMsg')
+      );
       return;
     }
     const url = this.getSelectedDesignUrl();
@@ -194,11 +216,17 @@ export class ClipsComponent {
     }).subscribe({
       next: (data) => {
         console.log(data);
-        this.toastService.success('Test Sent', 'Design test sent successfully!');
+        this.toastService.success(
+          this.translate.instant('clips.toasts.testSentTitle'),
+          this.translate.instant('clips.toasts.testSentMsg')
+        );
       },
       error: (error) => {
         console.error('Error testing design:', error);
-        this.toastService.error('Test Failed', 'Failed to send test design');
+        this.toastService.error(
+          this.translate.instant('clips.toasts.testFailedTitle'),
+          this.translate.instant('clips.toasts.testFailedMsg')
+        );
       }
     });
   }

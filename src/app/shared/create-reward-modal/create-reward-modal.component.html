@@ -26,7 +26,7 @@
               <!-- Title (Required) -->
               <div>
                 <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {{ 'createReward.title' | translate }} <span class="text-red-500">*</span>
+                  {{ 'common.title' | translate }} <span class="text-red-500">*</span>
                 </label>
                 <input type="text" 
                   id="title"
@@ -34,7 +34,7 @@
                   [(ngModel)]="newReward.title"
                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   [class.border-red-500]="validationErrors['title']"
-                  placeholder="Enter reward title"
+                  [placeholder]="'common.placeholderEnterRewardTitle' | translate"
                   required>
                 @if (validationErrors['title']) {
                   <p class="mt-1 text-sm text-red-600">{{ validationErrors['title'] }}</p>
@@ -44,7 +44,7 @@
               <!-- Cost (Required) -->
               <div>
                 <label for="cost" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {{ 'createReward.cost' | translate }} <span class="text-red-500">*</span>
+                  {{ 'common.cost' | translate }} <span class="text-red-500">*</span>
                 </label>
                 <input type="number" 
                   id="cost"
@@ -54,7 +54,7 @@
                   step="1"
                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   [class.border-red-500]="validationErrors['cost']"
-                  placeholder="Enter cost in points"
+                  [placeholder]="'common.placeholderEnterCostInPoints' | translate"
                   required>
                 @if (validationErrors['cost']) {
                   <p class="mt-1 text-sm text-red-600">{{ validationErrors['cost'] }}</p>
@@ -64,7 +64,7 @@
               <!-- Prompt (Optional) -->
               <div>
                 <label for="prompt" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {{ 'createReward.prompt' | translate }}
+                  {{ 'createReward.promptOptional' | translate }}
                 </label>
                 <textarea 
                   id="prompt"
@@ -72,13 +72,13 @@
                   [(ngModel)]="newReward.prompt"
                   rows="3"
                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                  placeholder="Enter reward description (optional)"></textarea>
+                  [placeholder]="'common.placeholderEnterRewardDescription' | translate"></textarea>
               </div>
 
               <!-- Cooldown (Optional) -->
               <div>
                 <label for="cooldown" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {{ 'createReward.cooldown' | translate }}
+                  {{ 'createReward.cooldownOptional' | translate }}
                 </label>
                 <input type="number" 
                   id="cooldown"
@@ -88,7 +88,7 @@
                   step="1"
                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   [class.border-red-500]="validationErrors['cooldown']"
-                  placeholder="Enter cooldown in seconds (optional)">
+                  [placeholder]="'common.placeholderEnterCooldownInSeconds' | translate">
                 @if (validationErrors['cooldown']) {
                   <p class="mt-1 text-sm text-red-600">{{ validationErrors['cooldown'] }}</p>
                 }
@@ -123,7 +123,7 @@
                 @if (showColorPicker) {
                   <div class="absolute z-10 mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg p-4 w-full max-w-xs">
                     <div class="mb-3">
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ 'createReward.presetColors' | translate }}</label>
+                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ 'common.presetColors' | translate }}</label>
                       <div class="grid grid-cols-6 gap-2">
                         @for (color of presetColors; track color) {
                           <div 
@@ -136,7 +136,7 @@
                       </div>
                     </div>
                     <div class="mb-3">
-                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'createReward.customColor' | translate }}</label>
+                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'common.customColor' | translate }}</label>
                       <input type="text" 
                         [(ngModel)]="newReward.background_color"
                         class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -149,7 +149,7 @@
               <!-- Message (Optional) -->
               <div>
                 <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {{ 'createReward.message' | translate }}
+                  {{ 'createReward.messageOptional' | translate }}
                 </label>
                 <textarea 
                   id="message"
@@ -157,7 +157,7 @@
                   [(ngModel)]="newReward.message"
                   rows="2"
                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                  placeholder="Enter custom message (optional)"></textarea>
+                  [placeholder]="'common.placeholderEnterCustomMessage' | translate"></textarea>
               </div>
 
               <!-- Premium Features Section -->
@@ -167,14 +167,14 @@
                     <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                     </svg>
-                    <span class="text-sm font-medium text-yellow-700 dark:text-yellow-400">{{ 'createReward.premiumFeatures' | translate }}</span>
+                    <span class="text-sm font-medium text-yellow-700 dark:text-yellow-300">{{ 'createReward.premiumFeatures' | translate }}</span>
                   </div>
 
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <!-- Original Cost -->
-                    <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-3 border border-yellow-200 dark:border-yellow-800">
-                      <label for="originalCost" class="block text-xs text-yellow-600 dark:text-yellow-400 mb-1">
-                        {{ 'createReward.originalCost' | translate }}
+                    <div class="bg-yellow-50 dark:bg-yellow-950/40 rounded-lg p-3 border border-yellow-200 dark:border-yellow-700/50">
+                      <label for="originalCost" class="block text-xs text-yellow-600 dark:text-yellow-300 mb-1">
+                        {{ 'common.originalCost' | translate }}
                       </label>
                       <input type="number" 
                         id="originalCost"
@@ -187,9 +187,9 @@
                     </div>
 
                     <!-- Cost Change -->
-                    <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-3 border border-yellow-200 dark:border-yellow-800">
-                      <label for="costChange" class="block text-xs text-yellow-600 dark:text-yellow-400 mb-1">
-                        {{ 'createReward.costChange' | translate }}
+                    <div class="bg-yellow-50 dark:bg-yellow-950/40 rounded-lg p-3 border border-yellow-200 dark:border-yellow-700/50">
+                      <label for="costChange" class="block text-xs text-yellow-600 dark:text-yellow-300 mb-1">
+                        {{ 'common.costChange' | translate }}
                       </label>
                       <input type="number" 
                         id="costChange"
@@ -207,7 +207,7 @@
                           [(ngModel)]="newReward.returnToOriginalCost"
                           name="returnToOriginalCost"
                           class="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500">
-                        <span class="text-sm text-yellow-700 dark:text-yellow-400">{{ 'createReward.returnToOriginalCost' | translate }}</span>
+                        <span class="text-sm text-yellow-700 dark:text-yellow-300">{{ 'common.returnToOriginalCost' | translate }}</span>
                       </label>
                     </div>
                   </div>
@@ -222,14 +222,14 @@
                       </svg>
                       <span class="text-sm font-medium text-gray-600 dark:text-gray-300">{{ 'createReward.premiumFeatures' | translate }}</span>
                     </div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ 'createReward.premiumRequired' | translate }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ 'common.premiumSubscriptionRequired' | translate }}</p>
                     <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <div class="bg-gray-100 dark:bg-gray-600 rounded p-2 opacity-60">
-                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ 'createReward.originalCost' | translate }}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ 'common.originalCost' | translate }}</div>
                         <div class="text-sm text-gray-400 dark:text-gray-500">--</div>
                       </div>
                       <div class="bg-gray-100 dark:bg-gray-600 rounded p-2 opacity-60">
-                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ 'createReward.costChange' | translate }}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ 'common.costChange' | translate }}</div>
                         <div class="text-sm text-gray-400 dark:text-gray-500">--</div>
                       </div>
                     </div>
@@ -254,7 +254,7 @@
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                 }
-                {{ 'createReward.create' | translate }}
+                {{ 'common.create' | translate }}
               </button>
             </div>
           </form>

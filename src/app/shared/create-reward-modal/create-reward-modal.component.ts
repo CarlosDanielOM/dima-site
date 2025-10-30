@@ -126,11 +126,11 @@ export class CreateRewardModalComponent implements OnInit, OnChanges {
 
     // Optional field validations
     if (this.newReward.cooldown < 0) {
-      this.validationErrors['cooldown'] = 'Cooldown cannot be negative';
+      this.validationErrors['cooldown'] = this.translate.instant('common.cooldownCannotBeNegative');
     }
 
     if (this.newReward.background_color && !this.validateColor(this.newReward.background_color)) {
-      this.validationErrors['background_color'] = 'Invalid color format';
+      this.validationErrors['background_color'] = this.translate.instant('common.invalidColorFormat');
     }
 
     return Object.keys(this.validationErrors).length === 0;
@@ -190,7 +190,7 @@ export class CreateRewardModalComponent implements OnInit, OnChanges {
       case 'originalCost':
       case 'costChange':
       case 'returnToOriginalCost':
-        return this.isPremiumUser() ? '' : this.translate.instant('createReward.premiumRequired');
+        return this.isPremiumUser() ? '' : this.translate.instant('common.premiumSubscriptionRequired');
       default:
         return '';
     }

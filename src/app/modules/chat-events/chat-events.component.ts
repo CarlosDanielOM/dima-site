@@ -25,6 +25,7 @@ import {
   Play,
   PlusCircle,
 } from 'lucide-angular';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { EventsubService } from '../../eventsub.service';
 import { ToastService } from '../../toast.service';
 import { UserService } from '../../user.service';
@@ -78,7 +79,7 @@ export interface ChatEvent {
 @Component({
   selector: 'app-chat-events',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, FormsModule],
+  imports: [CommonModule, LucideAngularModule, FormsModule, TranslateModule],
   templateUrl: './chat-events.component.html',
   styleUrl: './chat-events.component.css',
 })
@@ -191,7 +192,8 @@ export class ChatEventsComponent implements OnInit {
     private userService: UserService,
     private confirmationService: ConfirmationService,
     private releaseStageService: ReleaseStageService,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    public translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -353,7 +355,10 @@ export class ChatEventsComponent implements OnInit {
   saveConfiguration(eventToSave: ChatEvent): void {
     if (!eventToSave.config) {
       console.warn('No configuration to save for', eventToSave.name);
-      this.toastService.error('No Configuration', 'No configuration to save for this event.');
+      this.toastService.error(
+        this.translate.instant('chatEvents.toasts.noConfigurationTitle'),
+        this.translate.instant('chatEvents.toasts.noConfigurationMsg')
+      );
       return;
     }
   
@@ -363,7 +368,10 @@ export class ChatEventsComponent implements OnInit {
     this.eventsubService.saveEventConfiguration(eventToSave.type, configPayload).subscribe(() => {
       // On success, exit configuration mode.
       this.toggleConfigure(eventToSave.name);
-      this.toastService.success('Configuration Saved', 'Configuration for this event has been saved.');
+      this.toastService.success(
+        this.translate.instant('chatEvents.toasts.configurationSavedTitle'),
+        this.translate.instant('chatEvents.toasts.configurationSavedMsg')
+      );
     });
   }
 
@@ -422,7 +430,11 @@ export class ChatEventsComponent implements OnInit {
       this.isLoading = true; // Show loading state
       this.eventsubService.deleteEvent(eventToDelete.type).subscribe({
         next: () => {
-          this.toastService.success('Event Unsubscribed', `The event "${eventToDelete.name}" has been reset.`);
+          const message = this.translate.instant('chatEvents.toasts.eventUnsubscribedMsg', { eventName: eventToDelete.name });
+          this.toastService.success(
+            this.translate.instant('chatEvents.toasts.eventUnsubscribedTitle'),
+            message
+          );
           // The cache is cleared in the service, so we refetch to get the updated state
           this.eventsubService.getEvents().subscribe(events => {
             this.chatEvents = events;
@@ -461,17 +473,17 @@ export class ChatEventsComponent implements OnInit {
 
   getAddTierTooltip(event: ChatEvent, currentTiers: any): string {
     if (this.canAddTier(event, currentTiers)) {
-      return 'Add a new message tier';
+      return this.translate.instant('chatEvents.tooltips.addTierDefault');
     }
 
     const limit = this.getTierLimit(event);
     if (this.userPremiumStatus === 'none') {
-      return 'Requires Premium to add message tiers.';
+      return this.translate.instant('chatEvents.tooltips.addTierRequiresPremium');
     }
     if (this.userPremiumStatus === 'premium') {
-      return `You have reached the max of ${limit} tiers. Upgrade to Premium Plus for more.`;
+      return this.translate.instant('chatEvents.tooltips.addTierUpgradePrompt', { limit });
     }
-    return `You have reached the maximum of ${limit} tiers.`;
+    return this.translate.instant('chatEvents.tooltips.addTierMaxReached', { limit });
   }
 
   getTierLimitInfoMessage(event: ChatEvent, currentTiers: any): { message: string; level: 'upsell-plus' | 'upsell-premium' | 'limit-reached' } | null {
@@ -483,40 +495,46 @@ export class ChatEventsComponent implements OnInit {
 
     if (this.userPremiumStatus === 'none') {
       return {
-        message: 'Tiered messages are a Premium feature.',
+        message: this.translate.instant('chatEvents.tierInfo.premiumFeature'),
         level: 'upsell-premium'
       };
     }
 
     if (this.userPremiumStatus === 'premium') {
       return {
-        message: `You've reached your ${limit}-tier limit. Upgrade to Premium Plus for more!`,
+        message: this.translate.instant('chatEvents.tierInfo.upgradePrompt', { limit }),
         level: 'upsell-plus'
       };
     }
 
     // This must be premium_plus
     return {
-      message: `You have reached the maximum of ${limit} tiers.`,
+      message: this.translate.instant('chatEvents.tierInfo.maxReached', { limit }),
       level: 'limit-reached'
     };
   }
 
   addTier(tiers: any, event: ChatEvent): void {
     if (!this.canAddTier(event, tiers)) {
-      this.toastService.info('Limit Reached', this.getAddTierTooltip(event, tiers));
+      this.toastService.info(
+        this.translate.instant('chatEvents.toasts.limitReachedTitle'),
+        this.getAddTierTooltip(event, tiers)
+      );
       return;
     }
     if (!Array.isArray(tiers)) return;
     tiers.push({
       id: `new-tier-${Date.now()}`,
-      name: 'New Tier',
+      name: this.translate.instant('chatEvents.newTier'),
       message: '',
       minAmount: 0,
       maxAmount: 0,
     });
     this.setTierInfoMessage(event, tiers);
-    this.toastService.success('Tier Added', 'A new tier has been added to your message.');
+    this.toastService.success(
+      this.translate.instant('chatEvents.toasts.tierAddedTitle'),
+      this.translate.instant('chatEvents.toasts.tierAddedMsg')
+    );
   }
 
   removeTier(tiers: any, tierId: string, event: ChatEvent): void {
@@ -526,7 +544,10 @@ export class ChatEventsComponent implements OnInit {
       tiers.splice(index, 1);
     }
     this.setTierInfoMessage(event, tiers);
-    this.toastService.success('Tier Removed', 'A tier has been removed from your message.');
+    this.toastService.success(
+      this.translate.instant('chatEvents.toasts.tierRemovedTitle'),
+      this.translate.instant('chatEvents.toasts.tierRemovedMsg')
+    );
   }
 
   getControlValue(config: ConfigControl[] | undefined, controlId: string): any {

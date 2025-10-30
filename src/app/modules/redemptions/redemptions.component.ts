@@ -221,7 +221,7 @@ export class RedemptionsComponent implements OnInit {
       case 'originalCost':
       case 'costChange':
       case 'returnToOriginalCost':
-        return this.isPremiumUser() ? '' : this.translate.instant('redemptions.premiumRequired');
+        return this.isPremiumUser() ? '' : this.translate.instant('common.premiumSubscriptionRequired');
       default:
         return '';
     }
@@ -403,7 +403,7 @@ export class RedemptionsComponent implements OnInit {
     
     // Check if user can edit premium fields
     if (!this.canEditPremiumField(field)) {
-      this.toastService.warn(this.translate.instant('redemptions.premiumFeature'), this.getPremiumFieldTooltip(field));
+      this.toastService.warn(this.translate.instant('common.premiumFeature'), this.getPremiumFieldTooltip(field));
       return;
     }
     
@@ -428,7 +428,7 @@ export class RedemptionsComponent implements OnInit {
     
     // Check if user can edit premium fields
     if (!this.canEditPremiumField(field)) {
-      this.toastService.warn(this.translate.instant('redemptions.premiumFeature'), this.getPremiumFieldTooltip(field));
+      this.toastService.warn(this.translate.instant('common.premiumFeature'), this.getPremiumFieldTooltip(field));
       return;
     }
     

@@ -1,8 +1,8 @@
 <div class="container mx-auto px-4 py-8">
   <div class="text-center mb-12">
-    <h1 class="text-4xl font-bold mb-4 text-purple-900 tracking-tight">
-      Clip Designs
-    </h1>
+      <h1 class="text-4xl font-bold mb-4 text-purple-900 tracking-tight">
+        {{ 'clips.heading' | translate }}
+      </h1>
     <div class="w-24 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 mx-auto rounded-full"></div>
   </div>
 
@@ -66,18 +66,18 @@
   <!-- Preview Section -->
   @if (selectedDesign) {
     <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-purple-100">
-      <h2 class="text-2xl font-bold text-purple-900 mb-4">{{ getDesignName(selectedDesign) }} Preview</h2>
+      <h2 class="text-2xl font-bold text-purple-900 mb-4">{{ getDesignName(selectedDesign) }} {{ 'clips.preview' | translate }}</h2>
       <div class="flex justify-center mb-4">
         <iframe [src]="getSelectedDesignUrl() | safe" width="802" height="227" class="rounded-lg shadow-md border border-purple-200" allow="autoplay"></iframe>
       </div>
       <div class="flex items-center justify-center space-x-4">
         <div class="flex items-center space-x-2">
-          <label for="timeout" class="font-semibold text-purple-800">Timeout (1-30s):</label>
+          <label for="timeout" class="font-semibold text-purple-800">{{ 'clips.timeoutLabel' | translate }}</label>
           <input type="range" id="timeout" min="1" max="30" [(ngModel)]="timeoutSeconds" (ngModelChange)="onTimeoutChange()" class="w-48">
           <span class="font-mono text-purple-900">{{ timeoutSeconds }}s</span>
         </div>
-        <button appBlockInactiveUser actionType="click" (click)="copyUrl()" class="px-4 py-2 text-sm font-semibold text-white bg-purple-600 hover:bg-purple-700 rounded-full transition-colors">Copy URL</button>
-        <button (click)="testDesign()" class="px-4 py-2 text-sm font-semibold text-white bg-green-500 hover:bg-green-600 rounded-full transition-colors">Test Design</button>
+        <button appBlockInactiveUser actionType="click" (click)="copyUrl()" class="px-4 py-2 text-sm font-semibold text-white bg-purple-600 hover:bg-purple-700 rounded-full transition-colors">{{ 'clips.copyUrl' | translate }}</button>
+        <button (click)="testDesign()" class="px-4 py-2 text-sm font-semibold text-white bg-green-500 hover:bg-green-600 rounded-full transition-colors">{{ 'clips.testDesign' | translate }}</button>
       </div>
     </div>
   }
