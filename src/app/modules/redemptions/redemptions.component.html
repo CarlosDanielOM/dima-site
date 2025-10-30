@@ -743,7 +743,7 @@
             @if (twitchRefreshCooldown > 0) {
               Cooldown ({{ twitchRefreshCooldown }}s)
             } @else {
-              Refresh
+              {{ 'common.refresh' | translate }}
             }
           </button>
           @if (twitchRefreshCooldown > 0) {

@@ -645,3 +645,37 @@ section {
   }
 }
 
+/* Sticky navbar with glassmorphic effect */
+.sticky-navbar {
+  transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
+  backdrop-filter: blur(0px);
+  background-color: transparent;
+}
+
+.sticky-navbar.scrolled {
+  backdrop-filter: blur(10px);
+  background-color: rgba(233, 213, 255, 0.7); /* purple-200 with transparency */
+  border-bottom: 1px solid rgba(196, 181, 253, 0.3); /* purple-300 border */
+}
+
+/* Mobile menu dropdown styles */
+.mobile-menu-dropdown {
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile navigation link styles */
+.nav-pill-mobile {
+  transition: background-color 0.2s ease;
+}
+

@@ -2,12 +2,36 @@
     <div class="parallax-layer" data-depth="0.03"><div class="aurora-blob blob-1"></div></div>
     <div class="parallax-layer" data-depth="0.06"><div class="aurora-blob blob-2"></div></div>
     <div class="parallax-layer" data-depth="0.09"><div class="aurora-blob blob-3"></div></div>
-    <header class="px-4 lg:px-6 h-14 flex items-center">
-      <a class="flex items-center justify-center" href="#">
-        <svg class="w-6 h-6 mr-2" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitch</title><path fill="#9146FF" d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
-        <span class="ml-2 text-2xl font-bold text-purple-900">DomDimaBot</span>
-      </a>
-      <nav class="ml-auto flex gap-4 sm:gap-6 items-center">
+    <header class="sticky-navbar fixed top-0 left-0 right-0 z-50 px-4 lg:px-6 h-14 flex items-center justify-between">
+      <div class="flex items-center">
+        <div class="sm:hidden relative" (focusout)="onMenuFocusOut($event)" tabindex="-1">
+          <button (click)="toggleMobileMenu()" class="mr-2" aria-label="Toggle menu" [attr.aria-expanded]="isMobileMenuOpen">
+            <lucide-icon [name]="menuIcon" class="w-6 h-6 text-purple-900"></lucide-icon>
+          </button>
+          <!-- Mobile menu dropdown -->
+          @if (isMobileMenuOpen) {
+            <div class="mobile-menu-dropdown absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50" role="menu" tabindex="0">
+              <div class="py-1" tabindex="0">
+                <a (click)="closeMobileMenu()" class="nav-pill-mobile px-4 py-2 text-sm text-purple-900 hover:bg-purple-50 block" href="#features" role="menuitem">
+                  {{ 'landing.nav.features' | translate }}
+                </a>
+                <a (click)="closeMobileMenu()" class="nav-pill-mobile px-4 py-2 text-sm text-purple-900 hover:bg-purple-50 block" href="#pricing" role="menuitem">
+                  {{ 'landing.nav.pricing' | translate }}
+                </a>
+                <a (click)="closeMobileMenu()" class="nav-pill-mobile px-4 py-2 text-sm text-purple-900 hover:bg-purple-50 block" href="#contact" role="menuitem">
+                  {{ 'landing.nav.contact' | translate }}
+                </a>
+              </div>
+            </div>
+          }
+        </div>
+        <a class="flex items-center justify-center" href="#">
+          <svg class="w-6 h-6 mr-2" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitch</title><path fill="#9146FF" d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
+          <span class="ml-2 text-2xl font-bold text-purple-900">DomDimaBot</span>
+        </a>
+      </div>
+      <!-- Desktop navigation -->
+      <nav class="hidden sm:flex gap-4 sm:gap-6 items-center">
         <a class="nav-pill text-sm font-medium text-purple-900" href="#features">
           {{ 'landing.nav.features' | translate }}
         </a>
@@ -22,7 +46,14 @@
           <span>{{ getCurrentLanguageInfo().nativeName || 'English' }}</span>
         </button>
       </nav>
+      <!-- Mobile language switcher (always visible) -->
+      <button (click)="toggleLanguage()" class="sm:hidden nav-pill text-sm font-medium text-purple-900 flex items-center gap-1" title="Switch Language">
+        <lucide-icon [name]="languageIcon" class="w-4 h-4"></lucide-icon>
+        <span class="text-sm">{{ getCurrentLanguageInfo().nativeName || 'English' }}</span>
+      </button>
     </header>
+    <!-- Spacer to offset fixed header -->
+    <div class="h-14"></div>
     <main class="flex-1">
       <section class="w-full py-12 md:py-24 lg:py-32 xl:py-48 reveal-init">
         <div class="container mx-auto px-4 md:px-6">
