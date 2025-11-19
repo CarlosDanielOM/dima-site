@@ -1,0 +1,9 @@
+.color-bar {
+  height: 8px;
+  width: 100%;
+}
+
+.color-picker-popup {
+  min-width: 200px;
+}
+

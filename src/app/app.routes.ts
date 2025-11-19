@@ -112,11 +112,11 @@ export const routes: Routes = [
                 },
             {
                 path: 'triggers',
-                component: WipComponent,
+                component: TriggersComponent,
                 title: 'Triggers',
                 canActivate: [PermissionGuard],
                 data: {
-                    permission: { requiredLevel: 'none', redirectTo: 'dashboard' },
+                    permission: { requiredLevel: 'premium', redirectTo: 'dashboard' },
                     wip: {
                         progress: 50,
                         accent: 'amber',

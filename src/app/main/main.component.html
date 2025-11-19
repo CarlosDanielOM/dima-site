@@ -5,14 +5,14 @@
     </div>
     
     <!-- Main content area with side-navbar -->
-    <div class="flex flex-1 mt-20">
+    <div class="flex flex-1 mt-20 min-w-0">
         <!-- Side navbar -->
-        <div class="md:w-[240px]">
+        <div class="md:w-[240px] flex-shrink-0">
             <app-side-navbar></app-side-navbar>
         </div>
         
         <!-- Scrollable main content -->
-        <div class="flex flex-1 p-4 overflow-y-auto">
+        <div class="flex-1 min-w-0 overflow-y-auto">
             <router-outlet></router-outlet>
         </div>
     </div>

@@ -1,0 +1,207 @@
+<div *ngIf="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <!-- Backdrop with blur -->
+  <div class="fixed inset-0 bg-black/5 backdrop-blur-sm transition-opacity" aria-hidden="true" (click)="closeModal()"></div>
+
+  <!-- Modal Panel -->
+  <div class="relative bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col transform transition-all">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-medium text-gray-900" id="modal-title">
+        {{ 'triggers.createTrigger' | translate }}
+      </h3>
+      <button 
+        type="button" 
+        class="text-gray-400 hover:text-gray-500 focus:outline-none transition-colors"
+        (click)="closeModal()">
+        <span class="sr-only">{{ 'common.close' | translate }}</span>
+        <lucide-icon [name]="xIcon" class="w-5 h-5"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="flex-1 overflow-y-auto p-6">
+      <form (ngSubmit)="onSubmit()">
+        
+        <!-- Title & Cost Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
+              {{ 'common.title' | translate }} <span class="text-red-500">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="title" 
+              name="title"
+              [(ngModel)]="newTrigger.title"
+              [placeholder]="'common.placeholderEnterRewardTitle' | translate"
+              class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              [class.border-red-500]="validationErrors['title']"
+              [class.border-gray-300]="!validationErrors['title']"
+              required>
+            <p *ngIf="validationErrors['title']" class="mt-1 text-sm text-red-500">{{ validationErrors['title'] }}</p>
+          </div>
+          
+          <div>
+            <label for="cost" class="block text-sm font-medium text-gray-700 mb-1">
+              {{ 'common.cost' | translate }} <span class="text-red-500">*</span>
+            </label>
+            <input 
+              type="number" 
+              id="cost" 
+              name="cost"
+              [(ngModel)]="newTrigger.cost"
+              [placeholder]="'common.placeholderEnterCostInPoints' | translate"
+              min="0"
+              class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              [class.border-red-500]="validationErrors['cost']"
+              [class.border-gray-300]="!validationErrors['cost']"
+              required>
+            <p *ngIf="validationErrors['cost']" class="mt-1 text-sm text-red-500">{{ validationErrors['cost'] }}</p>
+          </div>
+        </div>
+
+        <!-- Media Selection -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            {{ 'triggers.selectMedia' | translate }} <span class="text-red-500">*</span>
+          </label>
+          
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-40 overflow-y-auto border rounded-md p-2 bg-gray-50"
+               [class.border-red-500]="validationErrors['mediaName']"
+               [class.border-gray-300]="!validationErrors['mediaName']">
+            
+            <div *ngIf="mediaFiles.length === 0" class="col-span-full text-center py-4 text-gray-500 text-sm">
+              {{ 'triggers.noMediaFound' | translate }}
+            </div>
+
+            <div *ngFor="let file of mediaFiles" 
+                 (click)="selectMedia(file.name)"
+                 class="cursor-pointer border rounded p-2 flex flex-col items-center justify-center text-center transition-all"
+                 [class.bg-blue-100]="newTrigger.mediaName === file.name"
+                 [class.border-blue-500]="newTrigger.mediaName === file.name"
+                 [class.border-gray-200]="newTrigger.mediaName !== file.name"
+                 [class.hover:bg-gray-100]="newTrigger.mediaName !== file.name">
+              <!-- Use icon for now or file preview if available -->
+              <!-- Assuming file.previewUrl might be empty for now, use generic icon -->
+              <div class="w-8 h-8 mb-1 bg-gray-200 rounded flex items-center justify-center">
+                 <img *ngIf="file.type === 'video' || file.type === 'image'" [src]="file.previewUrl || ''" class="w-full h-full object-cover rounded" onerror="this.style.display='none'"> 
+                 <lucide-icon [name]="imageIcon" class="w-4 h-4 text-gray-500" [class.hidden]="file.previewUrl"></lucide-icon>
+              </div>
+              <span class="text-xs truncate w-full" [title]="file.name">{{ file.name }}</span>
+            </div>
+          </div>
+           <p *ngIf="validationErrors['mediaName']" class="mt-1 text-sm text-red-500">{{ 'triggers.selectMedia' | translate }} required</p>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-4">
+          <label for="prompt" class="block text-sm font-medium text-gray-700 mb-1">
+            {{ 'common.prompt' | translate }}
+          </label>
+          <textarea 
+            id="prompt" 
+            name="prompt"
+            [(ngModel)]="newTrigger.prompt"
+            [placeholder]="'common.placeholderEnterRewardDescription' | translate"
+            rows="2"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+        </div>
+
+        <!-- Background Color -->
+        <div class="mb-4 relative">
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            {{ 'common.backgroundColor' | translate }}
+          </label>
+          <div class="flex items-center gap-2">
+            <input 
+              type="text" 
+              name="background_color"
+              [(ngModel)]="newTrigger.background_color"
+              class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="#6366f1">
+            <div 
+              class="w-10 h-10 rounded border border-gray-300 cursor-pointer"
+              [style.background-color]="newTrigger.background_color"
+              (click)="toggleColorPicker()">
+            </div>
+          </div>
+          
+          <!-- Color Picker Popup -->
+          <div *ngIf="showColorPicker" class="absolute top-full right-0 mt-1 z-10 bg-white border border-gray-200 rounded-lg shadow-lg p-3 w-64">
+            <div class="grid grid-cols-6 gap-2">
+              <div *ngFor="let color of presetColors"
+                class="w-6 h-6 rounded cursor-pointer border border-gray-200 hover:scale-110 transition-transform"
+                [style.background-color]="color"
+                (click)="onColorSelect(color)">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Cooldown, Message & Volume -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+           <div>
+            <label for="cooldown" class="block text-sm font-medium text-gray-700 mb-1">
+              {{ 'common.cooldown' | translate }}
+            </label>
+            <input 
+              type="number" 
+              id="cooldown" 
+              name="cooldown"
+              [(ngModel)]="newTrigger.cooldown"
+              [placeholder]="'common.placeholderEnterCooldownInSeconds' | translate"
+              min="0"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+           <div>
+            <label for="message" class="block text-sm font-medium text-gray-700 mb-1">
+              {{ 'common.message' | translate }}
+            </label>
+             <input 
+              type="text" 
+              id="message" 
+              name="message"
+              [(ngModel)]="newTrigger.message"
+              [placeholder]="'common.placeholderEnterCustomMessage' | translate"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+             <label for="volume" class="block text-sm font-medium text-gray-700 mb-1">
+                Volume ({{ newTrigger.volume }}%)
+             </label>
+             <input 
+               type="range" 
+               id="volume" 
+               name="volume"
+               min="0"
+               max="100"
+               [(ngModel)]="newTrigger.volume"
+               class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-3 bg-gray-50 rounded-b-lg">
+      <button 
+        type="button" 
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        (click)="closeModal()">
+        {{ 'common.cancel' | translate }}
+      </button>
+      <button 
+        type="button" 
+        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center"
+        [disabled]="isSubmitting"
+        (click)="onSubmit()">
+        <svg *ngIf="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        {{ 'common.create' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
