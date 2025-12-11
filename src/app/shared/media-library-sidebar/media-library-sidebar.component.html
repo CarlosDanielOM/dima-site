@@ -1,0 +1,86 @@
+<div 
+  class="h-full bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex-shrink-0 flex flex-col transition-all duration-300 z-30"
+  [class.absolute]="isMobile"
+  [class.top-0]="isMobile"
+  [class.right-0]="isMobile"
+  [class.w-full]="isMobile"
+  [class.max-w-full]="isMobile"
+  [class.w-[320px]]="!isMobile"
+  [class.shadow-xl]="isMobile"
+  [class.translate-x-0]="isOpen && isMobile"
+  [class.translate-x-full]="!isOpen && isMobile"
+  [class.static]="!isMobile">
+  
+  <div class="h-full flex flex-col">
+    <!-- Sidebar Header -->
+    <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50 dark:bg-gray-900">
+      <h2 class="font-semibold text-gray-900 dark:text-gray-100">{{ 'triggers.mediaLibrary' | translate }}</h2>
+      <div class="flex items-center gap-1">
+          <button 
+              class="lg:hidden p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+              (click)="onToggle()">
+              <lucide-icon [name]="xIcon" class="w-5 h-5"></lucide-icon>
+          </button>
+           <!-- Desktop Collapse Button -->
+           <button 
+              class="hidden lg:block p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+              (click)="onToggle()"
+              [title]="'common.close' | translate">
+              <lucide-icon [name]="chevronRightIcon" class="w-5 h-5"></lucide-icon>
+           </button>
+      </div>
+    </div>
+
+    <!-- Upload Button -->
+    <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+      <button 
+          class="w-full flex items-center justify-center px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+          (click)="onUpload()"
+          [title]="'triggers.uploadMediaTooltip' | translate">
+          <lucide-icon [name]="uploadIcon" class="w-4 h-4 mr-2"></lucide-icon>
+          {{ 'triggers.uploadMedia' | translate }}
+      </button>
+    </div>
+
+    <!-- Media List - Grid of 2 -->
+    <div class="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-900">
+       <div *ngIf="isLoading" class="text-center py-4 text-gray-500 dark:text-gray-400">
+          {{ 'common.loading' | translate }}
+       </div>
+       
+       <div *ngIf="!isLoading && mediaFiles.length === 0" class="text-center py-4 text-gray-500 dark:text-gray-400 text-sm">
+          {{ 'triggers.noMediaFound' | translate }}
+       </div>
+
+       <div *ngIf="!isLoading && mediaFiles.length > 0" class="grid grid-cols-2 gap-3">
+          <div *ngFor="let file of mediaFiles" class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-sm overflow-hidden group">
+              <!-- Preview -->
+              <div class="aspect-video bg-black relative flex items-center justify-center">
+                  <img *ngIf="file.type === 'image'" [src]="file.previewUrl || ''" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                  <video *ngIf="file.type === 'video'" [src]="file.previewUrl || ''" class="w-full h-full object-cover"></video>
+                  
+                  <!-- Delete Overlay -->
+                  <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button 
+                         class="p-2 bg-red-500 text-white rounded-full hover:bg-red-600"
+                         (click)="onDelete(file)"
+                         [title]="'common.delete' | translate">
+                         <lucide-icon [name]="trashIcon" class="w-4 h-4"></lucide-icon>
+                      </button>
+                  </div>
+              </div>
+              <div class="p-2">
+                  <div class="font-medium text-sm truncate text-gray-900 dark:text-gray-100" [title]="file.name">{{ file.name }}</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400">{{ file.size / (1024*1024) | number:'1.1-1' }} MB</div>
+              </div>
+          </div>
+       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay for mobile sidebar -->
+<div *ngIf="isOpen && isMobile" 
+     class="fixed inset-0 bg-black/20 z-20 lg:hidden backdrop-blur-sm"
+     (click)="onToggle()">
+</div>

@@ -47,9 +47,9 @@ export class ModuleService {
           en: 'Create, edit, and manage triggers for your content. Triggers are short videos that can be triggered by twitch rewards.',
           es: 'Crea, edita y gestiona triggers para tu contenido. Los triggers son videos cortos que pueden ser activados por recompensas de Twitch.',
         },
-        releaseStage: 'coming_soon',
-        premium: true,
-        premium_plus: true,
+        releaseStage: 'alpha',
+        premium: false,
+        premium_plus: false,
       },
       {
         name: 'Redemptions',

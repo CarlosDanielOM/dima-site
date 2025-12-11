@@ -12,6 +12,7 @@ import { LucideAngularModule, Plus, Trash2, X, Menu, ChevronRight, ChevronLeft, 
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CreateTriggerModalComponent } from '../../shared/create-trigger-modal/create-trigger-modal.component';
 import { UploadMediaModalComponent } from '../../shared/upload-media-modal/upload-media-modal.component';
+import { MediaLibrarySidebarComponent } from '../../shared/media-library-sidebar/media-library-sidebar.component';
 
 @Component({
   selector: 'app-triggers',
@@ -22,7 +23,8 @@ import { UploadMediaModalComponent } from '../../shared/upload-media-modal/uploa
     LucideAngularModule, 
     TranslateModule,
     CreateTriggerModalComponent,
-    UploadMediaModalComponent
+    UploadMediaModalComponent,
+    MediaLibrarySidebarComponent
   ],
   templateUrl: './triggers.component.html',
   styleUrl: './triggers.component.css'
