@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TriggersService } from '../../services/triggers.service';
@@ -8,7 +8,7 @@ import { ToastService } from '../../toast.service';
 import { ConfirmationService } from '../../services/confirmation.service';
 import { UserService } from '../../user.service';
 import { LanguageService } from '../../services/language.service';
-import { LucideAngularModule, Plus, Trash2, X, Menu, ChevronRight, ChevronLeft, Upload, RefreshCw } from 'lucide-angular';
+import { LucideAngularModule, Plus, Trash2, X, Menu, ChevronRight, ChevronLeft, Upload, RefreshCw, Copy, Check } from 'lucide-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CreateTriggerModalComponent } from '../../shared/create-trigger-modal/create-trigger-modal.component';
 import { UploadMediaModalComponent } from '../../shared/upload-media-modal/upload-media-modal.component';
@@ -39,6 +39,8 @@ export class TriggersComponent implements OnInit {
   chevronLeftIcon = ChevronLeft;
   uploadIcon = Upload;
   refreshIcon = RefreshCw;
+  copyIcon = Copy;
+  checkIcon = Check;
 
   triggers: Trigger[] = [];
   mediaFiles: MediaFile[] = [];
@@ -51,6 +53,7 @@ export class TriggersComponent implements OnInit {
   // UI State
   isSidebarOpen = true; // Default open on desktop
   isMobile = false;
+  isObsLinkCopied = signal(false);
   
   // Modals
   showCreateTriggerModal = false;
@@ -115,6 +118,46 @@ export class TriggersComponent implements OnInit {
 
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
+  copyObsLink() {
+    const userId = this.userService.getUserId();
+    const url = `https://api.domdimabot.com/overlays/triggers/${userId}`;
+    
+    // Use navigator.clipboard API
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => {
+          this.isObsLinkCopied.set(true);
+          setTimeout(() => this.isObsLinkCopied.set(false), 2000);
+        }).catch(err => {
+          console.error('Failed to copy text: ', err);
+          this.fallbackCopy(url);
+        });
+    } else {
+        this.fallbackCopy(url);
+    }
+  }
+
+  fallbackCopy(text: string) {
+    // Fallback for older browsers or non-secure contexts
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      const successful = document.execCommand('copy');
+      if(successful) {
+          this.isObsLinkCopied.set(true);
+          setTimeout(() => this.isObsLinkCopied.set(false), 2000);
+      } else {
+         this.toastService.error('Error', 'Failed to copy OBS Link');
+      }
+    } catch (err) {
+      console.error('Fallback: Oops, unable to copy', err);
+      this.toastService.error('Error', 'Failed to copy OBS Link');
+    }
+    document.body.removeChild(textArea);
   }
 
   // Data Loading
