@@ -16,17 +16,10 @@
       <h2 class="font-semibold text-gray-900 dark:text-gray-100">{{ 'triggers.mediaLibrary' | translate }}</h2>
       <div class="flex items-center gap-1">
           <button 
-              class="lg:hidden p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+              class="md:hidden p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
               (click)="onToggle()">
               <lucide-icon [name]="xIcon" class="w-5 h-5"></lucide-icon>
           </button>
-           <!-- Desktop Collapse Button -->
-           <button 
-              class="hidden lg:block p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
-              (click)="onToggle()"
-              [title]="'common.close' | translate">
-              <lucide-icon [name]="chevronRightIcon" class="w-5 h-5"></lucide-icon>
-           </button>
       </div>
     </div>
 
@@ -80,6 +73,6 @@
 
 <!-- Overlay for mobile sidebar -->
 <div *ngIf="isOpen && isMobile" 
-     class="fixed inset-0 bg-black/20 z-20 lg:hidden backdrop-blur-sm"
+     class="fixed inset-0 bg-black/20 z-20 md:hidden backdrop-blur-sm"
      (click)="onToggle()">
 </div>
