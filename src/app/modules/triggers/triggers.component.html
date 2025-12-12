@@ -1,7 +1,7 @@
-<div class="flex flex-1 min-w-0 h-full overflow-hidden relative bg-gray-50 dark:bg-gray-900">
+<div class="flex flex-col md:flex-row flex-1 min-w-0 h-full overflow-hidden relative bg-gray-50 dark:bg-gray-900">
   
   <!-- Main Content Area (Left/Center) -->
-  <div class="flex-1 overflow-y-auto transition-all duration-300 min-w-0">
+  <div class="flex-1 w-full md:w-[70%] overflow-y-auto transition-all duration-300 min-w-0">
     
     <div class="p-4 lg:p-6">
       <div class="mb-6 flex items-center justify-between">
@@ -10,6 +10,14 @@
       </h1>
       
       <div class="flex gap-2">
+        <button type="button"
+          class="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 bg-purple-600 hover:bg-purple-700 text-white flex items-center"
+          (click)="copyObsLink()"
+          [title]="'Copy OBS Overlay Link'">
+          <lucide-icon [name]="isCopied ? checkIcon : copyIcon" class="w-4 h-4 mr-2"></lucide-icon>
+          {{ isCopied ? 'Copied!' : 'Copy OBS Link' }}
+        </button>
+
         <button type="button"
           class="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 bg-green-500 hover:bg-green-600 text-white flex items-center"
           (click)="showCreateTriggerModal = true"
@@ -33,7 +41,7 @@
 
         <!-- Mobile Toggle Sidebar Button -->
         <button type="button"
-          class="lg:hidden px-3 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md"
+          class="md:hidden px-3 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md"
           (click)="toggleSidebar()">
           <lucide-icon [name]="menuIcon" class="w-5 h-5"></lucide-icon>
         </button>
@@ -187,7 +195,7 @@
 
   <!-- Right Sidebar (Media) -->
   <app-media-library-sidebar
-    *ngIf="isSidebarOpen || isMobile"
+    class="md:w-[30%] md:block md:sticky md:top-0 md:h-full"
     [isOpen]="isSidebarOpen"
     [isMobile]="isMobile"
     [mediaFiles]="mediaFiles"
@@ -197,12 +205,8 @@
     (delete)="deleteMedia($event)">
   </app-media-library-sidebar>
 
-  <!-- Sidebar Toggle Button (Floating) - Visible only when sidebar closed on Desktop -->
-  <button *ngIf="!isSidebarOpen && !isMobile"
-        class="absolute top-4 right-4 z-10 p-2 bg-white dark:bg-gray-800 border dark:border-gray-700 shadow-md rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300"
-        (click)="toggleSidebar()">
-        <lucide-icon [name]="chevronLeftIcon" class="w-5 h-5"></lucide-icon>
-  </button>
+  <!-- Sidebar Toggle Button (Floating) - Removed for desktop permanent sidebar -->
+  <!-- <button *ngIf="!isSidebarOpen && !isMobile" ... > -->
 
 </div>
 

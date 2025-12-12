@@ -8,7 +8,7 @@ import { ToastService } from '../../toast.service';
 import { ConfirmationService } from '../../services/confirmation.service';
 import { UserService } from '../../user.service';
 import { LanguageService } from '../../services/language.service';
-import { LucideAngularModule, Plus, Trash2, X, Menu, ChevronRight, ChevronLeft, Upload, RefreshCw } from 'lucide-angular';
+import { LucideAngularModule, Plus, Trash2, X, Menu, ChevronRight, ChevronLeft, Upload, RefreshCw, Copy, Check } from 'lucide-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CreateTriggerModalComponent } from '../../shared/create-trigger-modal/create-trigger-modal.component';
 import { UploadMediaModalComponent } from '../../shared/upload-media-modal/upload-media-modal.component';
@@ -39,6 +39,8 @@ export class TriggersComponent implements OnInit {
   chevronLeftIcon = ChevronLeft;
   uploadIcon = Upload;
   refreshIcon = RefreshCw;
+  copyIcon = Copy;
+  checkIcon = Check;
 
   triggers: Trigger[] = [];
   mediaFiles: MediaFile[] = [];
@@ -51,6 +53,10 @@ export class TriggersComponent implements OnInit {
   // UI State
   isSidebarOpen = true; // Default open on desktop
   isMobile = false;
+
+  // OBS Link
+  userId: number | null = null;
+  isCopied = false;
   
   // Modals
   showCreateTriggerModal = false;
@@ -76,6 +82,7 @@ export class TriggersComponent implements OnInit {
 
   ngOnInit() {
     this.checkScreenSize();
+    this.userId = this.userService.getUserId();
     this.loadTriggers();
     this.loadMedia();
     this.startCooldownTimer();
@@ -104,8 +111,26 @@ export class TriggersComponent implements OnInit {
     }
   }
 
+  copyObsLink() {
+    if (!this.userId) return;
+    
+    const url = `https://api.domdimabot.com/overlays/triggers/${this.userId}`;
+    
+    // Use navigator.clipboard
+    navigator.clipboard.writeText(url).then(() => {
+        this.isCopied = true;
+        this.toastService.success('Success', 'Link copied to clipboard');
+        setTimeout(() => {
+            this.isCopied = false;
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy text: ', err);
+        this.toastService.error('Error', 'Failed to copy link');
+    });
+  }
+
   checkScreenSize() {
-    this.isMobile = window.innerWidth < 1024; // lg breakpoint
+    this.isMobile = window.innerWidth < 768; // md breakpoint
     if (this.isMobile) {
       this.isSidebarOpen = false;
     } else {
