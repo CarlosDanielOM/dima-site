@@ -8,11 +8,13 @@ import { ToastService } from '../../toast.service';
 import { ConfirmationService } from '../../services/confirmation.service';
 import { UserService } from '../../user.service';
 import { LanguageService } from '../../services/language.service';
-import { LucideAngularModule, Plus, Trash2, X, Menu, ChevronRight, ChevronLeft, Upload, RefreshCw, Copy, Check } from 'lucide-angular';
+import { LucideAngularModule, Plus, Trash2, X, Menu, ChevronRight, ChevronLeft, Upload, RefreshCw, Copy, Check, Zap } from 'lucide-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CreateTriggerModalComponent } from '../../shared/create-trigger-modal/create-trigger-modal.component';
 import { UploadMediaModalComponent } from '../../shared/upload-media-modal/upload-media-modal.component';
 import { MediaLibrarySidebarComponent } from '../../shared/media-library-sidebar/media-library-sidebar.component';
+import { SafePipe } from '../../safe.pipe';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-triggers',
@@ -24,7 +26,8 @@ import { MediaLibrarySidebarComponent } from '../../shared/media-library-sidebar
     TranslateModule,
     CreateTriggerModalComponent,
     UploadMediaModalComponent,
-    MediaLibrarySidebarComponent
+    MediaLibrarySidebarComponent,
+    SafePipe
   ],
   templateUrl: './triggers.component.html',
   styleUrl: './triggers.component.css'
@@ -41,6 +44,7 @@ export class TriggersComponent implements OnInit {
   refreshIcon = RefreshCw;
   copyIcon = Copy;
   checkIcon = Check;
+  zapIcon = Zap;
 
   triggers: Trigger[] = [];
   mediaFiles: MediaFile[] = [];
@@ -58,6 +62,13 @@ export class TriggersComponent implements OnInit {
   // Modals
   showCreateTriggerModal = false;
   showUploadMediaModal = false;
+
+  // Test Modal
+  showTestModal = false;
+  testingTrigger: Trigger | null = null;
+  testTimeoutId: any;
+  obsOverlayUrl: string = '';
+  isTestFinished = false;
   
   // Editing State
   editingField: { [key: string]: string } = {}; 
@@ -122,7 +133,7 @@ export class TriggersComponent implements OnInit {
 
   copyObsLink() {
     const userId = this.userService.getUserId();
-    const url = `https://api.domdimabot.com/overlays/triggers/${userId}`;
+    const url = `${environment.DIMA_API}/overlays/triggers/${userId}`;
     
     // Use navigator.clipboard API
     if (navigator.clipboard) {
@@ -418,5 +429,104 @@ export class TriggersComponent implements OnInit {
   
   getDisabledFilter(isEnabled: boolean): string {
     return isEnabled ? 'none' : 'saturate(90%) brightness(0.9)';
+  }
+
+  onTestTrigger(trigger: Trigger) {
+    const mediaFile = this.mediaFiles.find(f => f.name === trigger.mediaName);
+    
+    // If we can't find media file by name, try looking it up by fileID if available
+    // But triggers only seem to store mediaName (file) in API response map
+    
+    if (!mediaFile) {
+        this.toastService.error(
+            this.translate.instant('triggers.errorTitle'),
+            this.translate.instant('triggers.noMediaFound')
+        );
+        return;
+    }
+
+    const userId = this.userService.getUserId();
+    this.obsOverlayUrl = `${environment.DIMA_API}/overlays/triggers/${userId}`;
+    this.testingTrigger = trigger;
+    this.showTestModal = true;
+    this.isTestFinished = false;
+    
+    // Detect duration
+    let duration = 5; // Default 5s fallback
+    
+    // Try to detect if it's video or audio to get duration
+    if (mediaFile.mimeType && (mediaFile.mimeType.startsWith('video') || mediaFile.mimeType.startsWith('audio'))) {
+         const tempMedia = document.createElement(mediaFile.mimeType.startsWith('video') ? 'video' : 'audio');
+         tempMedia.preload = 'metadata';
+         tempMedia.onloadedmetadata = () => {
+             duration = tempMedia.duration;
+             if (!isFinite(duration)) duration = 5;
+             this.startTest(trigger, mediaFile, duration);
+         };
+         tempMedia.onerror = () => {
+             this.startTest(trigger, mediaFile, 5);
+         };
+         tempMedia.src = mediaFile.url;
+    } else {
+         // Image or other
+         this.startTest(trigger, mediaFile, 5); 
+    }
+  }
+
+  startTest(trigger: Trigger, mediaFile: MediaFile, duration: number) {
+      const userId = this.userService.getUserId();
+      // Ensure mediaType is mimeType
+      const payload = {
+          url: mediaFile.url,
+          mediaType: mediaFile.mimeType, 
+          volume: trigger.volume
+      };
+      
+      this.toastService.info(
+        this.translate.instant('triggers.testStartedTitle'),
+        this.translate.instant('triggers.testStartedMsg')
+      );
+
+      this.triggersService.testTrigger(userId.toString(), payload).subscribe({
+          next: () => {
+              this.toastService.success(
+                  this.translate.instant('triggers.testSentTitle'),
+                  this.translate.instant('triggers.testSentMsg')
+              );
+              
+              // Auto close logic
+              if (this.testTimeoutId) clearTimeout(this.testTimeoutId);
+              
+              const durationMs = duration * 1000;
+              
+              // Set finished state after media plays
+              this.testTimeoutId = setTimeout(() => {
+                  this.isTestFinished = true;
+                  
+                  // Close after additional 3s
+                  this.testTimeoutId = setTimeout(() => {
+                      this.closeTestModal();
+                  }, 3000);
+                  
+              }, durationMs);
+          },
+          error: (err) => {
+              console.error('Test failed', err);
+              this.toastService.error(
+                  this.translate.instant('triggers.testFailedTitle'),
+                  this.translate.instant('triggers.testFailedMsg')
+              );
+          }
+      });
+  }
+
+  closeTestModal() {
+      this.showTestModal = false;
+      this.testingTrigger = null;
+      this.obsOverlayUrl = '';
+      if (this.testTimeoutId) {
+          clearTimeout(this.testTimeoutId);
+          this.testTimeoutId = null;
+      }
   }
 }

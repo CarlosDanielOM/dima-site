@@ -117,6 +117,17 @@ export class UploadMediaModalComponent {
   upload() {
     if (!this.selectedFile || !this.fileName.trim()) return;
 
+    // Validate filename (alphanumeric, spaces, underscores)
+    // Regex: ^[a-zA-Z0-9 _]+$
+    const isValidName = /^[a-zA-Z0-9 _]+$/.test(this.fileName);
+    if (!isValidName) {
+        this.toastService.error(
+            this.translate.instant('triggers.errorTitle'),
+            this.translate.instant('triggers.invalidFileName')
+        );
+        return;
+    }
+
     this.isUploading = true;
     this.uploadProgress = 0;
 

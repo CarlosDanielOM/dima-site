@@ -70,7 +70,8 @@
     "placeholderEnterCostInPoints": "Enter cost in points",
     "placeholderEnterRewardDescription": "Enter reward description (optional)",
     "placeholderEnterCooldownInSeconds": "Enter cooldown in seconds (optional)",
-    "placeholderEnterCustomMessage": "Enter custom message (optional)"
+    "placeholderEnterCustomMessage": "Enter custom message (optional)",
+    "noDescription": "No description"
   },
   "premium": {
     "needs_premium": "Requires Premium",
@@ -321,6 +322,7 @@
     "mediaFile": "Media File",
     "fileSizeLimit": "File size limit: {{limit}}MB",
     "fileSizeError": "File exceeds the limit of {{limit}}MB",
+    "invalidFileName": "File name must contain only letters, numbers, spaces, and underscores.",
     "uploadSuccess": "File uploaded successfully",
     "deleteMediaConfirm": "Are you sure you want to delete this media file?",
     "deleteTriggerConfirm": "Are you sure you want to delete this trigger?",
@@ -344,7 +346,16 @@
     "errorMsg": "An error occurred",
     "saveAll": "Save all",
     "cancelAll": "Cancel all",
-    "exitEditMode": "Exit edit mode"
+    "exitEditMode": "Exit edit mode",
+    "testTrigger": "Test Trigger",
+    "closeTest": "Click outside to close",
+    "testSentTitle": "Test Sent",
+    "testSentMsg": "Trigger test sent successfully!",
+    "testFailedTitle": "Test Failed",
+    "testFailedMsg": "Failed to send trigger test",
+    "testStartedTitle": "Test Started",
+    "testStartedMsg": "Testing trigger...",
+    "triggerEnded": "Trigger has ended"
   },
   "media": {
     "title": "Media",

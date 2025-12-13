@@ -70,7 +70,8 @@
     "placeholderEnterCostInPoints": "Ingresa el costo en puntos",
     "placeholderEnterRewardDescription": "Ingresa la descripción de la recompensa (opcional)",
     "placeholderEnterCooldownInSeconds": "Ingresa el enfriamiento en segundos (opcional)",
-    "placeholderEnterCustomMessage": "Ingresa un mensaje personalizado (opcional)"
+    "placeholderEnterCustomMessage": "Ingresa un mensaje personalizado (opcional)",
+    "noDescription": "No hay descripción"
   },
   "premium": {
     "needs_premium": "Requiere Premium",
@@ -321,6 +322,7 @@
     "mediaFile": "Archivo Multimedia",
     "fileSizeLimit": "Límite de tamaño: {{limit}}MB",
     "fileSizeError": "El archivo excede el límite de {{limit}}MB",
+    "invalidFileName": "El nombre del archivo solo puede contener letras, números, espacios y guiones bajos.",
     "uploadSuccess": "Archivo subido exitosamente",
     "deleteMediaConfirm": "¿Estás seguro de eliminar este archivo multimedia?",
     "deleteTriggerConfirm": "¿Estás seguro de eliminar este trigger?",
@@ -344,7 +346,16 @@
     "errorMsg": "Ocurrió un error",
     "saveAll": "Guardar todo",
     "cancelAll": "Cancelar todo",
-    "exitEditMode": "Salir de edición"
+    "exitEditMode": "Salir de edición",
+    "testTrigger": "Probar Trigger",
+    "closeTest": "Haz clic fuera para cerrar",
+    "testSentTitle": "Prueba Enviada",
+    "testSentMsg": "¡Prueba de trigger enviada exitosamente!",
+    "testFailedTitle": "Error en la Prueba",
+    "testFailedMsg": "No se pudo enviar la prueba del trigger",
+    "testStartedTitle": "Prueba Iniciada",
+    "testStartedMsg": "Probando trigger...",
+    "triggerEnded": "El trigger ha terminado"
   },
   "media": {
     "title": "Multimedia",

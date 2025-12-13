@@ -151,6 +151,10 @@ export class TriggersService {
     return throwError(() => new Error('Field not supported'));
   }
 
+  testTrigger(channelID: string, payload: any): Observable<any> {
+    return this.http.post<any>(`${environment.DIMA_API}/triggers/${channelID}/send`, payload, { headers: this.getHeaders() });
+  }
+
   private mapApiToTrigger(data: any): Trigger {
     return {
       _id: data._id,
