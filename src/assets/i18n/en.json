@@ -88,6 +88,7 @@
   },
   "navbar": {
     "activateBot": "Activate Bot",
+    "updatePermissions": "Update Permissions",
     "dashboard": "Dashboard",
     "modules": "Modules",
     "settings": "Settings",

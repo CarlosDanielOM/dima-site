@@ -88,6 +88,7 @@
   },
   "navbar": {
     "activateBot": "Activar Bot",
+    "updatePermissions": "Actualizar Permisos",
     "dashboard": "Panel de Control",
     "modules": "Módulos",
     "settings": "Configuración",
