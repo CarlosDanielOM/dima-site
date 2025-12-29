@@ -11,17 +11,22 @@
         </div>
 
         <!-- Mobile view -->
-        <div class="md:hidden flex items-center space-x-4">
-            <div *ngIf="!user?.up_to_date_twitch_permissions" class="mr-2">
-                <button class="bg-orange-500 hover:bg-orange-600 text-white text-xs px-3 py-1 rounded-full transition-colors" (click)="startPermissionFlow()">
-                    {{ 'navbar.activateBot' | translate }}
+        <div class="md:hidden flex items-center space-x-2">
+            @if (botActionState(); as state) {
+                <button 
+                    class="text-white text-xs px-3 py-1.5 rounded-md transition-colors whitespace-nowrap"
+                    [ngClass]="[
+                        state.cssClass,
+                        state.type === 'activate' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-slate-900 hover:bg-slate-800'
+                    ]"
+                    (click)="startPermissionFlow()">
+                    {{ state.label | translate }}
                 </button>
-            </div>
-            <button (click)="toggleLanguage()" class="hover:text-purple-200 flex items-center space-x-1" title="Switch Language">
+            }
+            <button (click)="toggleLanguage()" class="hover:text-purple-200 flex items-center space-x-1 shrink-0" title="Switch Language">
                 <i-lucide [name]="languageIcon" class="w-5 h-5"></i-lucide>
-                <span class="text-sm">{{ getCurrentLanguageInfo().nativeName || 'English' }}</span>
             </button>
-            <div class="relative" (focusout)="onMenuFocusOut($event)" tabindex="-1">
+            <div class="relative shrink-0" (focusout)="onMenuFocusOut($event)" tabindex="-1">
                 <button (click)="toggleDropdown()" class="relative h-8 w-8 overflow-hidden rounded-full bg-transparent hover:bg-purple-600" aria-haspopup="menu" [attr.aria-expanded]="isDropdownOpen">
                     <img src="{{user?.profile_image_url || ''}}" alt="User avatar" class="rounded-full" />
                 </button>
@@ -66,12 +71,18 @@
 
         <!-- Desktop view -->
         <div class="hidden md:flex items-center space-x-4">
-            <div *ngIf="!user?.up_to_date_twitch_permissions" class="mr-4">
-                <button class="bg-orange-500 hover:bg-orange-600 text-white text-sm px-4 py-2 rounded-lg transition-colors flex items-center space-x-2" (click)="startPermissionFlow()">
+            @if (botActionState(); as state) {
+                <button 
+                    class="text-white text-sm px-4 py-2 rounded-md transition-colors flex items-center space-x-2"
+                    [ngClass]="[
+                        state.cssClass,
+                        state.type === 'activate' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-slate-900 hover:bg-slate-800'
+                    ]"
+                    (click)="startPermissionFlow()">
                     <i-lucide [name]="twitchIcon" class="w-4 h-4"></i-lucide>
-                    <span>{{ 'navbar.activateBot' | translate }}</span>
+                    <span>{{ state.label | translate }}</span>
                 </button>
-            </div>
+            }
             <a routerLink="dashboard" class="hover:text-purple-200 flex items-center space-x-1">
                 <i-lucide [name]="dashboardIcon" class="w-5 h-5"></i-lucide>
                 <span>{{ 'navbar.dashboard' | translate }}</span>
@@ -88,7 +99,7 @@
                 <i-lucide [name]="languageIcon" class="w-5 h-5"></i-lucide>
                 <span>{{ getCurrentLanguageInfo().nativeName || 'English' }}</span>
             </button>
-            <div class="relative" (focusout)="onMenuFocusOut($event)" tabindex="-1">
+            <div class="relative shrink-0" (focusout)="onMenuFocusOut($event)" tabindex="-1">
                 <button (click)="toggleDropdown()" class="relative h-8 w-8 rounded-full bg-transparent hover:bg-purple-600" aria-haspopup="menu" [attr.aria-expanded]="isDropdownOpen">
                     <img src="{{user?.profile_image_url || ''}}" alt="User avatar" class="rounded-full" />
                 </button>

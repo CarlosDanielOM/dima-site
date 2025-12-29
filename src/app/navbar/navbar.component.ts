@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, OnDestroy, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { UserService } from '../user.service';
@@ -13,6 +13,12 @@ import { SetupModalComponent } from '../shared/setup-modal/setup-modal.component
 import { Subscription } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
 
+export interface BotActionState {
+  type: 'activate' | 'update';
+  label: string;
+  cssClass: string;
+}
+
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -25,6 +31,36 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isDropdownOpen = false;
   isSetupModalOpen = false;
   private subscription: Subscription = new Subscription();
+
+  // Reactive signal for user state
+  private userSignal = signal(this.userService.getUser());
+
+  // Computed signal for bot action state
+  botActionState = computed<BotActionState | null>(() => {
+    const user = this.userSignal();
+    if (!user) return null;
+
+    // State A: Bot not activated
+    if (!user.actived) {
+      return {
+        type: 'activate',
+        label: 'navbar.activateBot',
+        cssClass: 'anim-shine'
+      };
+    }
+
+    // State B: Activated but permissions outdated
+    if (user.actived && !user.up_to_date_twitch_permissions) {
+      return {
+        type: 'update',
+        label: 'navbar.updatePermissions',
+        cssClass: 'anim-gradient-ring'
+      };
+    }
+
+    // State C: Both valid - no action needed
+    return null;
+  });
 
   // Icons
   twitchIcon = Twitch;
@@ -64,6 +100,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.userEventsService.userStatusChanged$.subscribe(() => {
         this.user = this.userService.getUser();
+        this.userSignal.set(this.user);
         // Reinitialize auth URL when user data changes
         this.initializeAuthUrl();
       })

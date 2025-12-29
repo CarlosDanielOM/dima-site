@@ -679,3 +679,43 @@ section {
   transition: background-color 0.2s ease;
 }
 
+/* ANIMATION 1: Subtle Shine (Activation) */
+@keyframes shine-slide {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(200%); }
+}
+
+.anim-shine {
+  @apply relative overflow-hidden;
+}
+
+.anim-shine::after {
+  content: "";
+  @apply absolute inset-0 -skew-x-20;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transform: translateX(-100%);
+  animation: shine-slide 3s infinite;
+}
+
+/* ANIMATION 2: Rotating Gradient Border (Update Permissions) */
+.anim-gradient-ring {
+  @apply relative isolate text-white border-transparent rounded-md;
+}
+
+/* The Spinning Gradient Layer */
+.anim-gradient-ring::before {
+  content: "";
+  @apply absolute -inset-[3px] -z-20; 
+  background: conic-gradient(from 0deg, #9333ea, #3b82f6, #9333ea); /* Purple to Blue */
+  @apply rounded-[inherit] animate-spin;
+  animation-duration: 3s;
+}
+
+/* The Solid Background Layer (Masking the center) */
+.anim-gradient-ring::after {
+  content: "";
+  @apply absolute inset-0 -z-10;
+  @apply bg-slate-900; /* Adjust to match navbar background */
+  @apply rounded-[inherit];
+}
+
