@@ -1,1 +1,159 @@
-/* Add any additional styles here if needed */
+/* Bot Action Button - Activate (Shine Effect) */
+.bot-action-activate {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+.bot-action-activate::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  animation: shine 2.5s infinite;
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  50%, 100% {
+    left: 100%;
+  }
+}
+
+/* Bot Action Button - Update (Glowing Ring Effect) */
+.bot-action-update {
+  position: relative;
+  background: transparent;
+  z-index: 1;
+}
+
+.bot-action-update-wrapper {
+  position: relative;
+  display: inline-flex;
+  border-radius: 0.5rem;
+  padding: 2px;
+  background: conic-gradient(
+    from 0deg,
+    #8b5cf6,
+    #3b82f6,
+    #06b6d4,
+    #3b82f6,
+    #8b5cf6
+  );
+  animation: spin-gradient 2s linear infinite;
+}
+
+@keyframes spin-gradient {
+  0% {
+    background: conic-gradient(
+      from 0deg,
+      #8b5cf6,
+      #3b82f6,
+      #06b6d4,
+      #3b82f6,
+      #8b5cf6
+    );
+  }
+  25% {
+    background: conic-gradient(
+      from 90deg,
+      #8b5cf6,
+      #3b82f6,
+      #06b6d4,
+      #3b82f6,
+      #8b5cf6
+    );
+  }
+  50% {
+    background: conic-gradient(
+      from 180deg,
+      #8b5cf6,
+      #3b82f6,
+      #06b6d4,
+      #3b82f6,
+      #8b5cf6
+    );
+  }
+  75% {
+    background: conic-gradient(
+      from 270deg,
+      #8b5cf6,
+      #3b82f6,
+      #06b6d4,
+      #3b82f6,
+      #8b5cf6
+    );
+  }
+  100% {
+    background: conic-gradient(
+      from 360deg,
+      #8b5cf6,
+      #3b82f6,
+      #06b6d4,
+      #3b82f6,
+      #8b5cf6
+    );
+  }
+}
+
+.bot-action-update-inner {
+  background: #1f2937;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.bot-action-update-inner:hover {
+  background: #374151;
+}
+
+/* Mobile version - smaller padding */
+.bot-action-update-inner-mobile {
+  background: #1f2937;
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.bot-action-update-inner-mobile:hover {
+  background: #374151;
+}
+
+/* Mobile wrapper - smaller border radius */
+.bot-action-update-wrapper-mobile {
+  position: relative;
+  display: inline-flex;
+  border-radius: 9999px;
+  padding: 2px;
+  background: conic-gradient(
+    from 0deg,
+    #8b5cf6,
+    #3b82f6,
+    #06b6d4,
+    #3b82f6,
+    #8b5cf6
+  );
+  animation: spin-gradient 2s linear infinite;
+}

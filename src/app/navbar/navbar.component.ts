@@ -1,9 +1,9 @@
-import { Component, ElementRef, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, OnDestroy, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { UserService } from '../user.service';
 import { LanguageService, SupportedLanguage } from '../services/language.service';
-import { LucideAngularModule, Twitch, Settings, LayoutDashboard, Terminal, User, LogOut, CircuitBoard, Menu, Languages } from 'lucide-angular';
+import { LucideAngularModule, Twitch, Settings, LayoutDashboard, Terminal, User, LogOut, CircuitBoard, Menu, Languages, Zap } from 'lucide-angular';
 import { AuthService } from '../auth.service';
 import { LinksService } from '../links.service';
 import { SidebarService } from '../services/sidebar.service';
@@ -12,6 +12,13 @@ import { UserEventsService } from '../services/user-events.service';
 import { SetupModalComponent } from '../shared/setup-modal/setup-modal.component';
 import { Subscription } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
+import { User as UserModel } from '../user';
+
+export interface BotActionState {
+  type: 'activate' | 'update';
+  label: string;
+  action: () => void;
+}
 
 @Component({
   selector: 'app-navbar',
@@ -26,6 +33,37 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isSetupModalOpen = false;
   private subscription: Subscription = new Subscription();
 
+  // User signal for reactive state
+  private userSignal = signal<UserModel | null>(this.userService.getUser());
+
+  // Computed signal for bot action state
+  botActionState = computed<BotActionState | null>(() => {
+    const user = this.userSignal();
+    if (!user) return null;
+
+    // CASE A: Bot not activated - show Activate button
+    const isActivated = user.activated ?? user.actived;
+    if (!isActivated) {
+      return {
+        type: 'activate',
+        label: 'Activate Bot',
+        action: () => this.activateBot()
+      };
+    }
+
+    // CASE B: Activated but permissions outdated - show Update button
+    if (isActivated && !user.up_to_date_twitch_permissions) {
+      return {
+        type: 'update',
+        label: 'Update Permissions',
+        action: () => this.updatePermissions()
+      };
+    }
+
+    // CASE C: All good - hide button
+    return null;
+  });
+
   // Icons
   twitchIcon = Twitch;
   dashboardIcon = LayoutDashboard;
@@ -36,6 +74,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   circuitBoardIcon = CircuitBoard;
   menuIcon = Menu;
   languageIcon = Languages;
+  zapIcon = Zap;
 
   authUrl = '';
 
@@ -64,6 +103,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.userEventsService.userStatusChanged$.subscribe(() => {
         this.user = this.userService.getUser();
+        // Update signal for reactive state
+        this.userSignal.set(this.user);
         // Reinitialize auth URL when user data changes
         this.initializeAuthUrl();
       })
@@ -107,6 +148,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
       return;
     }
     window.location.href = this.authUrl;
+  }
+
+  activateBot() {
+    this.startPermissionFlow();
+  }
+
+  updatePermissions() {
+    this.startPermissionFlow();
   }
 
   toggleDropdown() {
