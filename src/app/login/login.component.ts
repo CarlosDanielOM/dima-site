@@ -61,7 +61,8 @@ export class LoginComponent {
             premium_until: user.premium_until,
             premium_plus: user.premium_plus,
             actived: user.actived,
-            chat_enabled: user.chat_enabled
+            chat_enabled: user.chat_enabled,
+            up_to_date_twitch_permissions: user.up_to_date_twitch_permissions
           }
           let userCreated = this.userService.createUser(userData);
           if(userCreated) {
