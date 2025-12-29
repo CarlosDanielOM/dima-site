@@ -85,7 +85,8 @@ export class UserService {
             premium_until: this.user.premium_until,
             premium_plus: this.user.premium_plus,
             chat_enabled: this.user.chat_enabled,
-            token: this.user.token
+            token: this.user.token,
+            up_to_date_twitch_permissions: this.user.up_to_date_twitch_permissions
           };
           this.createRouteUser(dataUser);
           this.routeUser = dataUser;
@@ -178,6 +179,10 @@ export class UserService {
 
   isChatEnabled(): boolean {
     return this.user?.chat_enabled || false;
+  }
+
+  isUpToDate(): boolean {
+    return this.user?.up_to_date_twitch_permissions || false;
   }
 
   setChatEnabled(status: boolean): void {

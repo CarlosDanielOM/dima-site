@@ -10,4 +10,5 @@ export interface User {
     premium_plus: boolean;
     actived: boolean;
     chat_enabled: boolean;
+    up_to_date_twitch_permissions: boolean;
 }
