@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TriggersService } from '../../services/triggers.service';
 import { MediaService } from '../../services/media.service';
+import { WebsocketService } from '../../services/websocket.service';
 import { Trigger, MediaFile } from '../../interfaces/triggers';
 import { ToastService } from '../../toast.service';
 import { ConfirmationService } from '../../services/confirmation.service';
@@ -81,6 +82,7 @@ export class TriggersComponent implements OnInit {
   constructor(
     private triggersService: TriggersService,
     private mediaService: MediaService,
+    private websocketService: WebsocketService,
     private toastService: ToastService,
     private confirmationService: ConfirmationService,
     private userService: UserService,
@@ -473,54 +475,70 @@ export class TriggersComponent implements OnInit {
     }
   }
 
-  startTest(trigger: Trigger, mediaFile: MediaFile, duration: number) {
+  async startTest(trigger: Trigger, mediaFile: MediaFile, duration: number) {
       const userId = this.userService.getUserId();
-      // Ensure mediaType is mimeType
-      const payload = {
-          url: mediaFile.url,
-          mediaType: mediaFile.mimeType, 
-          volume: trigger.volume
-      };
-      
+      const namespace = `/overlays/triggers/${userId}`;
+
       this.toastService.info(
         this.translate.instant('triggers.testStartedTitle'),
         this.translate.instant('triggers.testStartedMsg')
       );
 
-      this.triggersService.testTrigger(userId.toString(), payload).subscribe({
-          next: () => {
-              this.toastService.success(
-                  this.translate.instant('triggers.testSentTitle'),
-                  this.translate.instant('triggers.testSentMsg')
-              );
-              
-              // Auto close logic
-              if (this.testTimeoutId) clearTimeout(this.testTimeoutId);
-              
-              const durationMs = duration * 1000;
-              
-              // Set finished state after media plays
-              this.testTimeoutId = setTimeout(() => {
-                  this.isTestFinished = true;
+      try {
+          // Wait for websocket connection before sending the test request
+          // This ensures the overlay is actually listening when the event is emitted
+          await this.websocketService.connectNamespace(namespace);
+
+          const payload = {
+              url: mediaFile.url,
+              mediaType: mediaFile.mimeType, 
+              volume: trigger.volume
+          };
+
+          this.triggersService.testTrigger(userId.toString(), payload).subscribe({
+              next: () => {
+                  this.toastService.success(
+                      this.translate.instant('triggers.testSentTitle'),
+                      this.translate.instant('triggers.testSentMsg')
+                  );
                   
-                  // Close after additional 3s
+                  // Auto close logic
+                  if (this.testTimeoutId) clearTimeout(this.testTimeoutId);
+                  
+                  const durationMs = duration * 1000;
+                  
+                  // Set finished state after media plays
                   this.testTimeoutId = setTimeout(() => {
-                      this.closeTestModal();
-                  }, 3000);
-                  
-              }, durationMs);
-          },
-          error: (err) => {
-              console.error('Test failed', err);
-              this.toastService.error(
-                  this.translate.instant('triggers.testFailedTitle'),
-                  this.translate.instant('triggers.testFailedMsg')
-              );
-          }
-      });
+                      this.isTestFinished = true;
+                      
+                      // Close after additional 3s
+                      this.testTimeoutId = setTimeout(() => {
+                          this.closeTestModal();
+                      }, 3000);
+                      
+                  }, durationMs);
+              },
+              error: (err) => {
+                  console.error('Test failed', err);
+                  this.toastService.error(
+                      this.translate.instant('triggers.testFailedTitle'),
+                      this.translate.instant('triggers.testFailedMsg')
+                  );
+              }
+          });
+      } catch (error) {
+          console.error('Failed to connect to overlay websocket:', error);
+          this.toastService.error(
+              'Connection Error', 
+              'Failed to establish connection with the overlay. Please try again.'
+          );
+      }
   }
 
   closeTestModal() {
+      const userId = this.userService.getUserId();
+      this.websocketService.disconnectNamespace(`/overlays/triggers/${userId}`);
+      
       this.showTestModal = false;
       this.testingTrigger = null;
       this.obsOverlayUrl = '';
