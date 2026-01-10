@@ -14,6 +14,7 @@ import { TriggersComponent } from './modules/triggers/triggers.component';
 import { RedemptionsComponent } from './modules/redemptions/redemptions.component';
 import { LogoutComponent } from './logout/logout.component';
 import { PermissionGuard } from './guards/permission.guard';
+import { ReferralDashboardComponent } from './features/referrals/referral-dashboard.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent, title: 'Login' },
@@ -23,6 +24,13 @@ export const routes: Routes = [
         { path: ':streamer', component: LandingPageComponent, title: 'DomDimaBot' },
     ] },
     { path: ':streamer', component: MainComponent, title: 'DomDimaBot', children: [
+        {
+            path: 'referrals',
+            component: ReferralDashboardComponent,
+            title: 'Referrals',
+            canActivate: [PermissionGuard],
+            data: { permission: { requiredLevel: 'everyone' } }
+        },
         {
             path: 'dashboard',
             component: WipComponent,
